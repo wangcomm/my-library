@@ -15,47 +15,32 @@
 <title>莉莉的書房</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
-/* Layout: 手機優先的單欄 App，底部分頁列；寬螢幕時內容置中、書格變多欄 */
+/* Layout: 淺灰畫布上只放封面，四種展示方式；選單收在右上角。配色固定為影片的淺灰黑白，不跟隨深色模式 */
 :root {
-  --bg: #f2f3ef;
-  --surface: #ffffff;
-  --surface-2: #e8eae4;
-  --ink: #1c2420;
-  --muted: #66706a;
-  --line: #d9ddd6;
-  --accent: #2c6a4d;
+  --bg: #e8e8e8;
+  --surface: #f7f7f7;
+  --surface-2: #dcdcdc;
+  --ink: #111111;
+  --muted: #6e6e6e;
+  --line: #c8c8c8;
+  --accent: #111111;
   --accent-ink: #ffffff;
-  --accent-soft: #dcebe2;
-  --gold: #a87a1e;
-  --danger: #b0413e;
-  --st-want: #5b6f8c;
-  --st-reading: #2f6db0;
-  --st-paused: #b07a1f;
-  --st-dropped: #a5504d;
-  --st-done: #2c6a4d;
-  --shadow: 0 1px 2px rgba(20,30,25,.12), 0 4px 12px rgba(20,30,25,.08);
-  --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --accent-soft: #d9d9d9;
+  --gold: #111111;
+  --danger: #a33a36;
+  --st-want: #a3a3a3;
+  --st-reading: #111111;
+  --st-paused: #7a7a7a;
+  --st-dropped: #c4c4c4;
+  --st-done: #3d3d3d;
+  --shadow: 0 1px 2px rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.07);
+  --font-display: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --font-body: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-label: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --top-h: 64px;
-  --shelf-bg: #0f1010; --shelf-ink: #ecebe6; --shelf-muted: #8d8f8a; --shelf-line: #2a2d2b; --shelf-surface: #191b1a;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #121614; --surface: #1b211e; --surface-2: #252c28; --ink: #e7ece9; --muted: #9aa49e; --line: #313a35;
-    --accent: #72b893; --accent-ink: #0f1a14; --accent-soft: #23362c; --gold: #d8ad52; --danger: #e07a76;
-    --st-want: #93a7c4; --st-reading: #7fb0e6; --st-paused: #dcae5a; --st-dropped: #df8a86; --st-done: #72b893;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #121614; --surface: #1b211e; --surface-2: #252c28; --ink: #e7ece9; --muted: #9aa49e; --line: #313a35;
-  --accent: #72b893; --accent-ink: #0f1a14; --accent-soft: #23362c; --gold: #d8ad52; --danger: #e07a76;
-  --st-want: #93a7c4; --st-reading: #7fb0e6; --st-paused: #dcae5a; --st-dropped: #df8a86; --st-done: #72b893;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
-  color-scheme: dark;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
 body {
@@ -67,7 +52,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .app { max-width: 1000px; margin: 0 auto; padding-block: 0 calc(32px + env(safe-area-inset-bottom, 0px)); }
-h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; }
 h1 { font-size: 26px; letter-spacing: .02em; }
 h2 { font-size: 17px; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 8px 14px; }
@@ -91,6 +76,7 @@ h2 { font-size: 17px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip { flex: none; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13.5px; white-space: nowrap; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip { background: transparent; border-color: var(--ink); }
 .chip .n { opacity: .6; margin-left: 4px; font-variant-numeric: tabular-nums; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
 
@@ -141,7 +127,7 @@ h2 { font-size: 17px; }
 .author { margin: 8px 0 0; font-size: 14px; }
 .blurb { margin: 12px 0 0; font-family: var(--font-display); font-size: 15px; line-height: 1.7; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-.tag { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.tag { font-size: 12px; padding: 1px 10px; border-radius: 999px; border: 1px solid var(--ink); color: var(--ink); }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .kv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
@@ -149,7 +135,7 @@ h2 { font-size: 17px; }
 .kv dt { font-size: 12px; color: var(--muted); }
 .kv dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
 .status-pick { display: flex; flex-wrap: wrap; gap: 8px; }
-.status-pick .chip[aria-pressed="true"] { background: var(--c); border-color: var(--c); color: var(--surface); }
+.status-pick .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .progress-row { display: flex; align-items: center; gap: 12px; }
 .progress-row .pbar { flex: 1; height: 8px; border-radius: 4px; }
 .pct { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 44px; text-align: right; }
@@ -237,55 +223,56 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .tag-chips { padding-top: 0; }
 .small-chip { height: 30px; font-size: 12.5px; padding: 0 12px; }
 
-/* 疊放：封面斜放成一疊，往右上方延伸 */
-.stack { position: relative; margin-top: 2px; }
-.stack:focus-visible { outline-offset: 4px; border-radius: 12px; }
-.stack-stage { position: relative; height: clamp(380px, 60vh, 620px); perspective: 1500px; perspective-origin: 15% 35%; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
-.sc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 0 100%; will-change: transform, opacity; }
-.sc .cover { border-radius: 3px; transition: transform .35s cubic-bezier(.2,.7,.2,1); box-shadow: 0 1px 3px rgba(0,0,0,.18), 0 22px 40px -18px rgba(0,0,0,.45); }
-.sc img { pointer-events: none; -webkit-user-drag: none; }
-@media (hover: hover) { .sc:hover .cover { transform: translateY(-14px); } }
-.stack-cap { position: absolute; left: 0; top: 0; max-width: 62%; display: flex; flex-direction: column; gap: 2px; pointer-events: none; }
-.stack-cap b { font-family: var(--font-display); font-size: 20px; line-height: 1.35; text-wrap: balance; }
-.stack-cap > span { color: var(--muted); font-size: 13px; }
-.cap-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
-.cap-score { font-size: 12.5px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
-.stack-nav { position: absolute; right: 0; bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.stack-nav button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 15px; }
+/* 首頁展示：四種排列，只顯示封面 */
+.home-bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: flex; align-items: center; gap: 10px; min-height: var(--top-h); background: var(--bg); }
+.modes { display: flex; gap: 6px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.modes::-webkit-scrollbar { display: none; }
+.pill { flex: none; height: 30px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font-family: var(--font-label), var(--font-body); font-size: 13px; transition: background .25s, color .25s; }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.home-bar .menu-btn { margin-left: auto; }
+.show { position: relative; }
+.show-stage { position: relative; height: 100%; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; perspective: 1200px; }
+.gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 50% 50%; will-change: transform; }
+.gc .cover { border-radius: 0; box-shadow: 0 1px 2px rgba(0,0,0,.08); transition: transform .3s cubic-bezier(.2,.7,.2,1); }
+.gc .cover::after { display: none; }
+.gc .cover .ph { padding: 12% 10%; }
+.gc .cover .ph::before { display: none; }
+.gc img { pointer-events: none; -webkit-user-drag: none; }
+@media (hover: hover) { .gc:hover .cover { transform: scale(1.06); } }
+.show-stage.morph .gc { transition: transform .9s cubic-bezier(.65,0,.25,1), width .9s cubic-bezier(.65,0,.25,1), opacity .6s; }
+.show-foot { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 12px; pointer-events: none; z-index: 5; font-family: var(--font-label), var(--font-body); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
+.show-foot button { pointer-events: auto; border: 1px solid var(--ink); background: transparent; border-radius: 999px; height: 26px; padding: 0 10px; font-size: 12px; letter-spacing: 0; text-transform: none; }
+.show-count { font-variant-numeric: tabular-nums; margin-right: 72px; }
 
-/* 書架：書背並排，選到的書轉成正面 */
-.shelf-band {
-  --sw: 34px; --cw: 148px; --h: 222px; --gap: 8px;
-  --shelf-gold: #d8ad52;
-  color: var(--shelf-ink);
-  display: flex; flex-direction: column; justify-content: center;
-  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
-  padding-block: 8px 20px;
-}
-@media (min-width: 640px) { .shelf-band { --sw: 40px; --cw: 180px; --h: 270px; --gap: 10px; } }
-@media (min-height: 760px) and (max-width: 639px) { .shelf-band { --sw: 38px; --cw: 176px; --h: 264px; } }
-@media (min-width: 1032px) { .shelf-band { margin-inline: 0; } }
-.shelf-title { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 0 18px; font-family: var(--font-display); font-size: 14px; letter-spacing: .2em; }
-.shelf-title::before, .shelf-title::after { content: ""; width: 36px; border-top: 1px solid var(--shelf-muted); }
-.shelf-view { overflow: hidden; height: calc(var(--h) + 8px); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-.shelf-view:focus-visible { outline: 2px solid var(--shelf-gold); outline-offset: -2px; }
-.shelf-track { display: flex; gap: var(--gap); align-items: flex-end; height: 100%; transition: transform .7s cubic-bezier(.22,.8,.25,1); }
-.shelf-track.instant, .shelf-track.instant * { transition: none !important; }
-.sb { position: relative; flex: none; width: var(--sw); height: var(--h); padding: 0; border: 0; background: none; perspective: 900px; transition: width .7s cubic-bezier(.22,.8,.25,1); }
-.sb.open { width: var(--cw); }
-.sb-box { position: absolute; left: 0; top: 0; width: var(--cw); height: 100%; transform-style: preserve-3d; transform-origin: 0 50% calc(var(--sw) / 2); transform: translateX(calc(var(--sw) / 2)) rotateY(90deg); transition: transform .7s cubic-bezier(.22,.8,.25,1); }
-.sb.open .sb-box { transform: translateX(0px) rotateY(0deg); }
-.sb-front { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.sb-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 1px 4px 4px 1px; box-shadow: 0 20px 40px -16px rgba(0,0,0,.8); }
-.sb-spine { position: absolute; left: 0; top: 0; width: var(--sw); height: 100%; transform-origin: left center; transform: rotateY(-90deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.1) 45%, rgba(0,0,0,.22)); color: #f1efe8; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
-.sb-spine span { writing-mode: vertical-rl; font-family: var(--font-display); font-size: 12.5px; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.shelf-info { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; max-width: 560px; margin: 0 auto; padding: 16px max(20px, env(safe-area-inset-left, 0px)) 0; }
-.si-no { font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--shelf-gold); font-variant-numeric: tabular-nums; }
-.si-text { display: flex; flex-direction: column; min-width: 0; }
-.si-text b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.si-text span { color: var(--shelf-muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.si-score { font-family: var(--font-display); font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
-.si-score small { font-size: 12px; color: var(--shelf-muted); margin-left: 3px; }
+/* 排行榜：有厚度的 3D 書，Cover Flow 排列 */
+.flow-wrap { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); display: flex; flex-direction: column; justify-content: center; }
+.flow { --bw: 148px; --bh: 222px; --bt: 26px; position: relative; height: calc(var(--bh) + 96px); perspective: 1100px; perspective-origin: 50% 30%; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+@media (min-width: 640px) { .flow { --bw: 180px; --bh: 270px; --bt: 30px; } }
+@media (min-height: 760px) and (max-width: 639px) { .flow { --bw: 168px; --bh: 252px; --bt: 28px; } }
+.flow:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+.bk-wrap { position: absolute; left: 50%; top: 34px; width: var(--bw); height: var(--bh); margin-left: calc(var(--bw) / -2); padding: 0; border: 0; background: none; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.22,.8,.25,1), opacity .5s; }
+.flow.instant .bk-wrap { transition: none; }
+.bk { position: absolute; inset: 0; transform-style: preserve-3d; }
+.bk-face { position: absolute; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.bk-front { inset: 0; transform: translateZ(calc(var(--bt) / 2)); }
+.bk-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 1px 3px 3px 1px; box-shadow: none; }
+.bk-back { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); background: var(--cloth); filter: brightness(.82); border-radius: 3px 1px 1px 3px; }
+.bk-spine { top: 0; left: calc(50% - var(--bt) / 2); width: var(--bt); height: 100%; transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2)); background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 45%, rgba(0,0,0,.18)); color: #f4f2ec; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
+.bk-spine span { writing-mode: vertical-rl; font-size: 11.5px; font-weight: 500; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bk-pages { top: 3px; left: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bt) - 2px); height: calc(100% - 6px); transform: rotateY(90deg) translateZ(calc(var(--bw) / 2 - 3px)); background: repeating-linear-gradient(90deg, #faf8f2 0 1px, #dedad1 1px 2px); }
+.bk-top, .bk-bottom { left: 0; top: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bw) - 3px); height: calc(var(--bt) - 2px); background: repeating-linear-gradient(0deg, #faf8f2 0 1px, #dedad1 1px 2px); }
+.bk-top { transform: rotateX(90deg) translateZ(calc(var(--bh) / 2 - 3px)); }
+.bk-bottom { transform: rotateX(-90deg) translateZ(calc(var(--bh) / 2 - 3px)); }
+.bk-shadow { position: absolute; left: -12%; right: -12%; bottom: -22px; height: 34px; background: radial-gradient(closest-side, rgba(0,0,0,.26), rgba(0,0,0,0)); transform: translateZ(-40px); pointer-events: none; }
+.flow-info { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: end; max-width: 520px; width: 100%; margin: 0 auto; padding: 4px max(20px, env(safe-area-inset-left, 0px)) 0; }
+.fi-no { font-family: var(--font-label), var(--font-body); font-size: 56px; font-weight: 500; line-height: .9; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.fi-text { display: flex; flex-direction: column; min-width: 0; padding-bottom: 2px; }
+.fi-text b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fi-text span { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fi-score { font-family: var(--font-label), var(--font-body); font-size: 26px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; padding-bottom: 4px; }
+.fi-score small { font-size: 12px; color: var(--muted); margin-left: 2px; }
+.flow-label { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0; font-family: var(--font-label), var(--font-body); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.flow-label::before, .flow-label::after { content: ""; width: 28px; border-top: 1px solid var(--ink); }
 .row-score { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
 
 /* 評分 */
@@ -313,6 +300,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-5.6px) rotate(-45deg); }
 .screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 8px); min-height: 420px; }
+.flow-wrap.screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 52px); min-height: 400px; gap: 18px; }
+.shelf-switch { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--ink); background: transparent; color: var(--ink); height: 30px; padding: 0 14px; border-radius: 999px; font-size: 13px; }
+.shelf-switch span { font-size: 9px; }
 #lib-grid.screen .stack, #lib-grid.screen .stack-stage { height: 100%; }
 .stack-nav { top: 50%; bottom: auto; transform: translateY(-50%); z-index: 2000; }
 .stack-cap, .stack-hint { z-index: 2000; }
@@ -322,7 +312,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .active-filter button { border: 0; background: var(--accent-soft); color: var(--accent); border-radius: 999px; height: 28px; padding: 0 12px; font-size: 12.5px; flex: none; }
 
 /* 浮動新增按鈕 */
-.fab { position: fixed; z-index: 18; right: max(20px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; box-shadow: 0 8px 24px -6px rgba(20,40,30,.45); transition: transform .2s; }
+.fab { position: fixed; z-index: 18; right: max(20px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; box-shadow: 0 8px 24px -8px rgba(0,0,0,.45); transition: transform .2s; }
 .fab:active { transform: scale(.92); }
 .fab svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
 
@@ -355,12 +345,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .m-nav[aria-current="page"] b { color: var(--accent); }
 @media (hover: hover) { .m-nav:hover b { transform: translateX(6px); } }
 
-/* 排行榜：整頁變成黑色書架 */
-body[data-mode="shelf"] { --bg: var(--shelf-bg); --surface: var(--shelf-surface); --surface-2: #232625; --ink: var(--shelf-ink); --muted: var(--shelf-muted); --line: var(--shelf-line); --accent: #8cc7a5; --accent-ink: #0f1a14; --accent-soft: #1f3128; --gold: #d8ad52; color-scheme: dark; }
-body[data-mode="shelf"] .drawer-panel { --bg: #121614; }
-.shelf-switch { display: inline-flex; align-items: center; gap: 6px; margin: 0 auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); height: 34px; padding: 0 14px; border-radius: 999px; font-size: 13.5px; }
-.shelf-switch span { font-size: 10px; color: var(--muted); }
-.shelf-band.screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 58px); min-height: 400px; }
 .list-label { margin-top: 8px; }
 
 /* 進場：格狀封面依序浮現，書的頁面各區塊依序浮現 */
@@ -451,7 +435,7 @@ const DB = {
 const S = {
   books: [], tags: [...DEFAULT_TAGS], apiKey: '',
   tab: 'library', stack: [],
-  filter: 'all', tagFilter: null, q: '', libView: 'stack',
+  filter: 'all', tagFilter: null, q: '', libView: 'stack', showMode: 'flat',
   rankTab: 'all', rankTag: null, rankYear: null, shelfIdx: 0, shelfKey: '',
   sbUrl: '', sbKey: '',
   results: [], resultSource: '', draft: null,
@@ -579,7 +563,7 @@ function render() {
   document.body.dataset.mode = v.name === 'ranking' ? 'shelf' : '';
   $('#fab').hidden = !(v.name === 'library' || v.name === 'ranking') || !S.books.length;
   if (v.name === 'library') renderGrid();
-  if (v.name === 'ranking') Shelf.mount();
+  if (v.name === 'ranking') Flow.mount();
 }
 
 // ---------- 書庫 ----------
@@ -608,9 +592,13 @@ function vLibrary() {
   const reading = S.books.filter(b => b.status === 'reading');
   const stack = S.libView === 'stack';
   const fl = filterLabel();
+  const bar = stack && S.books.length
+    ? `<header class="home-bar"><div class="modes" role="group" aria-label="展示方式">${MODES.map(m => `<button class="pill" data-act="show-mode" data-m="${m.k}" aria-pressed="${S.showMode === m.k}">${m.label}</button>`).join('')}</div>
+        <button class="menu-btn" data-act="menu-open" aria-label="打開選單" aria-expanded="false"><span></span><span></span><span></span></button></header>`
+    : topbar('我的書庫', `共 ${S.books.length} 本・已讀完 ${count('done')} 本`);
   return `
-  ${topbar('我的書庫', `共 ${S.books.length} 本・已讀完 ${count('done')} 本`)}
-  ${S.books.length ? `${fl ? `<div class="active-filter"><span>篩選：${esc(fl)}</span><button data-act="clear-filter">清除</button></div>` : ''}
+  ${bar}
+  ${S.books.length ? `${fl && !stack ? `<div class="active-filter"><span>篩選：${esc(fl)}</span><button data-act="clear-filter">清除</button></div>` : ''}
   ${!stack && !fl && reading.length ? `<p class="section-label">正在讀</p><div class="now">${reading.map(b => `
     <button class="now-item" data-act="open" data-id="${b.id}">${coverHTML(b)}
       <span class="meta"><span class="t">${esc(titleOf(b))}</span><span class="pbar"><span style="width:${progressOf(b)}%"></span></span>
@@ -626,13 +614,12 @@ function renderGrid() {
   const el = $('#lib-grid'); if (!el) return;
   const list = filtered();
   if (S.libView === 'stack' && list.length) {
-    el.innerHTML = `<div class="stack" id="stack" tabindex="0" aria-label="書堆：上下滑動瀏覽，點最前面的書打開">
-      <div class="stack-stage" id="stack-stage">${list.map((b, i) => `<button class="sc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
-      <div class="stack-cap" id="stack-cap"></div>
-      <div class="stack-nav"><button data-act="stack-step" data-d="-1" aria-label="上一本">↑</button><span id="stack-count"></span><button data-act="stack-step" data-d="1" aria-label="下一本">↓</button></div>
-      <p class="stack-hint">上下滑動翻書，點最前面那本打開</p>
+    const fl = filterLabel();
+    el.innerHTML = `<div class="show screen" id="show" tabindex="0" aria-label="封面展示：滑動瀏覽，點封面打開">
+      <div class="show-stage" id="show-stage">${list.map((b, i) => `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
+      <div class="show-foot">${fl ? `<button data-act="clear-filter">${esc(fl)} ✕</button>` : '<span>滑動瀏覽</span>'}<span class="show-count" id="show-count"></span></div>
     </div>`;
-    Stack.mount(list);
+    Show.mount(list);
     return;
   }
   el.innerHTML = list.length ? `<div class="grid">${list.map((b, i) => `
@@ -807,15 +794,15 @@ function rankData() {
   if (S.rankTab === 'tag') {
     const tags = usedTags();
     if (!S.rankTag || !tags.includes(S.rankTag)) S.rankTag = tags[0] || null;
-    return { tags, list: all.filter(b => b.tags.includes(S.rankTag)), heading: S.rankTag ? `${S.rankTag}榜` : '分類榜', key: 'tag:' + S.rankTag };
+    return { tags, list: all.filter(b => b.tags.includes(S.rankTag)), heading: S.rankTag || 'Category', key: 'tag:' + S.rankTag };
   }
   if (S.rankTab === 'year') {
     const years = [...new Set(S.books.filter(b => b.status === 'done' && b.endDate).map(b => b.endDate.slice(0, 4)))].sort().reverse();
     if (!S.rankYear || !years.includes(S.rankYear)) S.rankYear = years[0] || null;
     const inYear = S.books.filter(b => b.status === 'done' && S.rankYear && (b.endDate || '').startsWith(S.rankYear));
-    return { years, inYear, list: all.filter(b => inYear.includes(b)), rest: inYear.filter(b => !(b.rating > 0)), heading: `${S.rankYear || ''} 年度最愛`, key: 'year:' + S.rankYear };
+    return { years, inYear, list: all.filter(b => inYear.includes(b)), rest: inYear.filter(b => !(b.rating > 0)), heading: `Best of ${S.rankYear || ''}`, key: 'year:' + S.rankYear };
   }
-  return { list: all, heading: '總榜', key: 'all' };
+  return { list: all, heading: 'Favorite Books', key: 'all' };
 }
 function vRanking() {
   const all = ranked();
@@ -833,16 +820,16 @@ function vRanking() {
   }
   return `
   ${topbar('排行榜', `${all.length} 本已評分・依分數自動排名`)}
-  <button class="shelf-switch" data-act="menu-open">${esc(d.heading)}<span aria-hidden="true">▾</span></button>
-  ${d.list.length ? `<section class="shelf-band screen">
-    <p class="shelf-title"><span>FAVORITE BOOKS</span></p>
-    <div class="shelf-view" id="shelf" tabindex="0" aria-label="書架：左右滑動切換，點打開的書看詳情">
-      <div class="shelf-track" id="shelf-track">${d.list.map((b, i) => `
-        <button class="sb" data-i="${i}" data-book="${b.id}" style="--cloth:${hashColor(titleOf(b))}" aria-label="第 ${i + 1} 名 ${esc(titleOf(b))}">
-          <span class="sb-box"><span class="sb-front">${coverHTML(b)}</span><span class="sb-spine"><span>${esc(titleOf(b))}</span></span></span>
-        </button>`).join('')}</div>
+  <button class="shelf-switch" data-act="menu-open">${{ all: '總榜', tag: '分類榜', year: '年度最愛' }[S.rankTab]}${S.rankTab === 'tag' && S.rankTag ? '・' + esc(S.rankTag) : ''}${S.rankTab === 'year' && S.rankYear ? '・' + S.rankYear : ''}<span aria-hidden="true">▾</span></button>
+  ${d.list.length ? `<section class="flow-wrap screen">
+    <p class="flow-label">${esc(d.heading)}</p>
+    <div class="flow instant" id="flow" tabindex="0" aria-label="排行榜：左右滑動切換，點中間的書打開">${d.list.map((b, i) => `
+      <button class="bk-wrap" data-i="${i}" data-book="${b.id}" style="--cloth:${hashColor(titleOf(b))}" aria-label="第 ${i + 1} 名 ${esc(titleOf(b))}">
+        <span class="bk"><span class="bk-face bk-front">${coverHTML(b)}</span><span class="bk-face bk-back"></span><span class="bk-face bk-spine"><span>${esc(titleOf(b))}</span></span><span class="bk-face bk-pages"></span><span class="bk-face bk-top"></span><span class="bk-face bk-bottom"></span></span>
+        <span class="bk-shadow"></span>
+      </button>`).join('')}
     </div>
-    <div class="shelf-info" id="shelf-info"></div>
+    <div class="flow-info" id="flow-info"></div>
   </section>
   <p class="section-label list-label">完整名次</p>
   <ol class="rank-list">${d.list.map((b, i) => rankRow(b, i + 1)).join('')}</ol>` : `<p class="notice">${empty}</p>`}
@@ -855,26 +842,28 @@ function rankRow(b, no) {
   </li>`;
 }
 
-// ---------- 書架動畫（排行榜） ----------
-const Shelf = {
+// ---------- 排行榜：Cover Flow（有厚度的 3D 書） ----------
+const Flow = {
   list: [],
   mount() {
-    const view = $('#shelf'); if (!view) return;
+    const view = $('#flow'); if (!view) return;
     this.list = rankData().list;
-    this.select(S.shelfIdx, true);
+    this.select(S.shelfIdx);
+    requestAnimationFrame(() => requestAnimationFrame(() => view.classList.remove('instant')));
     let x0 = null, moved = false;
     view.addEventListener('pointerdown', e => { x0 = e.clientX; moved = false; });
     view.addEventListener('pointermove', e => { if (x0 !== null && Math.abs(e.clientX - x0) > 8) moved = true; });
     view.addEventListener('pointerup', e => {
       if (x0 === null) return;
       const dx = e.clientX - x0; x0 = null;
-      if (Math.abs(dx) > 30) this.select(S.shelfIdx + (dx < 0 ? 1 : -1) * Math.max(1, Math.round(Math.abs(dx) / 90)));
+      // 書跟著手指走：往左滑，右邊的書轉到中間
+      if (Math.abs(dx) > 30) this.select(S.shelfIdx + (dx < 0 ? 1 : -1) * Math.max(1, Math.round(Math.abs(dx) / 110)));
     });
     view.addEventListener('pointercancel', () => { x0 = null; });
     view.addEventListener('click', e => {
-      const el = e.target.closest('.sb'); if (!el || moved) return;
+      const el = e.target.closest('.bk-wrap'); if (!el || moved) return;
       const i = +el.dataset.i;
-      if (i === S.shelfIdx) openBook(this.list[i].id, el.querySelector('.sb-front .cover')); else this.select(i);
+      if (i === S.shelfIdx) openBook(this.list[i].id, el.querySelector('.bk-front .cover')); else this.select(i);
     });
     view.addEventListener('keydown', e => {
       if (e.key === 'ArrowRight') { this.select(S.shelfIdx + 1); e.preventDefault(); }
@@ -882,116 +871,170 @@ const Shelf = {
       if (e.key === 'Enter') openBook(this.list[S.shelfIdx].id);
     });
   },
-  select(i, instant = false) {
-    const track = $('#shelf-track'); if (!track || !this.list.length) return;
+  select(i) {
+    if (!$('#flow') || !this.list.length) return;
     S.shelfIdx = Math.max(0, Math.min(this.list.length - 1, i));
-    track.querySelectorAll('.sb').forEach((el, j) => el.classList.toggle('open', j === S.shelfIdx));
-    if (instant) { track.classList.add('instant'); requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('instant'))); }
     this.layout();
     const b = this.list[S.shelfIdx];
-    $('#shelf-info').innerHTML = `<span class="si-no">${String(S.shelfIdx + 1).padStart(2, '0')}</span>
-      <span class="si-text"><b>${esc(titleOf(b))}</b><span>${esc(b.author || '')}</span></span>
-      <span class="si-score">${fmtScore(b.rating)}<small>分</small></span>`;
+    $('#flow-info').innerHTML = `<span class="fi-no">${String(S.shelfIdx + 1).padStart(2, '0')}</span>
+      <span class="fi-text"><b>${esc(titleOf(b))}</b><span>${esc(b.author || '')}</span></span>
+      <span class="fi-score">${fmtScore(b.rating)}<small>/10</small></span>`;
   },
   layout() {
-    const view = $('#shelf'), track = $('#shelf-track'); if (!view || !track) return;
-    const cs = getComputedStyle(view);
-    const sw = parseFloat(cs.getPropertyValue('--sw')), cw = parseFloat(cs.getPropertyValue('--cw')), gap = parseFloat(cs.getPropertyValue('--gap'));
-    const center = S.shelfIdx * (sw + gap) + cw / 2;
-    track.style.transform = `translateX(${view.clientWidth / 2 - center}px)`;
+    const view = $('#flow'); if (!view) return;
+    const bw = parseFloat(getComputedStyle(view).getPropertyValue('--bw')) || 150;
+    view.querySelectorAll('.bk-wrap').forEach((el, j) => {
+      const d = j - S.shelfIdx, ad = Math.abs(d), sg = Math.sign(d);
+      // 中間那本微微側轉露出書背；左邊的書露出書背，右邊的書露出書頁
+      const x = ad === 0 ? 0 : sg * (bw * 0.66 + (ad - 1) * bw * 0.3);
+      const z = ad === 0 ? 30 : -150 - (ad - 1) * 20;
+      const ry = ad === 0 ? 22 : sg * -64;
+      el.style.transform = `translateX(${x}px) translateZ(${z}px) rotateY(${ry}deg)`;
+      el.style.zIndex = String(100 - ad);
+      el.style.opacity = ad > 6 ? '0' : '1';
+      el.tabIndex = -1;
+    });
   },
 };
 
-// ---------- 疊放動畫（書庫首頁） ----------
-const reduceMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-const Stack = {
-  p: 0, target: 0, raf: 0, list: [], drag: null, moved: false, wheelAcc: 0,
+// ---------- 首頁展示：圓環／傾斜／立體環／畫廊 ----------
+const reduceMotion = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const MODES = [{ k: 'flat', label: '圓環' }, { k: 'tilt', label: '傾斜' }, { k: 'ring', label: '立體環' }, { k: 'gallery', label: '畫廊' }];
+const rnd = i => { const x = Math.sin((i + 1) * 12.9898) * 43758.5453; return x - Math.floor(x); };
+const Show = {
+  p: 0, v: 0, raf: 0, list: [], drag: null, moved: false, wheelTimer: null, geo: { step: 100 },
   mount(list) {
     this.list = list;
-    this.target = Math.max(0, Math.min(Math.round(this.target), list.length - 1));
-    this.p = this.target;
-    const stage = $('#stack-stage');
+    cancelAnimationFrame(this.raf); this.raf = 0;
+    const stage = $('#show-stage');
     stage.addEventListener('pointerdown', e => {
-      this.drag = { y: e.clientY, x: e.clientX, p: this.p, t: performance.now(), lastY: e.clientY, lastT: performance.now(), v: 0 };
+      cancelAnimationFrame(this.raf); this.raf = 0;
+      this.drag = { x: e.clientX, y: e.clientY, p: this.p, last: this.axis(0, 0), t: performance.now(), v: 0 };
       this.moved = false;
     });
     stage.addEventListener('pointermove', e => {
       const d = this.drag; if (!d) return;
-      const dy = e.clientY - d.y, dx = e.clientX - d.x;
-      if (!this.moved && Math.hypot(dx, dy) > 8) { this.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
+      const dx = e.clientX - d.x, dy = e.clientY - d.y;
+      if (!this.moved && Math.hypot(dx, dy) > 6) { this.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
       if (!this.moved) return;
-      const now = performance.now();
-      d.v = (e.clientY - d.lastY) / Math.max(1, now - d.lastT); d.lastY = e.clientY; d.lastT = now;
-      // 書跟著手指走：往下（或往左）滑，前面的書滑出、後面的書往前
-      this.p = this.target = this.clamp(d.p + (dy - dx * 0.4) / 110);
+      const a = this.axis(dx, dy), now = performance.now();
+      // 封面跟著手指移動
+      this.p = d.p - a / this.geo.step;
+      d.v = -((a - d.last) / this.geo.step) / Math.max(1, now - d.t); d.last = a; d.t = now;
       this.draw();
     });
-    const end = () => {
-      const d = this.drag; this.drag = null; if (!d || !this.moved) return;
-      this.go(Math.round(this.p + Math.max(-1.5, Math.min(1.5, d.v * 2.5))));
-    };
+    const end = () => { const d = this.drag; this.drag = null; if (d && this.moved) this.fling(Math.max(-0.02, Math.min(0.02, d.v))); };
     stage.addEventListener('pointerup', end);
     stage.addEventListener('pointercancel', end);
     stage.addEventListener('click', e => {
-      const el = e.target.closest('.sc'); if (!el || this.moved) return;
-      const i = +el.dataset.i;
-      if (i === Math.round(this.p)) openBook(this.list[i].id, el); else this.go(i);
+      const el = e.target.closest('.gc'); if (!el || this.moved) return;
+      openBook(this.list[+el.dataset.i].id, el);
     });
     stage.addEventListener('wheel', e => {
       e.preventDefault();
-      this.wheelAcc += e.deltaY + e.deltaX;
-      if (Math.abs(this.wheelAcc) >= 40) { this.go(Math.round(this.target) + Math.sign(this.wheelAcc)); this.wheelAcc = 0; }
+      cancelAnimationFrame(this.raf); this.raf = 0;
+      this.p += (e.deltaY + e.deltaX) / (this.geo.step * 1.4);
+      this.draw();
+      clearTimeout(this.wheelTimer); this.wheelTimer = setTimeout(() => this.snap(), 140);
     }, { passive: false });
-    $('#stack').addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { this.go(Math.round(this.target) + 1); e.preventDefault(); }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { this.go(Math.round(this.target) - 1); e.preventDefault(); }
-      if (e.key === 'Enter' && e.target.id === 'stack') openBook(this.list[Math.round(this.p)].id);
+    $('#show').addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { this.animateTo(Math.round(this.p) + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { this.animateTo(Math.round(this.p) - 1); e.preventDefault(); }
+      if (e.key === 'Enter' && e.target.id === 'show') openBook(this.list[this.index()].id);
     });
     this.draw();
   },
-  clamp(v) { return Math.max(-0.3, Math.min(this.list.length - 0.7, v)); },
-  go(i) {
-    this.target = Math.max(0, Math.min(this.list.length - 1, i));
-    if (reduceMotion()) { this.p = this.target; this.draw(); return; }
-    if (!this.raf) this.raf = requestAnimationFrame(() => this.tick());
+  axis(dx, dy) { return S.showMode === 'flat' || S.showMode === 'ring' ? dx - dy * 0.6 : dx + dy * 0.25; },
+  index() { const n = this.list.length; return ((Math.round(this.p) % n) + n) % n; },
+  fling(v) {
+    if (reduceMotion()) { this.snap(); return; }
+    let last = performance.now();
+    const step = now => {
+      const dt = Math.min(40, now - last); last = now;
+      this.p += v * dt; v *= Math.pow(0.93, dt / 16);
+      this.draw();
+      if (Math.abs(v) > 0.0004) this.raf = requestAnimationFrame(step); else this.snap();
+    };
+    this.raf = requestAnimationFrame(step);
   },
-  tick() {
-    this.raf = 0;
-    const diff = this.target - this.p;
-    this.p = Math.abs(diff) < 0.002 ? this.target : this.p + diff * 0.14;
+  snap() { this.animateTo(Math.round(this.p)); },
+  animateTo(t) {
+    cancelAnimationFrame(this.raf);
+    if (reduceMotion()) { this.p = t; this.draw(); return; }
+    const step = () => {
+      const diff = t - this.p;
+      this.p = Math.abs(diff) < 0.002 ? t : this.p + diff * 0.16;
+      this.draw();
+      this.raf = this.p === t ? 0 : requestAnimationFrame(step);
+    };
+    this.raf = requestAnimationFrame(step);
+  },
+  setMode(m) {
+    if (S.showMode === m) return;
+    S.showMode = m; DB.setMeta('showMode', m).catch(() => {});
+    document.querySelectorAll('.pill[data-m]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
+    const stage = $('#show-stage'); if (!stage) return;
+    if (!reduceMotion()) { stage.classList.add('morph'); clearTimeout(this.morphTimer); this.morphTimer = setTimeout(() => stage.classList.remove('morph'), 950); }
+    this.p = Math.round(this.p);
     this.draw();
-    if (this.p !== this.target && !this.drag) this.raf = requestAnimationFrame(() => this.tick());
   },
   draw() {
-    const stage = $('#stack-stage'); if (!stage) return;
-    const w = stage.clientWidth, h = stage.clientHeight;
-    const cw = Math.min(w * 0.5, h * 0.42, 240);
-    const ch = cw * 1.5;
-    const sx = cw * 0.34, sy = cw * 0.24, sz = cw * 0.5;
-    const x0 = Math.max(8, w * 0.1), y0 = h - ch - h * 0.04;
-    stage.querySelectorAll('.sc').forEach((el, i) => {
-      const d = i - this.p;
-      if (d < -1.2 || d > 12) { el.style.visibility = 'hidden'; return; }
-      el.style.visibility = 'visible';
-      const lift = d < 0 ? d * cw * 0.5 : 0;   // 翻過的書往前下方滑出
-      el.style.width = cw + 'px';
-      el.style.transform = `translate3d(${x0 + d * sx + lift}px, ${y0 - d * sy - lift * 0.4}px, ${-d * sz}px) rotateY(34deg) rotateZ(-2deg)`;
-      el.style.opacity = d < 0 ? Math.max(0, 1 + d * 1.1) : d > 8 ? Math.max(0, (12 - d) / 4) : 1;
-      el.style.zIndex = String(1000 - Math.round(d * 10));
-      el.classList.toggle('front', Math.round(this.p) === i);
+    const stage = $('#show-stage'); if (!stage) return;
+    const w = stage.clientWidth, h = stage.clientHeight - 30, n = this.list.length, m = S.showMode;
+    const cards = stage.querySelectorAll('.gc');
+    let step = 100;
+    cards.forEach((el, i) => {
+      let d = ((i - this.p) % n + n) % n; if (d > n / 2) d -= n;
+      const ad = Math.abs(d);
+      let x, y, s, k = 1, z = 0, o = 1, ry = 0, zi;
+      if (m === 'flat') {
+        // 平鋪成一個大圓，最上面那本是目前這本
+        const R = Math.min(w, h) * 0.39;
+        s = Math.max(38, Math.min(R * 2 * Math.PI / Math.max(n, 6) * 0.62, Math.min(w, h) * 0.2));
+        const a = d / n * 2 * Math.PI - Math.PI / 2;
+        x = w / 2 + R * Math.cos(a); y = h / 2 + R * Math.sin(a);
+        step = R * 2 * Math.PI / Math.max(n, 6);
+        zi = 100;
+      } else if (m === 'tilt') {
+        // 高低錯落的橫向輪播，帶一點透視
+        s = Math.min(w * 0.34, h * 0.26, 190);
+        x = w / 2 + d * s * 1.18; y = h / 2 + (rnd(i) - 0.5) * h * 0.3;
+        k = 0.78 + rnd(i + 11) * 0.4; z = -ad * 30; ry = -d * 6;
+        o = ad > 3.5 ? Math.max(0, 1 - (ad - 3.5)) : 1;
+        step = s * 1.18; zi = 100 - Math.round(ad * 10);
+      } else if (m === 'ring') {
+        // 圓環斜放成 3D，從左下延伸到右上
+        const R = Math.min(w * 0.46, h * 0.62), al = 64 * Math.PI / 180, be = -36 * Math.PI / 180, f = 900;
+        const a = d / n * 2 * Math.PI;
+        const px = R * Math.sin(a), pz = R * Math.cos(a);
+        const y1 = pz * Math.sin(al), z1 = pz * Math.cos(al);
+        const x2 = px * Math.cos(be) - y1 * Math.sin(be), y2 = px * Math.sin(be) + y1 * Math.cos(be);
+        const sc = f / (f - z1);
+        s = Math.min(w, h) * 0.15; k = sc;
+        x = w / 2 + x2 * sc; y = h / 2 + y2 * sc;
+        o = 0.55 + 0.45 * (pz / R + 1) / 2;
+        step = R * 2 * Math.PI / Math.max(n, 6) * 0.8; zi = Math.round(500 + z1);
+      } else {
+        // 畫廊：一排橫向展開，中間那本最大
+        s = Math.min(w * 0.44, h * 0.42, 260);
+        const off = ad < 1 ? ad * s * 0.82 : s * 0.82 + (ad - 1) * s * 0.5;
+        x = w / 2 + Math.sign(d) * off; y = h / 2;
+        k = ad < 1 ? 1 - ad * 0.36 : Math.max(0.3, 0.64 - (ad - 1) * 0.08);
+        o = ad > 5 ? Math.max(0, 6 - ad) : 1;
+        step = s * 0.82; zi = 100 - Math.round(ad * 10);
+      }
+      el.style.width = s + 'px';
+      el.style.transform = `translate3d(${x - s / 2}px, ${y - s * 0.75}px, ${z}px) rotateY(${ry}deg) scale(${k})`;
+      el.style.opacity = String(o);
+      el.style.zIndex = String(zi);
+      el.style.visibility = o <= 0.01 ? 'hidden' : 'visible';
     });
-    const i = Math.max(0, Math.min(this.list.length - 1, Math.round(this.p)));
-    const b = this.list[i];
-    const cap = $('#stack-cap');
-    if (cap && cap.dataset.id !== b.id) {
-      cap.dataset.id = b.id;
-      cap.innerHTML = `<b>${esc(titleOf(b))}</b><span>${esc(b.author || '')}</span>
-        <span class="cap-meta">${b.demo ? '<span class="tag">範例</span>' : ''}<span class="status s-${b.status}">${STATUS_LABEL[b.status]}${b.status === 'reading' ? `・${progressOf(b)}%` : ''}</span>${b.rating > 0 ? `<span class="cap-score">${fmtScore(b.rating)} 分</span>` : ''}</span>`;
-    }
-    const c = $('#stack-count'); if (c) c.textContent = `${String(i + 1).padStart(2, '0')} / ${String(this.list.length).padStart(2, '0')}`;
+    this.geo.step = step;
+    const c = $('#show-count');
+    if (c) c.textContent = `${String(this.index() + 1).padStart(2, '0')} — ${String(n).padStart(2, '0')}`;
   },
 };
-window.addEventListener('resize', () => { Stack.draw(); Shelf.layout(); });
+window.addEventListener('resize', () => { Show.draw(); Flow.layout(); });
 
 // ---------- 我的 ----------
 function vSettings() {
@@ -1010,6 +1053,15 @@ function vSettings() {
     <p class="small muted" style="margin:0">${Sync.user ? '資料已同步到雲端，備份檔是多一份保險。' : `資料目前只存在這台裝置的瀏覽器裡${DB.ok ? '' : '（目前無法使用瀏覽器儲存，關閉頁面後資料會消失）'}。登入雲端同步前，換手機或清除瀏覽器資料前請先匯出備份。`}</p>
     <div class="btn-row"><button class="btn primary" data-act="export">匯出備份檔</button><button class="btn" data-act="copy-json">複製備份內容</button>
       <span class="btn file-btn">匯入備份<input type="file" id="import-file" accept="application/json,.json"></span></div>
+  </section>
+  <section class="panel"><h2>Kobo 匯入</h2>
+    <p class="small muted" style="margin:0">從 Kobo 閱讀器匯入書單、閱讀進度和畫線（畫線會變成金句）。重複匯入只會更新，不會重複新增。需要在電腦上操作。</p>
+    <div class="btn-row"><span class="btn primary file-btn">選擇 KoboReader.sqlite<input type="file" id="kobo-file" accept=".sqlite,.db,application/x-sqlite3,application/octet-stream"></span><button class="btn ghost" data-act="kobo-help">檔案在哪裡？</button></div>
+    <ol class="small muted" id="kobo-steps" hidden style="margin:0;padding-left:20px">
+      <li>用 USB 線把 Kobo 閱讀器接上電腦，閱讀器上選「連線」。</li>
+      <li>打開名為 KOBOeReader 的磁碟，裡面有一個隱藏資料夾 <b>.kobo</b>。Mac 按 Command + Shift + . 顯示隱藏檔；Windows 在檔案總管的「檢視」勾選「隱藏的項目」。</li>
+      <li>在 .kobo 資料夾裡選 <b>KoboReader.sqlite</b>。</li>
+    </ol>
   </section>
   <section class="panel"><h2>範例書</h2>
     <p class="small muted" style="margin:0">範例書只用來看畫面效果。書名和作者是真實的書，狀態、分數和日期是我隨意設定的，不會同步到雲端。</p>
@@ -1185,7 +1237,7 @@ window.addEventListener('online', () => Sync.schedule());
 
 // ---------- 選單（從右側滑出） ----------
 const NAV = [
-  { tab: 'library', label: '書庫', sub: '疊放瀏覽所有書' },
+  { tab: 'library', label: '書庫', sub: '圓環・傾斜・立體環・畫廊' },
   { tab: 'ranking', label: '排行榜', sub: '總榜・分類榜・年度最愛' },
   { tab: 'add', label: '新增書籍', sub: '搜尋書名自動帶入' },
   { tab: 'settings', label: '我的', sub: '同步・備份・設定' },
@@ -1201,7 +1253,7 @@ const Menu = {
       const count = k => S.books.filter(b => b.status === k).length;
       const tags = usedTags();
       ctx = item(`<p class="m-label">搜尋</p><input class="field-search" id="menu-q" type="search" placeholder="書名或作者" value="${esc(S.q)}" autocomplete="off">`)
-        + item(`<p class="m-label">顯示方式</p><div class="view-toggle" role="group" aria-label="顯示方式"><button data-act="lib-view" data-v="stack" aria-pressed="${S.libView === 'stack'}">疊放</button><button data-act="lib-view" data-v="grid" aria-pressed="${S.libView === 'grid'}">格狀</button></div>`)
+        + item(`<p class="m-label">顯示方式</p><div class="view-toggle" role="group" aria-label="顯示方式"><button data-act="lib-view" data-v="stack" aria-pressed="${S.libView === 'stack'}">展示</button><button data-act="lib-view" data-v="grid" aria-pressed="${S.libView === 'grid'}">格狀</button></div>`)
         + item(`<p class="m-label">閱讀狀態</p><div class="chips wrap" role="group" aria-label="閱讀狀態">
             <button class="chip" data-act="filter" data-f="all" aria-pressed="${S.filter === 'all'}">全部<span class="n">${S.books.length}</span></button>
             ${STATUS.map(s => `<button class="chip" data-act="filter" data-f="${s.k}" aria-pressed="${S.filter === s.k}">${s.label}<span class="n">${count(s.k)}</span></button>`).join('')}</div>`)
@@ -1246,6 +1298,64 @@ const Menu = {
 };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && Menu.isOpen) Menu.close(); });
 
+// ---------- Kobo 匯入（讀取閱讀器裡的 KoboReader.sqlite） ----------
+const SQLJS = 'https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/sql-asm-memory-growth.js';
+function sqlRows(db, sql) {
+  const r = db.exec(sql); if (!r.length) return [];
+  const { columns, values } = r[0];
+  return values.map(v => Object.fromEntries(columns.map((c, i) => [c, v[i]])));
+}
+async function importKobo(file) {
+  toast('正在讀取 Kobo 資料…');
+  let books, marks = [];
+  try {
+    if (!window.initSqlJs) await loadScript(SQLJS);
+    const SQL = await window.initSqlJs();
+    const db = new SQL.Database(new Uint8Array(await file.arrayBuffer()));
+    let cols;
+    try { cols = new Set(sqlRows(db, 'PRAGMA table_info(content)').map(r => r.name)); } catch (e) { cols = new Set(); }
+    if (!cols.has('ContentID') || !cols.has('Title') || !cols.has('ContentType')) { db.close(); toast('這個檔案不是 Kobo 的資料庫，請選 KoboReader.sqlite'); return; }
+    const col = (c, alias = c) => (cols.has(c) ? `${c} AS ${alias}` : `NULL AS ${alias}`);
+    books = sqlRows(db, `SELECT ContentID AS id, Title AS title, ${col('Attribution', 'author')}, ${col('___PercentRead', 'pct')}, ${col('ReadStatus', 'rs')},
+      ${col('DateLastRead', 'lastRead')}, ${col('LastTimeStartedReading', 'started')}, ${col('LastTimeFinishedReading', 'finished')}
+      FROM content WHERE ContentType = 6 AND Title IS NOT NULL AND TRIM(Title) != ''`);
+    try { marks = sqlRows(db, "SELECT VolumeID AS vid, Text AS text, Annotation AS note FROM Bookmark WHERE Text IS NOT NULL AND TRIM(Text) != '' ORDER BY DateCreated"); } catch (e) { marks = []; }
+    db.close();
+  } catch (e) {
+    toast('讀取失敗：需要網路下載讀取工具，或檔案已損壞'); return;
+  }
+  const day = v => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v) ? v.slice(0, 10) : '');
+  const norm = t => String(t || '').trim().toLowerCase();
+  let added = 0, updated = 0, quotes = 0;
+  for (const k of books) {
+    const status = k.rs === 2 ? 'done' : k.rs === 1 ? 'reading' : 'want';
+    const pct = Math.max(0, Math.min(100, Math.round(+k.pct || 0)));
+    let b = S.books.find(x => x.koboId === k.id) || S.books.find(x => !x.koboId && !x.demo && (norm(x.titleZh) === norm(k.title) || norm(x.titleEn) === norm(k.title)));
+    const isNew = !b;
+    if (isNew) b = newBook({ ...(hasCJK(k.title) ? { titleZh: k.title.trim() } : { titleEn: k.title.trim() }), author: (k.author || '').trim() });
+    b.koboId = k.id;
+    // Kobo 不知道「暫停中」「棄書」，這兩種狀態保留你自己的設定
+    if (b.status !== 'paused' && b.status !== 'dropped') {
+      if (status === 'done' || b.status !== 'done') b.status = status;
+    }
+    if (b.status !== 'done' && !b.totalPages && pct > (b.progress || 0)) b.progress = pct;
+    if (!b.startDate) b.startDate = day(k.started) || (status !== 'want' ? day(k.lastRead) : '');
+    if (b.status === 'done' && !b.endDate) b.endDate = day(k.finished) || day(k.lastRead);
+    const have = new Set(b.quotes.map(q => norm(q.text).split('\n')[0]));
+    for (const mk of marks.filter(x => x.vid === k.id)) {
+      const text = String(mk.text).trim();
+      if (have.has(norm(text))) continue;
+      have.add(norm(text));
+      b.quotes.push({ id: uid(), text: mk.note && String(mk.note).trim() ? `${text}\n（筆記：${String(mk.note).trim()}）` : text, page: '', from: 'kobo' });
+      quotes++;
+    }
+    await save(b);
+    if (isNew) added++; else updated++;
+  }
+  toast(`Kobo 匯入完成：新增 ${added} 本、更新 ${updated} 本、${quotes} 句畫線`);
+  render();
+}
+
 // ---------- 範例書（只用來看畫面；狀態、分數、日期為示範用的設定值） ----------
 const DEMO_BOOKS = [
   [1, '小王子', 'The Little Prince', '安東尼・聖修伯里', ['文學'], 'done', 9.5, '2025-02-03', '2025-02-10', 100],
@@ -1265,7 +1375,7 @@ const actions = {
   tab: el => setTab(el.dataset.tab),
   back: () => back(),
   open: el => openBook(el.dataset.id, el.closest('[data-book]') || el),
-  filter: el => { S.filter = el.dataset.f; Stack.target = 0; render(); Menu.refresh(); },
+  filter: el => { S.filter = el.dataset.f; Show.p = 0; render(); Menu.refresh(); },
   edit: el => { S.draft = JSON.parse(JSON.stringify(byId(el.dataset.id))); go({ name: 'edit' }); },
   manual: () => { const q = ($('#add-q') || {}).value || ''; S.draft = newBook(hasCJK(q) ? { titleZh: q.trim() } : { titleEn: q.trim() }); go({ name: 'edit' }); },
   pick: el => {
@@ -1296,11 +1406,12 @@ const actions = {
   },
   'menu-open': () => Menu.open(),
   'menu-close': () => Menu.close(),
-  'clear-filter': () => { S.filter = 'all'; S.tagFilter = null; S.q = ''; Stack.target = 0; render(); },
+  'clear-filter': () => { S.filter = 'all'; S.tagFilter = null; S.q = ''; Show.p = 0; render(); },
   'rating-clear': async () => { const b = byId(current().id); b.rating = null; await save(b); render(); },
   'lib-view': el => { S.libView = el.dataset.v; DB.setMeta('libView', S.libView).catch(() => {}); render(); Menu.refresh(); },
-  'tag-filter': el => { S.tagFilter = S.tagFilter === el.dataset.tag ? null : el.dataset.tag; Stack.target = 0; render(); Menu.refresh(); },
-  'stack-step': el => Stack.go(Math.round(Stack.target) + +el.dataset.d),
+  'tag-filter': el => { S.tagFilter = S.tagFilter === el.dataset.tag ? null : el.dataset.tag; Show.p = 0; render(); Menu.refresh(); },
+  'show-mode': el => Show.setMode(el.dataset.m),
+  'kobo-help': () => { const h = $('#kobo-steps'); if (h) h.hidden = !h.hidden; },
   'sb-save': async () => {
     S.sbUrl = $('#sb-url').value.trim().replace(/\/+$/, ''); S.sbKey = $('#sb-key').value.trim();
     await DB.setMeta('sb', { url: S.sbUrl, key: S.sbKey });
@@ -1354,7 +1465,7 @@ const actions = {
       await save(newBook({ id, demo: true, titleZh, titleEn, author, tags, status, rating, startDate, endDate, progress }));
       n++;
     }
-    Stack.target = 0; S.tab = 'library'; S.stack = []; S.libView = 'stack';
+    Show.p = 0; S.tab = 'library'; S.stack = []; S.libView = 'stack';
     toast(n ? `已載入 ${n} 本範例書` : '範例書已經在書庫裡'); render(); window.scrollTo(0, 0);
   },
   'clear-demo': async () => {
@@ -1373,7 +1484,7 @@ document.addEventListener('click', e => {
 let notesTimer;
 document.addEventListener('input', e => {
   const t = e.target;
-  if (t.id === 'menu-q') { S.q = t.value; Stack.target = 0; if (current().name === 'library') render(); }
+  if (t.id === 'menu-q') { S.q = t.value; Show.p = 0; if (current().name === 'library') render(); }
   if (t.id === 'rating') {
     const v = +t.value, num = $('#score-num');
     t.style.setProperty('--p', `${(v - 1) / 9 * 100}%`);
@@ -1410,6 +1521,7 @@ document.addEventListener('change', async e => {
     try { readForm(); S.draft.coverData = await resizeImage(t.files[0]); render(); }
     catch (err) { toast('這張圖片讀不出來，請換一張'); }
   }
+  if (t.id === 'kobo-file' && t.files[0]) { importKobo(t.files[0]); t.value = ''; }
   if (t.id === 'import-file' && t.files[0]) { importJSON(await t.files[0].text()); t.value = ''; }
 });
 document.addEventListener('submit', async e => {
@@ -1458,6 +1570,7 @@ document.addEventListener('submit', async e => {
     S.tags = (await DB.getMeta('tags')) || [...DEFAULT_TAGS];
     S.apiKey = (await DB.getMeta('apiKey')) || '';
     S.libView = (await DB.getMeta('libView')) || 'stack';
+    S.showMode = (await DB.getMeta('showMode')) || 'flat';
     const sb = (await DB.getMeta('sb')) || {};
     S.sbUrl = sb.url || ''; S.sbKey = sb.key || '';
   } catch (e) { S.books = []; }
