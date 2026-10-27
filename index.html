@@ -1,0 +1,1474 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2c6a4d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="我的書房">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="config.js"></script>
+</head><body>
+<title>莉莉的書房</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+/* Layout: 手機優先的單欄 App，底部分頁列；寬螢幕時內容置中、書格變多欄 */
+:root {
+  --bg: #f2f3ef;
+  --surface: #ffffff;
+  --surface-2: #e8eae4;
+  --ink: #1c2420;
+  --muted: #66706a;
+  --line: #d9ddd6;
+  --accent: #2c6a4d;
+  --accent-ink: #ffffff;
+  --accent-soft: #dcebe2;
+  --gold: #a87a1e;
+  --danger: #b0413e;
+  --st-want: #5b6f8c;
+  --st-reading: #2f6db0;
+  --st-paused: #b07a1f;
+  --st-dropped: #a5504d;
+  --st-done: #2c6a4d;
+  --shadow: 0 1px 2px rgba(20,30,25,.12), 0 4px 12px rgba(20,30,25,.08);
+  --font-display: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  --font-body: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --top-h: 64px;
+  --shelf-bg: #0f1010; --shelf-ink: #ecebe6; --shelf-muted: #8d8f8a; --shelf-line: #2a2d2b; --shelf-surface: #191b1a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121614; --surface: #1b211e; --surface-2: #252c28; --ink: #e7ece9; --muted: #9aa49e; --line: #313a35;
+    --accent: #72b893; --accent-ink: #0f1a14; --accent-soft: #23362c; --gold: #d8ad52; --danger: #e07a76;
+    --st-want: #93a7c4; --st-reading: #7fb0e6; --st-paused: #dcae5a; --st-dropped: #df8a86; --st-done: #72b893;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121614; --surface: #1b211e; --surface-2: #252c28; --ink: #e7ece9; --muted: #9aa49e; --line: #313a35;
+  --accent: #72b893; --accent-ink: #0f1a14; --accent-soft: #23362c; --gold: #d8ad52; --danger: #e07a76;
+  --st-want: #93a7c4; --st-reading: #7fb0e6; --st-paused: #dcae5a; --st-dropped: #df8a86; --st-done: #72b893;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.app { max-width: 1000px; margin: 0 auto; padding-block: 0 calc(32px + env(safe-area-inset-bottom, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: 26px; letter-spacing: .02em; }
+h2 { font-size: 17px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 8px 14px; }
+.sub { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+/* 按鈕 */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; font-weight: 500; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--accent); padding: 0 8px; }
+.btn.danger { color: var(--danger); border-color: var(--line); }
+.btn.danger.armed { background: var(--danger); color: var(--surface); border-color: var(--danger); }
+.btn.block { width: 100%; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; font-size: 18px; line-height: 1; }
+.back { display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; color: var(--accent); font-size: 15px; padding: 8px 0; min-height: 40px; }
+
+/* 搜尋與篩選 */
+.field-search { width: 100%; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: 0 14px; font-size: 15px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-block: 12px; scrollbar-width: none; margin-inline: -4px; padding-inline: 4px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13.5px; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip .n { opacity: .6; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.chips.wrap { flex-wrap: wrap; overflow: visible; }
+
+/* 封面 */
+.cover { position: relative; aspect-ratio: 2 / 3; max-width: 100%; border-radius: 3px 7px 7px 3px; overflow: hidden; box-shadow: var(--shadow); background: var(--cloth, #3d5a4c); }
+.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cover::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 9%; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.08) 60%, rgba(0,0,0,.05)); pointer-events: none; }
+.cover .ph { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 14% 12% 12% 18%; color: #f4f1ea; }
+.cover .ph b { font-family: var(--font-display); font-size: clamp(12px, 3.4vw, 16px); line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; word-break: break-word; }
+.cover .ph i { padding-right: 30px; font-style: normal; font-size: 10.5px; opacity: .8; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cover .ph::before { content: ""; position: absolute; left: 18%; right: 12%; top: 9%; border-top: 1px solid rgba(244,241,234,.45); }
+.rank-badge { position: absolute; bottom: 6px; right: 6px; min-width: 26px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--gold); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; font-variant-numeric: tabular-nums; z-index: 1; }
+
+/* 書格 */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 14px; }
+@media (min-width: 560px) { .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 24px 18px; } }
+.card { display: flex; flex-direction: column; gap: 4px; text-align: left; border: 0; background: none; padding: 0; min-width: 0; }
+.card .cover { margin-bottom: 6px; }
+.card-title { font-weight: 500; font-size: 13.5px; line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.card-author { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbar { height: 4px; border-radius: 2px; background: var(--surface-2); overflow: hidden; }
+.pbar > span { display: block; height: 100%; background: var(--st-reading); border-radius: 2px; }
+
+.status { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.s-want { --c: var(--st-want); } .s-reading { --c: var(--st-reading); } .s-paused { --c: var(--st-paused); } .s-dropped { --c: var(--st-dropped); } .s-done { --c: var(--st-done); }
+
+/* 正在讀 */
+.now { display: flex; gap: 12px; overflow-x: auto; padding-block: 4px 18px; scrollbar-width: none; }
+.now::-webkit-scrollbar { display: none; }
+.now-item { flex: none; width: min(280px, 78vw); display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); text-align: left; }
+.now-item .cover { width: 52px; flex: none; }
+.now-item .meta { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.now-item .t { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.section-label { font-size: 12px; letter-spacing: .12em; color: var(--muted); margin: 6px 0 8px; font-weight: 500; }
+
+.empty { text-align: center; padding: 48px 12px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.empty .shelf { display: flex; gap: 6px; align-items: flex-end; height: 64px; }
+.empty .shelf span { width: 14px; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--line); }
+.empty h2 { color: var(--ink); }
+
+/* 詳情 */
+.detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
+.detail-hero h1 { font-size: 22px; line-height: 1.35; }
+@media (min-width: 640px) { .detail-hero h1 { font-size: 28px; } }
+.en { color: var(--muted); font-size: 14px; margin: 4px 0 0; font-style: italic; }
+.author { margin: 8px 0 0; font-size: 14px; }
+.blurb { margin: 12px 0 0; font-family: var(--font-display); font-size: 15px; line-height: 1.7; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.kv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.kv div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kv dt { font-size: 12px; color: var(--muted); }
+.kv dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; }
+.status-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.status-pick .chip[aria-pressed="true"] { background: var(--c); border-color: var(--c); color: var(--surface); }
+.progress-row { display: flex; align-items: center; gap: 12px; }
+.progress-row .pbar { flex: 1; height: 8px; border-radius: 4px; }
+.pct { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 44px; text-align: right; }
+.page-input { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.page-input input { width: 88px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); padding: 0 10px; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+.quotes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.quote { position: relative; padding: 12px 40px 12px 16px; border-left: 3px solid var(--gold); background: var(--bg); border-radius: 0 10px 10px 0; }
+.quote p { margin: 0; font-family: var(--font-display); line-height: 1.75; white-space: pre-wrap; }
+.quote .pg { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.quote .x { position: absolute; top: 6px; right: 4px; width: 32px; height: 32px; border: 0; background: none; color: var(--muted); font-size: 18px; border-radius: 50%; }
+.quote-form { display: grid; grid-template-columns: minmax(0, 1fr) 84px auto; gap: 8px; align-items: end; }
+.quote-form textarea { grid-column: 1 / -1; }
+textarea, .input, select { width: 100%; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); padding: 10px 12px; font-size: 15px; }
+.input, select { height: 44px; padding-block: 0; }
+textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
+.notes { min-height: 160px; }
+.saved { font-size: 12px; color: var(--muted); min-height: 1em; }
+
+/* 表單 */
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--muted); }
+.form label > span b { color: var(--danger); font-weight: 500; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.cover-edit { display: flex; gap: 16px; align-items: flex-end; }
+.cover-edit .cover { width: 96px; flex: none; }
+.cover-edit .acts { display: flex; flex-direction: column; gap: 8px; }
+.file-btn { position: relative; overflow: hidden; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.form-actions { display: flex; gap: 10px; position: sticky; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); padding-top: 8px; }
+.form-actions .btn { flex: 1; min-height: 46px; box-shadow: var(--shadow); }
+.err { color: var(--danger); font-size: 13px; margin: 0; }
+
+/* 新增：搜尋結果 */
+.search-form { display: flex; gap: 8px; }
+.search-form .field-search { flex: 1; min-width: 0; }
+.results { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.result { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; border: 0; background: none; text-align: left; width: 100%; }
+.result:hover { background: var(--surface); }
+.result .t { font-weight: 500; line-height: 1.4; }
+.result .a { font-size: 13px; color: var(--muted); }
+.result .go { color: var(--accent); font-size: 13px; white-space: nowrap; }
+.notice { padding: 14px 16px; border-radius: 12px; background: var(--surface); border: 1px dashed var(--line); color: var(--muted); font-size: 14px; margin-top: 16px; }
+.source { font-size: 12px; color: var(--muted); margin-top: 12px; }
+
+/* 排行榜 */
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--surface-2); padding: 4px; border-radius: 12px; gap: 4px; }
+.seg button { height: 36px; border: 0; border-radius: 9px; background: none; font-size: 14px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 500; box-shadow: var(--shadow); }
+.rank-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; }
+.rank-row { display: grid; grid-template-columns: 40px 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.rank-row .no { font-family: var(--font-display); font-size: 24px; text-align: center; font-variant-numeric: tabular-nums; color: var(--muted); }
+.rank-row:nth-child(-n+3) .no { color: var(--gold); }
+.rank-row .info { min-width: 0; border: 0; background: none; padding: 0; text-align: left; }
+.rank-row .t { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-row .a { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-row .ctl { display: flex; gap: 4px; }
+.rank-row .ctl button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); font-size: 14px; color: var(--muted); }
+.rank-row .ctl button:disabled { opacity: .35; cursor: default; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+.picker { margin-top: 16px; }
+
+/* 設定 */
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.stat b { display: block; font-family: var(--font-display); font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat span { font-size: 12px; color: var(--muted); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-edit { display: inline-flex; align-items: center; gap: 2px; padding-left: 12px; }
+.tag-edit button { border: 0; background: none; color: var(--muted); width: 28px; height: 28px; font-size: 16px; }
+.inline-add { display: flex; gap: 8px; }
+.inline-add .input { flex: 1; min-width: 0; }
+
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 92px); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 30; max-width: calc(100% - 32px); text-align: center; box-shadow: var(--shadow); }
+.loading { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -3px; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loading { animation-duration: 3s; } }
+
+/* 顯示方式切換 */
+.view-toggle { display: flex; background: var(--surface-2); border-radius: 999px; padding: 3px; flex: none; }
+.view-toggle button { border: 0; background: none; height: 32px; padding: 0 14px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+.view-toggle button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); font-weight: 500; }
+.tag-chips { padding-top: 0; }
+.small-chip { height: 30px; font-size: 12.5px; padding: 0 12px; }
+
+/* 疊放：封面斜放成一疊，往右上方延伸 */
+.stack { position: relative; margin-top: 2px; }
+.stack:focus-visible { outline-offset: 4px; border-radius: 12px; }
+.stack-stage { position: relative; height: clamp(380px, 60vh, 620px); perspective: 1500px; perspective-origin: 15% 35%; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+.sc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 0 100%; will-change: transform, opacity; }
+.sc .cover { border-radius: 3px; transition: transform .35s cubic-bezier(.2,.7,.2,1); box-shadow: 0 1px 3px rgba(0,0,0,.18), 0 22px 40px -18px rgba(0,0,0,.45); }
+.sc img { pointer-events: none; -webkit-user-drag: none; }
+@media (hover: hover) { .sc:hover .cover { transform: translateY(-14px); } }
+.stack-cap { position: absolute; left: 0; top: 0; max-width: 62%; display: flex; flex-direction: column; gap: 2px; pointer-events: none; }
+.stack-cap b { font-family: var(--font-display); font-size: 20px; line-height: 1.35; text-wrap: balance; }
+.stack-cap > span { color: var(--muted); font-size: 13px; }
+.cap-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+.cap-score { font-size: 12.5px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stack-nav { position: absolute; right: 0; bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stack-nav button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 15px; }
+
+/* 書架：書背並排，選到的書轉成正面 */
+.shelf-band {
+  --sw: 34px; --cw: 148px; --h: 222px; --gap: 8px;
+  --shelf-gold: #d8ad52;
+  color: var(--shelf-ink);
+  display: flex; flex-direction: column; justify-content: center;
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-block: 8px 20px;
+}
+@media (min-width: 640px) { .shelf-band { --sw: 40px; --cw: 180px; --h: 270px; --gap: 10px; } }
+@media (min-height: 760px) and (max-width: 639px) { .shelf-band { --sw: 38px; --cw: 176px; --h: 264px; } }
+@media (min-width: 1032px) { .shelf-band { margin-inline: 0; } }
+.shelf-title { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 0 18px; font-family: var(--font-display); font-size: 14px; letter-spacing: .2em; }
+.shelf-title::before, .shelf-title::after { content: ""; width: 36px; border-top: 1px solid var(--shelf-muted); }
+.shelf-view { overflow: hidden; height: calc(var(--h) + 8px); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.shelf-view:focus-visible { outline: 2px solid var(--shelf-gold); outline-offset: -2px; }
+.shelf-track { display: flex; gap: var(--gap); align-items: flex-end; height: 100%; transition: transform .7s cubic-bezier(.22,.8,.25,1); }
+.shelf-track.instant, .shelf-track.instant * { transition: none !important; }
+.sb { position: relative; flex: none; width: var(--sw); height: var(--h); padding: 0; border: 0; background: none; perspective: 900px; transition: width .7s cubic-bezier(.22,.8,.25,1); }
+.sb.open { width: var(--cw); }
+.sb-box { position: absolute; left: 0; top: 0; width: var(--cw); height: 100%; transform-style: preserve-3d; transform-origin: 0 50% calc(var(--sw) / 2); transform: translateX(calc(var(--sw) / 2)) rotateY(90deg); transition: transform .7s cubic-bezier(.22,.8,.25,1); }
+.sb.open .sb-box { transform: translateX(0px) rotateY(0deg); }
+.sb-front { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.sb-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 1px 4px 4px 1px; box-shadow: 0 20px 40px -16px rgba(0,0,0,.8); }
+.sb-spine { position: absolute; left: 0; top: 0; width: var(--sw); height: 100%; transform-origin: left center; transform: rotateY(-90deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.1) 45%, rgba(0,0,0,.22)); color: #f1efe8; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
+.sb-spine span { writing-mode: vertical-rl; font-family: var(--font-display); font-size: 12.5px; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.shelf-info { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; max-width: 560px; margin: 0 auto; padding: 16px max(20px, env(safe-area-inset-left, 0px)) 0; }
+.si-no { font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--shelf-gold); font-variant-numeric: tabular-nums; }
+.si-text { display: flex; flex-direction: column; min-width: 0; }
+.si-text b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.si-text span { color: var(--shelf-muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.si-score { font-family: var(--font-display); font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+.si-score small { font-size: 12px; color: var(--shelf-muted); margin-left: 3px; }
+.row-score { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
+
+/* 評分 */
+.score { display: flex; align-items: baseline; gap: 6px; --t: 0; }
+.score-num { display: inline-block; font-family: var(--font-display); font-size: 56px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--gold); color: color-mix(in oklab, var(--gold) calc(var(--t) * 100%), var(--muted)); transform-origin: 50% 85%; }
+.score-max { color: var(--muted); font-size: 16px; }
+.rating-range { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; background: transparent; margin: 0; --p: 0%; }
+.rating-range::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--gold) var(--p), var(--surface-2) var(--p)); }
+.rating-range::-moz-range-track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--gold) var(--p), var(--surface-2) var(--p)); }
+.rating-range::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -10px; border-radius: 50%; background: var(--surface); border: 2px solid var(--gold); box-shadow: var(--shadow); transition: transform .15s; }
+.rating-range:active::-webkit-slider-thumb { transform: scale(1.18); }
+.rating-range::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--gold); }
+.score-scale { display: flex; justify-content: space-between; padding-inline: 10px; margin-top: -8px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.adv summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+/* ---------- 第三版：全螢幕 + 選單 + 轉場 ---------- */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--top-h); background: var(--bg); }
+.tb-title { min-width: 0; }
+.tb-title h1 { font-size: 22px; line-height: 1.25; }
+.tb-title .sub { margin: 0; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.menu-btn span { display: block; width: 18px; height: 1.6px; border-radius: 1px; background: var(--ink); transition: transform .3s, opacity .3s; }
+.menu-btn span:nth-child(2) { width: 12px; margin-left: 6px; }
+.menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(5.6px) rotate(45deg); }
+.menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-5.6px) rotate(-45deg); }
+.screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 8px); min-height: 420px; }
+#lib-grid.screen .stack, #lib-grid.screen .stack-stage { height: 100%; }
+.stack-nav { top: 50%; bottom: auto; transform: translateY(-50%); z-index: 2000; }
+.stack-cap, .stack-hint { z-index: 2000; }
+.stack-hint { position: absolute; left: 0; bottom: 4px; margin: 0; font-size: 11.5px; color: var(--muted); letter-spacing: .04em; pointer-events: none; }
+.active-filter { display: flex; align-items: center; gap: 10px; margin: -4px 0 6px; font-size: 13px; color: var(--muted); }
+.active-filter span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.active-filter button { border: 0; background: var(--accent-soft); color: var(--accent); border-radius: 999px; height: 28px; padding: 0 12px; font-size: 12.5px; flex: none; }
+
+/* 浮動新增按鈕 */
+.fab { position: fixed; z-index: 18; right: max(20px, env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; box-shadow: 0 8px 24px -6px rgba(20,40,30,.45); transition: transform .2s; }
+.fab:active { transform: scale(.92); }
+.fab svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+/* 選單 */
+.drawer { position: fixed; inset: 0; z-index: 40; }
+.drawer-backdrop { position: absolute; inset: 0; background: rgba(10,14,12,.42); opacity: 0; transition: opacity .35s; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(360px, 88vw); background: var(--surface); color: var(--ink); box-shadow: -12px 0 40px rgba(0,0,0,.2); overflow-y: auto; overscroll-behavior: contain;
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 24px) 20px;
+  transform: translateX(104%); transition: transform .38s cubic-bezier(.22,.8,.25,1); display: flex; flex-direction: column; gap: 18px; }
+.drawer.open .drawer-backdrop { opacity: 1; }
+.drawer.open .drawer-panel { transform: none; }
+.m-item { opacity: 0; transform: translateX(18px); }
+.drawer.open .m-item { animation: m-in .42s cubic-bezier(.22,.8,.25,1) both; animation-delay: calc(80ms + var(--i) * 45ms); }
+.drawer-panel.no-stagger .m-item { animation: none; opacity: 1; transform: none; }
+@keyframes m-in { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+.m-head { display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+.m-brand { font-family: var(--font-display); font-size: 15px; letter-spacing: .12em; color: var(--muted); }
+.m-close { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); font-size: 22px; line-height: 1; color: var(--ink); }
+.m-ctx { display: flex; flex-direction: column; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.m-label { margin: 0 0 8px; font-size: 12px; letter-spacing: .12em; color: var(--muted); }
+.m-ctx .chips { padding: 0; margin: 0; }
+.m-ctx .view-toggle { display: inline-flex; }
+.m-seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; }
+.m-seg button { height: 38px; border: 0; border-radius: 9px; background: none; color: var(--muted); font-size: 14px; }
+.m-seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 500; box-shadow: var(--shadow); }
+.m-navs { display: flex; flex-direction: column; }
+.m-nav { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--line); background: none; text-align: left; }
+.m-nav b { font-family: var(--font-display); font-size: 22px; font-weight: 700; transition: transform .25s, color .25s; }
+.m-nav span { font-size: 12.5px; color: var(--muted); }
+.m-nav[aria-current="page"] b { color: var(--accent); }
+@media (hover: hover) { .m-nav:hover b { transform: translateX(6px); } }
+
+/* 排行榜：整頁變成黑色書架 */
+body[data-mode="shelf"] { --bg: var(--shelf-bg); --surface: var(--shelf-surface); --surface-2: #232625; --ink: var(--shelf-ink); --muted: var(--shelf-muted); --line: var(--shelf-line); --accent: #8cc7a5; --accent-ink: #0f1a14; --accent-soft: #1f3128; --gold: #d8ad52; color-scheme: dark; }
+body[data-mode="shelf"] .drawer-panel { --bg: #121614; }
+.shelf-switch { display: inline-flex; align-items: center; gap: 6px; margin: 0 auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); height: 34px; padding: 0 14px; border-radius: 999px; font-size: 13.5px; }
+.shelf-switch span { font-size: 10px; color: var(--muted); }
+.shelf-band.screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 58px); min-height: 400px; }
+.list-label { margin-top: 8px; }
+
+/* 進場：格狀封面依序浮現，書的頁面各區塊依序浮現 */
+.card { animation: rise .5s cubic-bezier(.22,.8,.25,1) both; animation-delay: calc(var(--i, 0) * 35ms); }
+.detail-hero, #main > .panel { animation: rise .55s cubic-bezier(.22,.8,.25,1) both; }
+#main > .panel:nth-of-type(2) { animation-delay: 60ms; } #main > .panel:nth-of-type(3) { animation-delay: 120ms; } #main > .panel:nth-of-type(4) { animation-delay: 180ms; } #main > .panel:nth-of-type(n+5) { animation-delay: 240ms; }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@supports (animation-timeline: view()) {
+  #main > .panel:nth-of-type(n+3), .rank-row, .quote { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; animation-delay: 0s; }
+}
+
+/* 換頁（View Transitions） */
+::view-transition-old(root) { animation: vt-out .28s cubic-bezier(.4,0,.2,1) both; }
+::view-transition-new(root) { animation: vt-in .38s cubic-bezier(.22,.8,.25,1) both; }
+[data-dir="back"]::view-transition-old(root) { animation-name: vt-out-back; }
+[data-dir="back"]::view-transition-new(root) { animation-name: vt-in-back; }
+::view-transition-group(book-cover) { animation-duration: .5s; animation-timing-function: cubic-bezier(.22,.8,.25,1); z-index: 50; }
+@keyframes vt-out { to { opacity: 0; transform: translateX(-28px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateX(28px); } }
+@keyframes vt-out-back { to { opacity: 0; transform: translateX(28px); } }
+@keyframes vt-in-back { from { opacity: 0; transform: translateX(-28px); } }
+@media (prefers-reduced-motion: reduce) {
+  .card, .detail-hero, #main > .panel, .rank-row, .quote, .drawer.open .m-item { animation: none !important; opacity: 1; transform: none; }
+  .drawer-panel, .drawer-backdrop { transition: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+</style>
+
+<div class="app"><main id="main" aria-live="polite"></main></div>
+<button class="fab" id="fab" data-act="tab" data-tab="add" aria-label="新增書籍" hidden><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer-backdrop" data-act="menu-close"></div>
+  <aside class="drawer-panel" role="dialog" aria-modal="true" aria-label="選單" id="drawer-panel"></aside>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+const STATUS = [
+  { k: 'want', label: '待閱讀' },
+  { k: 'reading', label: '閱讀中' },
+  { k: 'paused', label: '暫停中' },
+  { k: 'dropped', label: '棄書' },
+  { k: 'done', label: '閱讀完畢' },
+];
+const STATUS_LABEL = Object.fromEntries(STATUS.map(s => [s.k, s.label]));
+const DEFAULT_TAGS = ['文學', '歷史', '自我成長', '科幻/奇幻', '愛情'];
+const CLOTH = ['#3d5a4c', '#5a3d43', '#33485e', '#6b5233', '#4b3f5e', '#2f5558', '#5e4a3a', '#3f4a2f'];
+
+// ---------- 儲存：IndexedDB（失敗時退回記憶體） ----------
+const DB = {
+  db: null, ok: false, mem: new Map(), memMeta: new Map(),
+  async open() {
+    try {
+      this.db = await new Promise((res, rej) => {
+        const r = indexedDB.open('reading-library', 1);
+        r.onupgradeneeded = () => {
+          const d = r.result;
+          if (!d.objectStoreNames.contains('books')) d.createObjectStore('books', { keyPath: 'id' });
+          if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta', { keyPath: 'key' });
+        };
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+      this.ok = true;
+    } catch (e) { this.ok = false; }
+  },
+  tx(store, mode, fn) {
+    return new Promise((res, rej) => {
+      const t = this.db.transaction(store, mode);
+      const req = fn(t.objectStore(store));
+      t.oncomplete = () => res(req && req.result);
+      t.onerror = () => rej(t.error);
+    });
+  },
+  async all() { return this.ok ? this.tx('books', 'readonly', s => s.getAll()) : [...this.mem.values()]; },
+  async put(b) { this.mem.set(b.id, b); if (this.ok) await this.tx('books', 'readwrite', s => s.put(b)); },
+  async del(id) { this.mem.delete(id); if (this.ok) await this.tx('books', 'readwrite', s => s.delete(id)); },
+  async getMeta(k) {
+    if (!this.ok) return this.memMeta.get(k);
+    const r = await this.tx('meta', 'readonly', s => s.get(k));
+    return r && r.value;
+  },
+  async setMeta(k, v) { this.memMeta.set(k, v); if (this.ok) await this.tx('meta', 'readwrite', s => s.put({ key: k, value: v })); },
+};
+
+// ---------- 狀態 ----------
+const S = {
+  books: [], tags: [...DEFAULT_TAGS], apiKey: '',
+  tab: 'library', stack: [],
+  filter: 'all', tagFilter: null, q: '', libView: 'stack',
+  rankTab: 'all', rankTag: null, rankYear: null, shelfIdx: 0, shelfKey: '',
+  sbUrl: '', sbKey: '',
+  results: [], resultSource: '', draft: null,
+};
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const hasCJK = s => /[㐀-鿿豈-﫿]/.test(s);
+const titleOf = b => b.titleZh || b.titleEn || '（未命名）';
+const byId = id => S.books.find(b => b.id === id);
+const fmtDate = d => d ? d.replace(/-/g, '/') : '—';
+
+function progressOf(b) {
+  if (b.status === 'done') return 100;
+  if (b.totalPages > 0) return Math.max(0, Math.min(100, Math.round((b.currentPage || 0) / b.totalPages * 100)));
+  return Math.max(0, Math.min(100, Math.round(b.progress || 0)));
+}
+function hashColor(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return CLOTH[h % CLOTH.length]; }
+
+function coverHTML(b, badge = false) {
+  const src = b.coverData || b.coverUrl;
+  return `<div class="cover" style="--cloth:${hashColor(titleOf(b))}">
+    <div class="ph"><b>${esc(titleOf(b))}</b><i>${esc(b.author || '')}</i></div>
+    ${src ? `<img src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ''}
+    ${badge && rankOf(b) ? `<span class="rank-badge">#${rankOf(b)}</span>` : ''}
+  </div>`;
+}
+// 圖片載不到時移除，露出布面封面
+document.addEventListener('error', e => { const t = e.target; if (t.tagName === 'IMG' && t.closest('.cover')) t.remove(); }, true);
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2200);
+}
+
+async function save(b) {
+  b.updatedAt = new Date().toISOString();
+  rankCache = null;
+  const i = S.books.findIndex(x => x.id === b.id);
+  if (i >= 0) S.books[i] = b; else S.books.push(b);
+  try { await DB.put(b); } catch (e) { toast('儲存失敗，請先匯出備份'); }
+  Sync.schedule();
+}
+
+function newBook(p = {}) {
+  return {
+    id: uid(), coverUrl: '', coverData: '', titleZh: '', titleEn: '', author: '', blurb: '',
+    status: 'want', tags: [], quotes: [], notes: '', rating: null,
+    startDate: '', endDate: '', currentPage: null, totalPages: null, progress: 0,
+    createdAt: new Date().toISOString(), updatedAt: '', ...p,
+  };
+}
+
+// ---------- 排名：依評分自動計算（同分時較晚讀完的在前） ----------
+function ranked() {
+  return S.books.filter(b => b.rating > 0).sort((a, b) =>
+    b.rating - a.rating || (b.endDate || '').localeCompare(a.endDate || '') || titleOf(a).localeCompare(titleOf(b), 'zh-Hant'));
+}
+let rankCache = null;
+function rankOf(b) {
+  if (!rankCache) rankCache = new Map(ranked().map((x, i) => [x.id, i + 1]));
+  return rankCache.get(b.id) || null;
+}
+const fmtScore = r => (r % 1 ? r.toFixed(1) : String(r));
+
+// 狀態連動：開始讀自動填開始日、讀完自動填讀完日
+function applyStatus(b, st) {
+  b.status = st;
+  if ((st === 'reading' || st === 'done') && !b.startDate) b.startDate = today();
+  if (st === 'done') { if (!b.endDate) b.endDate = today(); if (b.totalPages) b.currentPage = b.totalPages; b.progress = 100; }
+}
+
+// ---------- 導覽 ----------
+const current = () => S.stack[S.stack.length - 1] || { name: S.tab };
+// 換頁動畫：支援 View Transitions 的瀏覽器會讓封面從原位置放大到書的頁面，其餘頁面淡入滑動
+function transition(update, dir = 'forward', fromCover = null, bookId = null) {
+  const done = () => { update(); window.scrollTo(0, 0); };
+  if (reduceMotion()) { done(); return; }
+  if (!document.startViewTransition) {
+    done();
+    const m = $('#main');
+    if (m.animate) m.animate([{ opacity: 0, transform: `translateX(${dir === 'back' ? -24 : 24}px)` }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2,.7,.2,1)' });
+    return;
+  }
+  document.documentElement.dataset.dir = dir;
+  if (fromCover) fromCover.style.viewTransitionName = 'book-cover';
+  const t = document.startViewTransition(() => {
+    if (fromCover) fromCover.style.viewTransitionName = '';
+    done();
+    const target = dir === 'back' ? findCover(bookId) : $('.detail-hero .cover');
+    if (target && (fromCover || dir === 'back')) target.style.viewTransitionName = 'book-cover';
+  });
+  t.finished.finally(() => { document.querySelectorAll('.cover').forEach(c => { c.style.viewTransitionName = ''; }); });
+}
+function findCover(id) {
+  if (!id) return null;
+  const el = document.querySelector(`[data-book="${CSS.escape(id)}"] .cover`);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return r.bottom > 0 && r.top < innerHeight && getComputedStyle(el.closest('[data-book]')).visibility !== 'hidden' ? el : null;
+}
+function openBook(id, fromEl) {
+  const cover = fromEl && (fromEl.classList.contains('cover') ? fromEl : fromEl.querySelector('.cover'));
+  transition(() => { S.stack.push({ name: 'detail', id }); render(); }, 'forward', cover || null);
+}
+function go(view) { transition(() => { S.stack.push(view); render(); }); }
+function back() {
+  const v = current();
+  transition(() => { S.stack.pop(); render(); }, 'back', null, v.name === 'detail' ? v.id : null);
+}
+function setTab(t) {
+  Menu.close();
+  if (t === S.tab && !S.stack.length) return;
+  transition(() => { S.tab = t; S.stack = []; if (t === 'add') { S.results = []; S.resultSource = ''; } render(); });
+}
+
+function render() {
+  const v = current();
+  rankCache = null;
+  const views = { library: vLibrary, detail: vDetail, edit: vEdit, add: vAdd, ranking: vRanking, settings: vSettings };
+  $('#main').innerHTML = views[v.name](v);
+  document.body.dataset.mode = v.name === 'ranking' ? 'shelf' : '';
+  $('#fab').hidden = !(v.name === 'library' || v.name === 'ranking') || !S.books.length;
+  if (v.name === 'library') renderGrid();
+  if (v.name === 'ranking') Shelf.mount();
+}
+
+// ---------- 書庫 ----------
+const usedTags = () => [...new Set([...S.tags, ...S.books.flatMap(b => b.tags)])].filter(t => S.books.some(b => b.tags.includes(t)));
+function filtered() {
+  const q = S.q.trim().toLowerCase();
+  return S.books
+    .filter(b => S.filter === 'all' || b.status === S.filter)
+    .filter(b => !S.tagFilter || b.tags.includes(S.tagFilter))
+    .filter(b => !q || [b.titleZh, b.titleEn, b.author].some(x => (x || '').toLowerCase().includes(q)))
+    .sort((a, b) => (b.updatedAt || b.createdAt).localeCompare(a.updatedAt || a.createdAt));
+}
+function topbar(title, sub) {
+  return `<header class="topbar"><div class="tb-title"><h1>${title}</h1>${sub ? `<p class="sub">${sub}</p>` : ''}</div>
+    <button class="menu-btn" data-act="menu-open" aria-label="打開選單" aria-expanded="false"><span></span><span></span><span></span></button></header>`;
+}
+function filterLabel() {
+  const parts = [];
+  if (S.filter !== 'all') parts.push(STATUS_LABEL[S.filter]);
+  if (S.tagFilter) parts.push(S.tagFilter);
+  if (S.q.trim()) parts.push(`「${S.q.trim()}」`);
+  return parts.join('・');
+}
+function vLibrary() {
+  const count = k => S.books.filter(b => b.status === k).length;
+  const reading = S.books.filter(b => b.status === 'reading');
+  const stack = S.libView === 'stack';
+  const fl = filterLabel();
+  return `
+  ${topbar('我的書庫', `共 ${S.books.length} 本・已讀完 ${count('done')} 本`)}
+  ${S.books.length ? `${fl ? `<div class="active-filter"><span>篩選：${esc(fl)}</span><button data-act="clear-filter">清除</button></div>` : ''}
+  ${!stack && !fl && reading.length ? `<p class="section-label">正在讀</p><div class="now">${reading.map(b => `
+    <button class="now-item" data-act="open" data-id="${b.id}">${coverHTML(b)}
+      <span class="meta"><span class="t">${esc(titleOf(b))}</span><span class="pbar"><span style="width:${progressOf(b)}%"></span></span>
+      <span class="small muted">${progressOf(b)}%${b.totalPages ? `・第 ${b.currentPage || 0} / ${b.totalPages} 頁` : ''}</span></span>
+    </button>`).join('')}</div><p class="section-label">全部書籍</p>` : ''}
+  <div id="lib-grid" class="${stack ? 'screen' : ''}"></div>` : `
+  <div class="empty"><div class="shelf"><span style="height:48px"></span><span style="height:60px"></span><span style="height:40px"></span><span style="height:56px"></span></div>
+    <h2>書架還是空的</h2><p>搜尋書名加入第一本書，封面、書名和作者會自動帶入。</p>
+    <button class="btn primary" data-act="tab" data-tab="add">新增第一本書</button>
+    <button class="btn ghost" data-act="load-demo">載入 10 本範例書看看效果</button></div>`}`;
+}
+function renderGrid() {
+  const el = $('#lib-grid'); if (!el) return;
+  const list = filtered();
+  if (S.libView === 'stack' && list.length) {
+    el.innerHTML = `<div class="stack" id="stack" tabindex="0" aria-label="書堆：上下滑動瀏覽，點最前面的書打開">
+      <div class="stack-stage" id="stack-stage">${list.map((b, i) => `<button class="sc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
+      <div class="stack-cap" id="stack-cap"></div>
+      <div class="stack-nav"><button data-act="stack-step" data-d="-1" aria-label="上一本">↑</button><span id="stack-count"></span><button data-act="stack-step" data-d="1" aria-label="下一本">↓</button></div>
+      <p class="stack-hint">上下滑動翻書，點最前面那本打開</p>
+    </div>`;
+    Stack.mount(list);
+    return;
+  }
+  el.innerHTML = list.length ? `<div class="grid">${list.map((b, i) => `
+    <button class="card" data-act="open" data-id="${b.id}" data-book="${b.id}" style="--i:${Math.min(i, 18)}">${coverHTML(b, true)}
+      <span class="card-title">${esc(titleOf(b))}</span>
+      <span class="card-author">${esc(b.author || '　')}</span>
+      ${b.status === 'reading' ? `<span class="pbar"><span style="width:${progressOf(b)}%"></span></span>` : `<span class="status s-${b.status}">${STATUS_LABEL[b.status]}</span>`}
+    </button>`).join('')}</div>` : `<p class="notice">沒有符合的書。</p>`;
+}
+
+// ---------- 詳情 ----------
+function vDetail(v) {
+  const b = byId(v.id); if (!b) return `<button class="back" data-act="back">‹ 返回</button><p class="notice">找不到這本書。</p>`;
+  const p = progressOf(b);
+  return `
+  <div class="top"><button class="back" data-act="back">‹ 返回</button><button class="btn" data-act="edit" data-id="${b.id}">編輯</button></div>
+  <section class="detail-hero" data-book="${b.id}">${coverHTML(b)}
+    <div><h1>${esc(titleOf(b))}</h1>
+      ${b.titleZh && b.titleEn ? `<p class="en">${esc(b.titleEn)}</p>` : ''}
+      <p class="author">${esc(b.author || '作者未填')}</p>
+      ${b.blurb ? `<p class="blurb">${esc(b.blurb)}</p>` : ''}
+      ${b.tags.length ? `<div class="tags">${b.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+    </div>
+  </section>
+
+  <section class="panel"><h2>閱讀狀態</h2>
+    <div class="status-pick">${STATUS.map(s => `<button class="chip s-${s.k}" data-act="set-status" data-st="${s.k}" aria-pressed="${b.status === s.k}">${s.label}</button>`).join('')}</div>
+    <div class="progress-row"><span class="pbar"><span style="width:${p}%"></span></span><span class="pct">${p}%</span></div>
+    ${b.status !== 'done' ? (b.totalPages ? `<div class="page-input"><span>讀到第</span><input id="cur-page" type="number" inputmode="numeric" min="0" max="${b.totalPages}" value="${b.currentPage ?? ''}"><span>/ ${b.totalPages} 頁</span></div>`
+      : `<input id="pct-range" type="range" min="0" max="100" step="5" value="${p}" aria-label="閱讀進度百分比"><p class="hint" style="margin:0">在「編輯」填入總頁數，就能用頁數記錄進度。</p>`) : ''}
+    <dl class="kv" style="margin:0">
+      <div><dt>開始閱讀</dt><dd>${fmtDate(b.startDate)}</dd></div>
+      <div><dt>讀完</dt><dd>${fmtDate(b.endDate)}</dd></div>
+      <div><dt>總榜排名</dt><dd>${rankOf(b) ? '#' + rankOf(b) : '未上榜'}</dd></div>
+    </dl>
+  </section>
+
+  <section class="panel rating-panel"><div class="panel-head"><h2>評分</h2><span class="small muted" id="rank-note">${rankOf(b) ? `總榜第 ${rankOf(b)} 名` : '評分後自動上榜'}</span></div>
+    <div class="score" style="--t:${(b.rating || 0) / 10}"><span class="score-num" id="score-num">${b.rating ? fmtScore(b.rating) : '–'}</span><span class="score-max">/ 10</span></div>
+    <input id="rating" class="rating-range" type="range" min="1" max="10" step="0.5" value="${b.rating || 1}" style="--p:${b.rating ? (b.rating - 1) / 9 * 100 : 0}%" aria-label="評分，1 到 10 分">
+    <div class="score-scale" aria-hidden="true">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<span>${n}</span>`).join('')}</div>
+    ${b.rating ? `<button class="btn ghost" data-act="rating-clear" style="align-self:flex-start">清除評分</button>` : `<p class="hint" style="margin:0">拖動滑桿打分數，可以給到 0.5 分。</p>`}
+  </section>
+
+  <section class="panel"><div class="panel-head"><h2>金句</h2><span class="small muted">${b.quotes.length} 句</span></div>
+    ${b.quotes.length ? `<ul class="quotes">${b.quotes.map(q => `<li class="quote"><p>${esc(q.text)}</p>${q.page ? `<span class="pg">p.${esc(q.page)}</span>` : ''}
+      <button class="x" data-act="quote-del" data-q="${q.id}" aria-label="刪除這句">×</button></li>`).join('')}</ul>` : ''}
+    <form class="quote-form" id="quote-form">
+      <textarea id="q-text" placeholder="寫下打動你的句子" required></textarea>
+      <label class="small muted" style="grid-column:1/2;align-self:center">頁碼（可不填）</label>
+      <input class="input" id="q-page" inputmode="numeric" placeholder="頁碼" aria-label="頁碼">
+      <button class="btn primary" type="submit">加入</button>
+    </form>
+  </section>
+
+  <section class="panel"><div class="panel-head"><h2>筆記心得</h2><span class="saved" id="notes-saved"></span></div>
+    <textarea class="notes" id="notes" placeholder="讀完的感想、想記住的事">${esc(b.notes)}</textarea>
+  </section>
+
+  <section class="panel"><button class="btn danger block" data-act="delete" data-id="${b.id}">刪除這本書</button></section>`;
+}
+
+// ---------- 編輯 / 新增表單 ----------
+function vEdit(v) {
+  const b = S.draft;
+  const isNew = !byId(b.id);
+  const allTags = [...new Set([...S.tags, ...b.tags])];
+  return `
+  <div class="top"><button class="back" data-act="back">‹ ${isNew ? '返回' : '取消'}</button><h2>${isNew ? '新增書籍' : '編輯書籍'}</h2><span style="width:48px"></span></div>
+  <form class="form" id="edit-form" novalidate>
+    <div class="cover-edit"><div id="cover-preview">${coverHTML(b)}</div>
+      <div class="acts"><span class="btn file-btn">上傳封面<input type="file" id="cover-file" accept="image/*"></span>
+      ${b.coverData || b.coverUrl ? `<button type="button" class="btn ghost" data-act="cover-clear">移除封面</button>` : ''}</div></div>
+    <label><span>中文書名</span><input class="input" id="f-zh" value="${esc(b.titleZh)}"></label>
+    <label><span>英文書名（可留空）</span><input class="input" id="f-en" value="${esc(b.titleEn)}"></label>
+    <label><span>作者</span><input class="input" id="f-author" value="${esc(b.author)}"></label>
+    <label><span>一句話簡介</span><input class="input" id="f-blurb" maxlength="80" value="${esc(b.blurb)}" placeholder="用一句話說這本書"></label>
+    <div class="row2">
+      <label><span>閱讀狀態</span><select id="f-status">${STATUS.map(s => `<option value="${s.k}" ${b.status === s.k ? 'selected' : ''}>${s.label}</option>`).join('')}</select></label>
+      <label><span>進度（%）</span><input class="input" id="f-pct" type="number" inputmode="numeric" min="0" max="100" value="${b.progress || 0}"></label>
+    </div>
+    <div class="row2">
+      <label><span>開始閱讀日期</span><input class="input" id="f-start" type="date" value="${esc(b.startDate)}"></label>
+      <label><span>讀完日期</span><input class="input" id="f-end" type="date" value="${esc(b.endDate)}"></label>
+    </div>
+    <div class="row2">
+      <label><span>目前頁數</span><input class="input" id="f-cur" type="number" inputmode="numeric" min="0" value="${b.currentPage ?? ''}"></label>
+      <label><span>總頁數</span><input class="input" id="f-total" type="number" inputmode="numeric" min="0" value="${b.totalPages ?? ''}"></label>
+    </div>
+    <p class="hint" style="margin-top:-8px">有填總頁數時，進度會用頁數自動計算。</p>
+    <div><p class="small muted" style="margin:0 0 6px">分類標籤</p>
+      <div class="chips wrap" id="f-tags" style="padding-block:0 8px">${allTags.map(t => `<button type="button" class="chip" data-act="toggle-tag" data-tag="${esc(t)}" aria-pressed="${b.tags.includes(t)}">${esc(t)}</button>`).join('')}</div>
+      <div class="inline-add"><input class="input" id="f-newtag" placeholder="新增其他分類"><button type="button" class="btn" data-act="new-tag">加入</button></div>
+    </div>
+    <p class="err" id="f-err" hidden></p>
+    <div class="form-actions"><button class="btn primary" type="submit">${isNew ? '加入書庫' : '儲存'}</button></div>
+  </form>`;
+}
+function readForm() {
+  const b = S.draft;
+  const num = id => { const v = $(id).value.trim(); return v === '' ? null : Math.max(0, parseInt(v, 10) || 0); };
+  b.titleZh = $('#f-zh').value.trim();
+  b.titleEn = $('#f-en').value.trim();
+  b.author = $('#f-author').value.trim();
+  b.blurb = $('#f-blurb').value.trim();
+  b.status = $('#f-status').value;
+  b.startDate = $('#f-start').value;
+  b.endDate = $('#f-end').value;
+  b.currentPage = num('#f-cur');
+  b.totalPages = num('#f-total');
+  b.progress = Math.min(100, num('#f-pct') || 0);
+}
+
+// ---------- 新增（搜尋） ----------
+function vAdd() {
+  return `
+  ${topbar('新增書籍', '搜尋書名，自動帶入封面、書名與作者')}
+  <form class="search-form" id="search-form"><input class="field-search" id="add-q" type="search" placeholder="輸入書名、作者或 ISBN" autocomplete="off" enterkeyhint="search"><button class="btn primary" type="submit">搜尋</button></form>
+  <div id="results">${resultsHTML()}</div>
+  <div style="margin-top:20px"><button class="btn block" data-act="manual">找不到？手動新增</button></div>`;
+}
+function resultsHTML() {
+  if (S.resultSource === 'loading') return `<p class="notice"><span class="loading"></span>搜尋中…</p>`;
+  if (S.resultSource === 'error') return `<p class="notice">搜尋服務目前連不上（可能是網路或服務限制）。可以稍後再試，或改用手動新增。</p>`;
+  if (S.resultSource === 'none') return `<p class="notice">查不到這本書。可以換個關鍵字（例如作者名或 ISBN），或改用手動新增。</p>`;
+  if (!S.results.length) return '';
+  return `<ul class="results">${S.results.map((r, i) => `<li><button class="result" data-act="pick" data-i="${i}">
+      ${coverHTML({ titleZh: r.title, author: r.author, coverUrl: r.cover })}
+      <span style="min-width:0"><span class="t">${esc(r.title)}</span><br><span class="a">${esc(r.author || '作者不明')}${r.year ? '・' + esc(r.year) : ''}</span></span>
+      <span class="go">選擇</span></button></li>`).join('')}</ul>
+    <p class="source">資料來源：${esc(S.resultSource)}</p>`;
+}
+async function searchBooks(q) {
+  // 1) Google Books
+  try {
+    const key = S.apiKey ? `&key=${encodeURIComponent(S.apiKey)}` : '';
+    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=20&printType=books${key}`);
+    if (r.ok) {
+      const j = await r.json();
+      const items = (j.items || []).map(it => {
+        const v = it.volumeInfo || {};
+        const img = v.imageLinks && (v.imageLinks.thumbnail || v.imageLinks.smallThumbnail);
+        return {
+          title: [v.title, v.subtitle].filter(Boolean).join('：'),
+          author: (v.authors || []).join('、'),
+          cover: img ? img.replace(/^http:/, 'https:').replace('&edge=curl', '') : '',
+          year: (v.publishedDate || '').slice(0, 4),
+        };
+      }).filter(x => x.title);
+      if (items.length) return { items, source: 'Google Books' };
+    }
+  } catch (e) { /* 改試下一個來源 */ }
+  // 2) Open Library
+  try {
+    const r = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=20&fields=title,author_name,cover_i,first_publish_year`);
+    if (r.ok) {
+      const j = await r.json();
+      const items = (j.docs || []).map(d => ({
+        title: d.title, author: (d.author_name || []).join('、'),
+        cover: d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg` : '',
+        year: d.first_publish_year ? String(d.first_publish_year) : '',
+      })).filter(x => x.title);
+      return { items, source: 'Open Library' };
+    }
+  } catch (e) { /* 兩個來源都失敗 */ }
+  return null;
+}
+
+// ---------- 排行榜 ----------
+function rankData() {
+  const all = ranked();
+  if (S.rankTab === 'tag') {
+    const tags = usedTags();
+    if (!S.rankTag || !tags.includes(S.rankTag)) S.rankTag = tags[0] || null;
+    return { tags, list: all.filter(b => b.tags.includes(S.rankTag)), heading: S.rankTag ? `${S.rankTag}榜` : '分類榜', key: 'tag:' + S.rankTag };
+  }
+  if (S.rankTab === 'year') {
+    const years = [...new Set(S.books.filter(b => b.status === 'done' && b.endDate).map(b => b.endDate.slice(0, 4)))].sort().reverse();
+    if (!S.rankYear || !years.includes(S.rankYear)) S.rankYear = years[0] || null;
+    const inYear = S.books.filter(b => b.status === 'done' && S.rankYear && (b.endDate || '').startsWith(S.rankYear));
+    return { years, inYear, list: all.filter(b => inYear.includes(b)), rest: inYear.filter(b => !(b.rating > 0)), heading: `${S.rankYear || ''} 年度最愛`, key: 'year:' + S.rankYear };
+  }
+  return { list: all, heading: '總榜', key: 'all' };
+}
+function vRanking() {
+  const all = ranked();
+  const d = rankData();
+  if (S.shelfKey !== d.key) { S.shelfKey = d.key; S.shelfIdx = 0; }
+  S.shelfIdx = Math.min(S.shelfIdx, Math.max(0, d.list.length - 1));
+  let empty = '', extra = '';
+  if (S.rankTab === 'tag') {
+    empty = d.tags.length ? `「${esc(S.rankTag)}」還沒有評過分的書。` : '還沒有書標上分類。';
+  } else if (S.rankTab === 'year') {
+    empty = d.years.length ? '這年讀完的書還沒有評分。' : '還沒有讀完的書。把書標成「閱讀完畢」，就會出現在那一年的年度最愛。';
+    if (d.rest && d.rest.length) extra = `<p class="section-label" style="margin-top:22px">這年讀完、還沒評分</p><ul class="rank-list" style="margin-top:0">${d.rest.map(b => rankRow(b, '–')).join('')}</ul>`;
+  } else {
+    empty = '還沒有書上榜。到書的頁面打分數，就會依分數自動排進來。';
+  }
+  return `
+  ${topbar('排行榜', `${all.length} 本已評分・依分數自動排名`)}
+  <button class="shelf-switch" data-act="menu-open">${esc(d.heading)}<span aria-hidden="true">▾</span></button>
+  ${d.list.length ? `<section class="shelf-band screen">
+    <p class="shelf-title"><span>FAVORITE BOOKS</span></p>
+    <div class="shelf-view" id="shelf" tabindex="0" aria-label="書架：左右滑動切換，點打開的書看詳情">
+      <div class="shelf-track" id="shelf-track">${d.list.map((b, i) => `
+        <button class="sb" data-i="${i}" data-book="${b.id}" style="--cloth:${hashColor(titleOf(b))}" aria-label="第 ${i + 1} 名 ${esc(titleOf(b))}">
+          <span class="sb-box"><span class="sb-front">${coverHTML(b)}</span><span class="sb-spine"><span>${esc(titleOf(b))}</span></span></span>
+        </button>`).join('')}</div>
+    </div>
+    <div class="shelf-info" id="shelf-info"></div>
+  </section>
+  <p class="section-label list-label">完整名次</p>
+  <ol class="rank-list">${d.list.map((b, i) => rankRow(b, i + 1)).join('')}</ol>` : `<p class="notice">${empty}</p>`}
+  ${extra}`;
+}
+function rankRow(b, no) {
+  return `<li class="rank-row" data-book="${b.id}"><span class="no">${no}</span>${coverHTML(b)}
+    <button class="info" data-act="open" data-id="${b.id}"><div class="t">${esc(titleOf(b))}</div><div class="a">${esc(b.author || '')}${S.rankTab !== 'all' && rankOf(b) ? `・總榜 #${rankOf(b)}` : ''}</div></button>
+    <span class="row-score">${b.rating > 0 ? fmtScore(b.rating) : ''}</span>
+  </li>`;
+}
+
+// ---------- 書架動畫（排行榜） ----------
+const Shelf = {
+  list: [],
+  mount() {
+    const view = $('#shelf'); if (!view) return;
+    this.list = rankData().list;
+    this.select(S.shelfIdx, true);
+    let x0 = null, moved = false;
+    view.addEventListener('pointerdown', e => { x0 = e.clientX; moved = false; });
+    view.addEventListener('pointermove', e => { if (x0 !== null && Math.abs(e.clientX - x0) > 8) moved = true; });
+    view.addEventListener('pointerup', e => {
+      if (x0 === null) return;
+      const dx = e.clientX - x0; x0 = null;
+      if (Math.abs(dx) > 30) this.select(S.shelfIdx + (dx < 0 ? 1 : -1) * Math.max(1, Math.round(Math.abs(dx) / 90)));
+    });
+    view.addEventListener('pointercancel', () => { x0 = null; });
+    view.addEventListener('click', e => {
+      const el = e.target.closest('.sb'); if (!el || moved) return;
+      const i = +el.dataset.i;
+      if (i === S.shelfIdx) openBook(this.list[i].id, el.querySelector('.sb-front .cover')); else this.select(i);
+    });
+    view.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { this.select(S.shelfIdx + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { this.select(S.shelfIdx - 1); e.preventDefault(); }
+      if (e.key === 'Enter') openBook(this.list[S.shelfIdx].id);
+    });
+  },
+  select(i, instant = false) {
+    const track = $('#shelf-track'); if (!track || !this.list.length) return;
+    S.shelfIdx = Math.max(0, Math.min(this.list.length - 1, i));
+    track.querySelectorAll('.sb').forEach((el, j) => el.classList.toggle('open', j === S.shelfIdx));
+    if (instant) { track.classList.add('instant'); requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('instant'))); }
+    this.layout();
+    const b = this.list[S.shelfIdx];
+    $('#shelf-info').innerHTML = `<span class="si-no">${String(S.shelfIdx + 1).padStart(2, '0')}</span>
+      <span class="si-text"><b>${esc(titleOf(b))}</b><span>${esc(b.author || '')}</span></span>
+      <span class="si-score">${fmtScore(b.rating)}<small>分</small></span>`;
+  },
+  layout() {
+    const view = $('#shelf'), track = $('#shelf-track'); if (!view || !track) return;
+    const cs = getComputedStyle(view);
+    const sw = parseFloat(cs.getPropertyValue('--sw')), cw = parseFloat(cs.getPropertyValue('--cw')), gap = parseFloat(cs.getPropertyValue('--gap'));
+    const center = S.shelfIdx * (sw + gap) + cw / 2;
+    track.style.transform = `translateX(${view.clientWidth / 2 - center}px)`;
+  },
+};
+
+// ---------- 疊放動畫（書庫首頁） ----------
+const reduceMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Stack = {
+  p: 0, target: 0, raf: 0, list: [], drag: null, moved: false, wheelAcc: 0,
+  mount(list) {
+    this.list = list;
+    this.target = Math.max(0, Math.min(Math.round(this.target), list.length - 1));
+    this.p = this.target;
+    const stage = $('#stack-stage');
+    stage.addEventListener('pointerdown', e => {
+      this.drag = { y: e.clientY, x: e.clientX, p: this.p, t: performance.now(), lastY: e.clientY, lastT: performance.now(), v: 0 };
+      this.moved = false;
+    });
+    stage.addEventListener('pointermove', e => {
+      const d = this.drag; if (!d) return;
+      const dy = e.clientY - d.y, dx = e.clientX - d.x;
+      if (!this.moved && Math.hypot(dx, dy) > 8) { this.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
+      if (!this.moved) return;
+      const now = performance.now();
+      d.v = (e.clientY - d.lastY) / Math.max(1, now - d.lastT); d.lastY = e.clientY; d.lastT = now;
+      // 書跟著手指走：往下（或往左）滑，前面的書滑出、後面的書往前
+      this.p = this.target = this.clamp(d.p + (dy - dx * 0.4) / 110);
+      this.draw();
+    });
+    const end = () => {
+      const d = this.drag; this.drag = null; if (!d || !this.moved) return;
+      this.go(Math.round(this.p + Math.max(-1.5, Math.min(1.5, d.v * 2.5))));
+    };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+    stage.addEventListener('click', e => {
+      const el = e.target.closest('.sc'); if (!el || this.moved) return;
+      const i = +el.dataset.i;
+      if (i === Math.round(this.p)) openBook(this.list[i].id, el); else this.go(i);
+    });
+    stage.addEventListener('wheel', e => {
+      e.preventDefault();
+      this.wheelAcc += e.deltaY + e.deltaX;
+      if (Math.abs(this.wheelAcc) >= 40) { this.go(Math.round(this.target) + Math.sign(this.wheelAcc)); this.wheelAcc = 0; }
+    }, { passive: false });
+    $('#stack').addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { this.go(Math.round(this.target) + 1); e.preventDefault(); }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { this.go(Math.round(this.target) - 1); e.preventDefault(); }
+      if (e.key === 'Enter' && e.target.id === 'stack') openBook(this.list[Math.round(this.p)].id);
+    });
+    this.draw();
+  },
+  clamp(v) { return Math.max(-0.3, Math.min(this.list.length - 0.7, v)); },
+  go(i) {
+    this.target = Math.max(0, Math.min(this.list.length - 1, i));
+    if (reduceMotion()) { this.p = this.target; this.draw(); return; }
+    if (!this.raf) this.raf = requestAnimationFrame(() => this.tick());
+  },
+  tick() {
+    this.raf = 0;
+    const diff = this.target - this.p;
+    this.p = Math.abs(diff) < 0.002 ? this.target : this.p + diff * 0.14;
+    this.draw();
+    if (this.p !== this.target && !this.drag) this.raf = requestAnimationFrame(() => this.tick());
+  },
+  draw() {
+    const stage = $('#stack-stage'); if (!stage) return;
+    const w = stage.clientWidth, h = stage.clientHeight;
+    const cw = Math.min(w * 0.5, h * 0.42, 240);
+    const ch = cw * 1.5;
+    const sx = cw * 0.34, sy = cw * 0.24, sz = cw * 0.5;
+    const x0 = Math.max(8, w * 0.1), y0 = h - ch - h * 0.04;
+    stage.querySelectorAll('.sc').forEach((el, i) => {
+      const d = i - this.p;
+      if (d < -1.2 || d > 12) { el.style.visibility = 'hidden'; return; }
+      el.style.visibility = 'visible';
+      const lift = d < 0 ? d * cw * 0.5 : 0;   // 翻過的書往前下方滑出
+      el.style.width = cw + 'px';
+      el.style.transform = `translate3d(${x0 + d * sx + lift}px, ${y0 - d * sy - lift * 0.4}px, ${-d * sz}px) rotateY(34deg) rotateZ(-2deg)`;
+      el.style.opacity = d < 0 ? Math.max(0, 1 + d * 1.1) : d > 8 ? Math.max(0, (12 - d) / 4) : 1;
+      el.style.zIndex = String(1000 - Math.round(d * 10));
+      el.classList.toggle('front', Math.round(this.p) === i);
+    });
+    const i = Math.max(0, Math.min(this.list.length - 1, Math.round(this.p)));
+    const b = this.list[i];
+    const cap = $('#stack-cap');
+    if (cap && cap.dataset.id !== b.id) {
+      cap.dataset.id = b.id;
+      cap.innerHTML = `<b>${esc(titleOf(b))}</b><span>${esc(b.author || '')}</span>
+        <span class="cap-meta">${b.demo ? '<span class="tag">範例</span>' : ''}<span class="status s-${b.status}">${STATUS_LABEL[b.status]}${b.status === 'reading' ? `・${progressOf(b)}%` : ''}</span>${b.rating > 0 ? `<span class="cap-score">${fmtScore(b.rating)} 分</span>` : ''}</span>`;
+    }
+    const c = $('#stack-count'); if (c) c.textContent = `${String(i + 1).padStart(2, '0')} / ${String(this.list.length).padStart(2, '0')}`;
+  },
+};
+window.addEventListener('resize', () => { Stack.draw(); Shelf.layout(); });
+
+// ---------- 我的 ----------
+function vSettings() {
+  const y = String(new Date().getFullYear());
+  const doneYear = S.books.filter(b => b.status === 'done' && (b.endDate || '').startsWith(y)).length;
+  const quotes = S.books.reduce((n, b) => n + b.quotes.length, 0);
+  return `
+  ${topbar('我的', '統計、同步、備份與設定')}
+  <div class="stats">
+    <div class="stat"><b>${S.books.length}</b><span>書庫總數</span></div>
+    <div class="stat"><b>${doneYear}</b><span>${y} 年讀完</span></div>
+    <div class="stat"><b>${quotes}</b><span>收藏金句</span></div>
+  </div>
+  ${syncPanel()}
+  <section class="panel"><h2>備份</h2>
+    <p class="small muted" style="margin:0">${Sync.user ? '資料已同步到雲端，備份檔是多一份保險。' : `資料目前只存在這台裝置的瀏覽器裡${DB.ok ? '' : '（目前無法使用瀏覽器儲存，關閉頁面後資料會消失）'}。登入雲端同步前，換手機或清除瀏覽器資料前請先匯出備份。`}</p>
+    <div class="btn-row"><button class="btn primary" data-act="export">匯出備份檔</button><button class="btn" data-act="copy-json">複製備份內容</button>
+      <span class="btn file-btn">匯入備份<input type="file" id="import-file" accept="application/json,.json"></span></div>
+  </section>
+  <section class="panel"><h2>範例書</h2>
+    <p class="small muted" style="margin:0">範例書只用來看畫面效果。書名和作者是真實的書，狀態、分數和日期是我隨意設定的，不會同步到雲端。</p>
+    <div class="btn-row"><button class="btn" data-act="load-demo">載入 10 本範例書</button>${S.books.some(b => b.demo) ? `<button class="btn danger" data-act="clear-demo">清除範例書</button>` : ''}</div>
+  </section>
+  <section class="panel"><h2>分類標籤</h2>
+    <div class="chips wrap" style="padding:0">${S.tags.map(t => `<span class="chip tag-edit">${esc(t)}<button data-act="tag-del" data-tag="${esc(t)}" aria-label="移除 ${esc(t)}">×</button></span>`).join('')}</div>
+    <div class="inline-add"><input class="input" id="new-tag" placeholder="新增分類，例如：推理"><button class="btn" data-act="tag-add">加入</button></div>
+    <p class="hint" style="margin:0">移除分類不會影響已經標上的書。</p>
+  </section>
+  <section class="panel"><h2>搜書設定</h2>
+    <p class="small muted" style="margin:0">搜書先查 Google Books，查不到再查 Open Library。一般不用設定；如果 Google Books 常顯示連不上，可以填入自己的 API 金鑰。</p>
+    <div class="inline-add"><input class="input" id="api-key" placeholder="Google Books API 金鑰（選填）" value="${esc(S.apiKey)}" autocomplete="off"><button class="btn" data-act="save-key">儲存</button></div>
+  </section>`;
+}
+function syncPanel() {
+  const cfg = Sync.cfg();
+  let body;
+  if (!cfg.url || !cfg.key) {
+    body = `<p class="small muted" style="margin:0">填入 Supabase 的 Project URL 和 anon key，就能在手機和電腦之間同步。</p>`;
+  } else if (!Sync.client) {
+    body = `<p class="small muted" style="margin:0">${esc(Sync.status || '同步功能載入中…')}</p>`;
+  } else if (!Sync.user) {
+    body = `<p class="small muted" style="margin:0">登入後，這台裝置的書會和雲端合併，之後自動同步。</p>
+      <form class="form" id="login-form" style="gap:10px">
+        <input class="input" id="sb-email" type="email" autocomplete="username" placeholder="Email" required>
+        <input class="input" id="sb-pass" type="password" autocomplete="current-password" placeholder="密碼（至少 6 個字元）" required minlength="6">
+        <div class="btn-row"><button class="btn primary" type="submit">登入</button><button class="btn" type="button" data-act="sb-signup">第一次使用：註冊</button></div>
+      </form>`;
+  } else {
+    body = `<p style="margin:0">已登入 <b>${esc(Sync.user.email || '')}</b></p>
+      <p class="small muted" style="margin:0" id="sync-status">${esc(Sync.status)}</p>
+      <div class="btn-row"><button class="btn" data-act="sb-sync">立即同步</button><button class="btn ghost" data-act="sb-logout">登出</button></div>`;
+  }
+  return `<section class="panel"><h2>雲端同步</h2>${body}
+    <details class="adv"${cfg.url && cfg.key ? '' : ' open'}><summary>連線設定</summary>
+      <div class="form" style="gap:10px;margin-top:10px">
+        <input class="input" id="sb-url" placeholder="Project URL（https://xxxx.supabase.co）" value="${esc(cfg.url)}" autocomplete="off">
+        <input class="input" id="sb-key" placeholder="anon public key" value="${esc(cfg.key)}" autocomplete="off">
+        <button class="btn" data-act="sb-save">儲存連線設定</button>
+      </div>
+    </details>
+  </section>`;
+}
+function exportJSON() {
+  return JSON.stringify({ app: 'reading-library', version: 1, exportedAt: new Date().toISOString(), tags: S.tags, books: S.books }, null, 2);
+}
+async function importJSON(text) {
+  let data;
+  try { data = JSON.parse(text); } catch (e) { toast('這不是有效的備份檔'); return; }
+  const books = Array.isArray(data) ? data : data.books;
+  if (!Array.isArray(books)) { toast('備份檔裡找不到書籍資料'); return; }
+  let n = 0;
+  for (const raw of books) {
+    if (!raw || typeof raw !== 'object') continue;
+    const b = newBook({ ...raw, id: raw.id || uid(), tags: Array.isArray(raw.tags) ? raw.tags : [], quotes: Array.isArray(raw.quotes) ? raw.quotes : [] });
+    const i = S.books.findIndex(x => x.id === b.id);
+    if (i >= 0) S.books[i] = b; else S.books.push(b);
+    try { await DB.put(b); } catch (e) {}
+    n++;
+  }
+  if (Array.isArray(data.tags)) { S.tags = [...new Set([...S.tags, ...data.tags])]; await DB.setMeta('tags', S.tags); }
+  rankCache = null;
+  Sync.schedule();
+  toast(`已匯入 ${n} 本書`);
+  render();
+}
+
+// 圖片縮小後存成 data URL，避免佔太多空間
+function resizeImage(file, max = 480) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        res(c.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = rej; img.src = fr.result;
+    };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+
+// ---------- 雲端同步（Supabase） ----------
+// 本機 IndexedDB 是主要資料；每筆書用 updatedAt 比較，新的蓋舊的。刪除的書留下 deleted 標記，讓其他裝置也刪掉。
+const SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js';
+const ts = s => Date.parse(s) || 0;
+function loadScript(src) {
+  return new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = rej; document.head.appendChild(el); });
+}
+function authMsg(err) {
+  const m = (err && err.message) || '';
+  if (/invalid login credentials/i.test(m)) return 'Email 或密碼不對';
+  if (/email not confirmed/i.test(m)) return '請先到信箱點確認信的連結';
+  if (/already registered/i.test(m)) return '這個 Email 已經註冊過，請直接登入';
+  if (/signups not allowed/i.test(m)) return '已關閉註冊，請用原本的帳號登入';
+  if (/password/i.test(m)) return '密碼至少要 6 個字元';
+  return '登入失敗：' + (m || '連線問題');
+}
+const Sync = {
+  client: null, user: null, status: '', timer: null, busy: false, again: false,
+  cfg() {
+    const c = window.LIBRARY_CONFIG || {};
+    return { url: S.sbUrl || c.supabaseUrl || '', key: S.sbKey || c.supabaseKey || '' };
+  },
+  async init() {
+    const { url, key } = this.cfg();
+    if (!url || !key) return false;
+    try {
+      if (!window.supabase) await loadScript(SUPABASE_JS);
+      this.client = window.supabase.createClient(url, key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'library-auth' } });
+      const { data } = await this.client.auth.getSession();
+      this.user = data && data.session ? data.session.user : null;
+      this.client.auth.onAuthStateChange((_e, session) => { this.user = session ? session.user : null; });
+      return true;
+    } catch (e) {
+      this.client = null; this.status = '同步功能載入失敗，請檢查網路或連線設定';
+      return false;
+    }
+  },
+  setStatus(s) { this.status = s; const el = $('#sync-status'); if (el) el.textContent = s; },
+  schedule() {
+    if (!this.client || !this.user) return;
+    clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1500);
+  },
+  async run() {
+    if (!this.client || !this.user) return;
+    if (this.busy) { this.again = true; return; }
+    this.busy = true; this.setStatus('同步中…');
+    try {
+      const { data: remote, error } = await this.client.from('books').select('id,updated_at');
+      if (error) throw error;
+      const local = await DB.all();
+      const lmap = new Map(local.map(b => [b.id, b]));
+      const rmap = new Map(remote.map(r => [r.id, r]));
+      const pull = remote.filter(r => !lmap.has(r.id) || ts(r.updated_at) > ts(lmap.get(r.id).updatedAt)).map(r => r.id);
+      const push = local.filter(l => !l.demo && (!rmap.has(l.id) || ts(l.updatedAt) > ts(rmap.get(l.id).updated_at)));
+      for (let i = 0; i < pull.length; i += 50) {
+        const { data, error } = await this.client.from('books').select('id,data').in('id', pull.slice(i, i + 50));
+        if (error) throw error;
+        for (const row of data) if (row.data && row.data.id) await DB.put(row.data);
+      }
+      for (let i = 0; i < push.length; i += 20) {
+        const rows = push.slice(i, i + 20).map(b => {
+          if (!b.updatedAt) b.updatedAt = new Date().toISOString();
+          return { id: b.id, data: b, updated_at: b.updatedAt, deleted: !!b.deleted };
+        });
+        const { error } = await this.client.from('books').upsert(rows);
+        if (error) throw error;
+      }
+      if (pull.length) {
+        S.books = (await DB.all()).filter(b => !b.deleted).map(b => newBook(b));
+        rankCache = null;
+        // 正在打字的畫面不重畫，避免打斷輸入
+        const v = current().name, typing = document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+        if (v !== 'edit' && !typing) render();
+      }
+      const d = new Date();
+      this.setStatus(`已同步・${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`);
+    } catch (e) {
+      this.setStatus('同步失敗（' + ((e && e.message) || '連線問題') + '），資料仍保留在這台裝置，稍後會再試');
+    }
+    this.busy = false;
+    if (this.again) { this.again = false; this.run(); }
+  },
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden) Sync.schedule(); });
+window.addEventListener('online', () => Sync.schedule());
+
+// ---------- 選單（從右側滑出） ----------
+const NAV = [
+  { tab: 'library', label: '書庫', sub: '疊放瀏覽所有書' },
+  { tab: 'ranking', label: '排行榜', sub: '總榜・分類榜・年度最愛' },
+  { tab: 'add', label: '新增書籍', sub: '搜尋書名自動帶入' },
+  { tab: 'settings', label: '我的', sub: '同步・備份・設定' },
+];
+const Menu = {
+  isOpen: false, lastFocus: null,
+  html() {
+    const v = current().name;
+    let i = 0;
+    const item = (inner, cls = '') => `<div class="m-item ${cls}" style="--i:${i++}">${inner}</div>`;
+    let ctx = '';
+    if (v === 'library' && S.books.length) {
+      const count = k => S.books.filter(b => b.status === k).length;
+      const tags = usedTags();
+      ctx = item(`<p class="m-label">搜尋</p><input class="field-search" id="menu-q" type="search" placeholder="書名或作者" value="${esc(S.q)}" autocomplete="off">`)
+        + item(`<p class="m-label">顯示方式</p><div class="view-toggle" role="group" aria-label="顯示方式"><button data-act="lib-view" data-v="stack" aria-pressed="${S.libView === 'stack'}">疊放</button><button data-act="lib-view" data-v="grid" aria-pressed="${S.libView === 'grid'}">格狀</button></div>`)
+        + item(`<p class="m-label">閱讀狀態</p><div class="chips wrap" role="group" aria-label="閱讀狀態">
+            <button class="chip" data-act="filter" data-f="all" aria-pressed="${S.filter === 'all'}">全部<span class="n">${S.books.length}</span></button>
+            ${STATUS.map(s => `<button class="chip" data-act="filter" data-f="${s.k}" aria-pressed="${S.filter === s.k}">${s.label}<span class="n">${count(s.k)}</span></button>`).join('')}</div>`)
+        + (tags.length ? item(`<p class="m-label">分類</p><div class="chips wrap" role="group" aria-label="分類">${tags.map(t => `<button class="chip" data-act="tag-filter" data-tag="${esc(t)}" aria-pressed="${S.tagFilter === t}">${esc(t)}</button>`).join('')}</div>`) : '');
+    } else if (v === 'ranking') {
+      const d = rankData();
+      ctx = item(`<p class="m-label">排行榜</p><div class="m-seg">
+          <button data-act="rank-tab" data-t="all" aria-pressed="${S.rankTab === 'all'}">總榜</button>
+          <button data-act="rank-tab" data-t="tag" aria-pressed="${S.rankTab === 'tag'}">分類榜</button>
+          <button data-act="rank-tab" data-t="year" aria-pressed="${S.rankTab === 'year'}">年度最愛</button></div>`)
+        + (S.rankTab === 'tag' && d.tags.length ? item(`<p class="m-label">選擇分類</p><div class="chips wrap">${d.tags.map(t => `<button class="chip" data-act="rank-tag" data-tag="${esc(t)}" aria-pressed="${t === S.rankTag}">${esc(t)}</button>`).join('')}</div>`) : '')
+        + (S.rankTab === 'year' && d.years.length ? item(`<p class="m-label">選擇年份</p><div class="chips wrap">${d.years.map(y => `<button class="chip" data-act="rank-year" data-y="${y}" aria-pressed="${y === S.rankYear}">${y}</button>`).join('')}</div>`) : '');
+    }
+    const nav = NAV.map(n => item(`<button class="m-nav" data-act="tab" data-tab="${n.tab}" ${S.tab === n.tab && !S.stack.length ? 'aria-current="page"' : ''}><b>${n.label}</b><span>${n.sub}</span></button>`)).join('');
+    return `<div class="m-head"><span class="m-brand">莉莉的書房</span><button class="m-close" data-act="menu-close" aria-label="關閉選單">×</button></div>
+      ${ctx ? `<div class="m-ctx">${ctx}</div>` : ''}
+      <nav class="m-navs" aria-label="頁面">${nav}</nav>`;
+  },
+  open() {
+    const d = $('#drawer'), p = $('#drawer-panel');
+    this.lastFocus = document.activeElement;
+    p.innerHTML = this.html();
+    d.hidden = false; this.isOpen = true;
+    document.querySelectorAll('.menu-btn').forEach(b => b.setAttribute('aria-expanded', 'true'));
+    requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('open')));
+    setTimeout(() => { const f = p.querySelector('.m-close'); if (f) f.focus({ preventScroll: true }); }, 50);
+  },
+  refresh() {
+    if (!this.isOpen) return;
+    const p = $('#drawer-panel'), q = $('#menu-q'), focused = document.activeElement === q, top = p.scrollTop;
+    p.classList.add('no-stagger'); p.innerHTML = this.html(); p.scrollTop = top;
+    if (focused) { const n = $('#menu-q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+  },
+  close() {
+    if (!this.isOpen) return;
+    const d = $('#drawer'), p = $('#drawer-panel');
+    this.isOpen = false; d.classList.remove('open');
+    document.querySelectorAll('.menu-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+    setTimeout(() => { if (!this.isOpen) { d.hidden = true; p.classList.remove('no-stagger'); } }, reduceMotion() ? 0 : 380);
+    if (this.lastFocus && this.lastFocus.isConnected) this.lastFocus.focus({ preventScroll: true });
+  },
+};
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && Menu.isOpen) Menu.close(); });
+
+// ---------- 範例書（只用來看畫面；狀態、分數、日期為示範用的設定值） ----------
+const DEMO_BOOKS = [
+  [1, '小王子', 'The Little Prince', '安東尼・聖修伯里', ['文學'], 'done', 9.5, '2025-02-03', '2025-02-10', 100],
+  [2, '百年孤寂', 'One Hundred Years of Solitude', '加布列・賈西亞・馬奎斯', ['文學'], 'done', 9, '2025-06-01', '2025-07-15', 100],
+  [3, '人類大歷史', 'Sapiens: A Brief History of Humankind', '哈拉瑞', ['歷史'], 'done', 8.5, '2025-09-02', '2025-10-20', 100],
+  [4, '原子習慣', 'Atomic Habits', '詹姆斯・克利爾', ['自我成長'], 'done', 8, '2026-01-05', '2026-01-28', 100],
+  [5, '沙丘', 'Dune', '法蘭克・赫伯特', ['科幻/奇幻'], 'done', 10, '2026-03-01', '2026-04-12', 100],
+  [6, '挪威的森林', 'Norwegian Wood', '村上春樹', ['文學', '愛情'], 'done', 7.5, '2026-05-03', '2026-05-30', 100],
+  [7, '傲慢與偏見', 'Pride and Prejudice', '珍・奧斯汀', ['愛情', '文學'], 'done', 9, '2026-07-01', '2026-08-09', 100],
+  [8, '三體', 'The Three-Body Problem', '劉慈欣', ['科幻/奇幻'], 'reading', null, '2026-10-02', '', 60],
+  [9, '槍炮、病菌與鋼鐵', 'Guns, Germs, and Steel', '賈德・戴蒙', ['歷史'], 'paused', null, '2026-06-10', '', 35],
+  [10, '被討厭的勇氣', 'The Courage to Be Disliked', '岸見一郎、古賀史健', ['自我成長'], 'want', null, '', '', 0],
+];
+
+// ---------- 事件 ----------
+const actions = {
+  tab: el => setTab(el.dataset.tab),
+  back: () => back(),
+  open: el => openBook(el.dataset.id, el.closest('[data-book]') || el),
+  filter: el => { S.filter = el.dataset.f; Stack.target = 0; render(); Menu.refresh(); },
+  edit: el => { S.draft = JSON.parse(JSON.stringify(byId(el.dataset.id))); go({ name: 'edit' }); },
+  manual: () => { const q = ($('#add-q') || {}).value || ''; S.draft = newBook(hasCJK(q) ? { titleZh: q.trim() } : { titleEn: q.trim() }); go({ name: 'edit' }); },
+  pick: el => {
+    const r = S.results[+el.dataset.i];
+    const dup = S.books.find(b => b.titleZh === r.title || b.titleEn === r.title);
+    if (dup) toast('書庫裡已經有同名的書');
+    S.draft = newBook({ ...(hasCJK(r.title) ? { titleZh: r.title } : { titleEn: r.title }), author: r.author, coverUrl: r.cover });
+    go({ name: 'edit' });
+  },
+  'toggle-tag': el => { const t = el.dataset.tag; const tags = S.draft.tags; const i = tags.indexOf(t); if (i >= 0) tags.splice(i, 1); else tags.push(t); el.setAttribute('aria-pressed', i < 0); },
+  'new-tag': async () => {
+    const inp = $('#f-newtag'); const t = inp.value.trim(); if (!t) return;
+    readForm();
+    if (!S.tags.includes(t)) { S.tags.push(t); await DB.setMeta('tags', S.tags); }
+    if (!S.draft.tags.includes(t)) S.draft.tags.push(t);
+    render();
+  },
+  'cover-clear': () => { readForm(); S.draft.coverUrl = ''; S.draft.coverData = ''; render(); },
+  'set-status': async el => { const b = byId(current().id); applyStatus(b, el.dataset.st); await save(b); render(); },
+  'quote-del': async el => { const b = byId(current().id); b.quotes = b.quotes.filter(q => q.id !== el.dataset.q); await save(b); render(); },
+  delete: async el => {
+    if (!el.classList.contains('armed')) { el.classList.add('armed'); el.textContent = '再按一次確認刪除'; setTimeout(() => { if (el.isConnected) { el.classList.remove('armed'); el.textContent = '刪除這本書'; } }, 4000); return; }
+    const b = byId(el.dataset.id);
+    S.books = S.books.filter(x => x.id !== b.id);
+    try { await DB.put({ id: b.id, deleted: true, updatedAt: new Date().toISOString() }); } catch (e) {}
+    Sync.schedule();
+    toast('已刪除'); back();
+  },
+  'menu-open': () => Menu.open(),
+  'menu-close': () => Menu.close(),
+  'clear-filter': () => { S.filter = 'all'; S.tagFilter = null; S.q = ''; Stack.target = 0; render(); },
+  'rating-clear': async () => { const b = byId(current().id); b.rating = null; await save(b); render(); },
+  'lib-view': el => { S.libView = el.dataset.v; DB.setMeta('libView', S.libView).catch(() => {}); render(); Menu.refresh(); },
+  'tag-filter': el => { S.tagFilter = S.tagFilter === el.dataset.tag ? null : el.dataset.tag; Stack.target = 0; render(); Menu.refresh(); },
+  'stack-step': el => Stack.go(Math.round(Stack.target) + +el.dataset.d),
+  'sb-save': async () => {
+    S.sbUrl = $('#sb-url').value.trim().replace(/\/+$/, ''); S.sbKey = $('#sb-key').value.trim();
+    await DB.setMeta('sb', { url: S.sbUrl, key: S.sbKey });
+    Sync.client = null; Sync.user = null; Sync.status = '';
+    render();
+    const ok = await Sync.init();
+    toast(ok ? '已儲存，請登入' : '連線設定有誤，請檢查網址和 key');
+    render();
+  },
+  'sb-signup': async () => {
+    const email = $('#sb-email').value.trim(), password = $('#sb-pass').value;
+    if (!email || password.length < 6) { toast('請填 Email 和至少 6 個字元的密碼'); return; }
+    const { data, error } = await Sync.client.auth.signUp({ email, password });
+    if (error) { toast(authMsg(error)); return; }
+    if (data.session) { Sync.user = data.session.user; toast('註冊完成，開始同步'); await Sync.run(); render(); }
+    else toast('已寄出確認信，點信中的連結後再回來登入');
+  },
+  'sb-logout': async () => { await Sync.client.auth.signOut(); Sync.user = null; Sync.status = ''; toast('已登出，書仍保留在這台裝置'); render(); },
+  'sb-sync': () => Sync.run(),
+  'rank-tab': el => { S.rankTab = el.dataset.t; render(); Menu.refresh(); },
+  'rank-tag': el => { S.rankTag = el.dataset.tag; render(); Menu.refresh(); if (S.rankTab === 'tag') Menu.close(); },
+  'rank-year': el => { S.rankYear = el.dataset.y; render(); Menu.refresh(); Menu.close(); },
+  export: async () => {
+    const dl = window.claude && window.claude.use ? await window.claude.use('downloads').catch(() => null) : null;
+    if (dl) {
+      try { await dl.save({ filename: `library-backup-${today()}.json`, data: exportJSON() }); toast('已匯出備份檔'); }
+      catch (e) { if (e && e.code !== 'declined') toast('無法下載，請改用「複製備份內容」'); }
+      return;
+    }
+    try {
+      const blob = new Blob([exportJSON()], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = `我的書庫備份-${today()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      toast('已匯出備份檔');
+    } catch (e) { toast('無法下載，請改用「複製備份內容」'); }
+  },
+  'copy-json': async () => {
+    try { await navigator.clipboard.writeText(exportJSON()); toast('已複製，可貼到記事本保存'); }
+    catch (e) { toast('無法複製，請改用匯出'); }
+  },
+  'tag-del': async el => { S.tags = S.tags.filter(t => t !== el.dataset.tag); await DB.setMeta('tags', S.tags); render(); },
+  'tag-add': async () => { const t = $('#new-tag').value.trim(); if (t && !S.tags.includes(t)) { S.tags.push(t); await DB.setMeta('tags', S.tags); } render(); },
+  'load-demo': async () => {
+    let n = 0;
+    for (const d of DEMO_BOOKS) {
+      const id = 'demo-' + d[0];
+      if (byId(id)) continue;
+      const [titleZh, titleEn, author, tags, status, rating, startDate, endDate, progress] = d.slice(1);
+      await save(newBook({ id, demo: true, titleZh, titleEn, author, tags, status, rating, startDate, endDate, progress }));
+      n++;
+    }
+    Stack.target = 0; S.tab = 'library'; S.stack = []; S.libView = 'stack';
+    toast(n ? `已載入 ${n} 本範例書` : '範例書已經在書庫裡'); render(); window.scrollTo(0, 0);
+  },
+  'clear-demo': async () => {
+    for (const b of S.books.filter(b => b.demo)) { try { await DB.del(b.id); } catch (e) {} }
+    S.books = S.books.filter(b => !b.demo); toast('已清除範例書'); render();
+  },
+  'save-key': async () => { S.apiKey = $('#api-key').value.trim(); await DB.setMeta('apiKey', S.apiKey); toast('已儲存'); },
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  e.preventDefault();
+  actions[el.dataset.act] && actions[el.dataset.act](el, e);
+});
+
+let notesTimer;
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'menu-q') { S.q = t.value; Stack.target = 0; if (current().name === 'library') render(); }
+  if (t.id === 'rating') {
+    const v = +t.value, num = $('#score-num');
+    t.style.setProperty('--p', `${(v - 1) / 9 * 100}%`);
+    num.parentNode.style.setProperty('--t', v / 10);
+    if (num.textContent !== fmtScore(v)) {
+      num.textContent = fmtScore(v);
+      if (!reduceMotion() && num.animate) num.animate([{ transform: 'scale(1.28) translateY(-4px)' }, { transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2,.9,.3,1.3)' });
+    }
+  }
+  if (t.id === 'notes') {
+    const b = byId(current().id); $('#notes-saved').textContent = '編輯中…';
+    clearTimeout(notesTimer);
+    notesTimer = setTimeout(async () => { b.notes = t.value; await save(b); const s = $('#notes-saved'); if (s) s.textContent = '已儲存'; }, 600);
+  }
+});
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.id === 'rating') {
+    const b = byId(current().id); const before = rankOf(b);
+    b.rating = +t.value; await save(b);
+    const r = rankOf(b), note = $('#rank-note');
+    if (note) note.textContent = `總榜第 ${r} 名`;
+    if (r !== before) toast(before ? `排名 #${before} → #${r}` : `上榜！總榜第 ${r} 名`);
+    const clear = document.querySelector('.rating-panel .hint'); if (clear) clear.remove();
+  }
+  if (t.id === 'pct-range') { const b = byId(current().id); b.progress = +t.value; if (b.progress > 0 && b.status === 'want') applyStatus(b, 'reading'); await save(b); render(); }
+  if (t.id === 'cur-page') {
+    const b = byId(current().id); b.currentPage = Math.max(0, Math.min(b.totalPages, parseInt(t.value, 10) || 0));
+    if (b.currentPage > 0 && b.status === 'want') applyStatus(b, 'reading');
+    if (b.currentPage >= b.totalPages) { applyStatus(b, 'done'); toast('恭喜讀完！'); }
+    await save(b); render();
+  }
+  if (t.id === 'cover-file' && t.files[0]) {
+    try { readForm(); S.draft.coverData = await resizeImage(t.files[0]); render(); }
+    catch (err) { toast('這張圖片讀不出來，請換一張'); }
+  }
+  if (t.id === 'import-file' && t.files[0]) { importJSON(await t.files[0].text()); t.value = ''; }
+});
+document.addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.id === 'search-form') {
+    const q = $('#add-q').value.trim(); if (!q) return;
+    S.resultSource = 'loading'; S.results = []; $('#results').innerHTML = resultsHTML();
+    const r = await searchBooks(q);
+    if (!r) S.resultSource = 'error';
+    else if (!r.items.length) S.resultSource = 'none';
+    else { S.results = r.items; S.resultSource = r.source; }
+    $('#results').innerHTML = resultsHTML();
+  }
+  if (f.id === 'login-form') {
+    const email = $('#sb-email').value.trim(), password = $('#sb-pass').value;
+    const { data, error } = await Sync.client.auth.signInWithPassword({ email, password });
+    if (error) { toast(authMsg(error)); return; }
+    Sync.user = data.user; toast('登入成功，開始同步');
+    render(); await Sync.run(); render();
+  }
+  if (f.id === 'quote-form') {
+    const text = $('#q-text').value.trim(); if (!text) return;
+    const b = byId(current().id);
+    b.quotes.push({ id: uid(), text, page: $('#q-page').value.trim() });
+    await save(b); render();
+  }
+  if (f.id === 'edit-form') {
+    readForm();
+    const b = S.draft; const err = $('#f-err');
+    if (!b.titleZh && !b.titleEn) { err.textContent = '請至少填寫中文或英文書名。'; err.hidden = false; return; }
+    if (b.status === 'done') applyStatus(b, 'done');
+    else if (b.status === 'reading' && !b.startDate) b.startDate = today();
+    const isNew = !byId(b.id);
+    await save(b);
+    S.draft = null;
+    if (isNew) { S.tab = 'library'; S.stack = [{ name: 'detail', id: b.id }]; toast('已加入書庫'); render(); window.scrollTo(0, 0); }
+    else { toast('已儲存'); back(); }
+  }
+});
+
+(async () => {
+  await DB.open();
+  try {
+    S.books = ((await DB.all()) || []).filter(b => !b.deleted).map(b => newBook(b));
+    S.tags = (await DB.getMeta('tags')) || [...DEFAULT_TAGS];
+    S.apiKey = (await DB.getMeta('apiKey')) || '';
+    S.libView = (await DB.getMeta('libView')) || 'stack';
+    const sb = (await DB.getMeta('sb')) || {};
+    S.sbUrl = sb.url || ''; S.sbKey = sb.key || '';
+  } catch (e) { S.books = []; }
+  render();
+  if (await Sync.init()) {
+    if (current().name === 'settings') render();
+    Sync.run();
+  }
+})();
+})();
+</script>
+
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) { try { navigator.serviceWorker.register('sw.js'); } catch (e) {} }</script>
+</body></html>
