@@ -109,12 +109,12 @@ h2 { font-size: 17px; }
 
 /* 書籍頁：紙卡＋立體書封 */
 .detail-hero.d-sheet { display: flex; flex-direction: column; align-items: stretch; gap: 26px; }
-.d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1400px; }
-.d-3d { position: relative; width: min(56vw, 240px); }
+.d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1000px; }
+.d-3d { --bw: min(56vw, 240px); position: relative; width: var(--bw); transform-style: preserve-3d; transform: translateX(8%) rotateY(30deg); }
+.d-edge { position: absolute; top: .6%; bottom: .6%; left: calc(var(--bw) * -.2); width: calc(var(--bw) * .2); transform-origin: right center; transform: rotateY(-90deg); background: linear-gradient(90deg, rgba(0,0,0,.14), transparent 18%, transparent 82%, rgba(0,0,0,.1)), repeating-linear-gradient(90deg, #f6f6f3 0 1.3px, #dcdcd7 1.3px 2px); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
+.d-back { position: absolute; inset: 0; transform: translateZ(calc(var(--bw) * -.2)); background: #d8d8d8; }
 .d-3d .cover { z-index: 1; border-radius: 0; box-shadow: 0 2px 4px rgba(40,30,20,.18), 0 14px 30px rgba(40,30,20,.16); }
 .d-3d .cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 55%, rgba(0,0,0,.08)); pointer-events: none; }
-.d-pages { position: absolute; top: 1.5%; bottom: 1.5%; right: -7px; width: 10px; border-radius: 0 2px 2px 0;
-  background: repeating-linear-gradient(0deg, #f7f2e9 0 1.4px, #d8ccb8 1.4px 2.2px); box-shadow: 1px 1px 3px rgba(40,30,20,.18); }
 .d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
 .d-cards { display: flex; flex-direction: column; }
 .paper { position: relative; background: var(--surface); border: 0; border-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.05), 0 6px 16px rgba(0,0,0,.09); padding: 18px 20px; }
@@ -152,7 +152,7 @@ h2 { font-size: 17px; }
   .detail-hero.d-sheet { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
   .d-sheet .d-en { font-size: 34px; }
   .d-cards { order: 1; } .d-book { order: 2; position: sticky; top: 24px; padding-top: 30px; }
-  .d-3d { width: min(34vw, 330px); }
+  .d-3d { --bw: min(34vw, 360px); }
   .d-floor { width: min(30vw, 300px); }
   .d-sheet .p-title h1 { font-size: 30px; }
   .d-more { max-width: calc(50% - 20px); }
@@ -214,9 +214,8 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .dot-s { border-color: #8a5a3c; }
 .crop-poly polygon.sp { fill: rgba(138,90,60,.16); stroke: #8a5a3c; }
 .crop-h.sp::after { border-color: #8a5a3c; }
-.d-3d.has-spine { transform-style: preserve-3d; transform: translateX(-4%) rotateY(-26deg); }
-.d-3d.has-spine::before { display: none; }
-.d-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(100% * var(--sr)); transform-origin: left center; transform: rotateY(90deg); background-size: 100% 100%; filter: brightness(.9); }
+.d-3d::before { display: none !important; }
+.d-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(var(--bw) * .2); transform-origin: left center; transform: rotateY(90deg); background-size: 100% 100%; filter: brightness(.9); }
 /* 詳情 */
 .detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
@@ -334,7 +333,6 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 50% 50%; will-change: transform; }
 /* 有照片的封面不要疊書背陰影，免得蓋到封面上的字；書的厚度改畫在封面外側 */
 .cover:has(img)::after, .d-3d .cover:has(img)::before { display: none; }
-.d-3d::before { content: ''; position: absolute; top: .8%; bottom: .8%; left: -7px; width: 7px; background: linear-gradient(90deg, #bdbdbd, #e2e2e2 60%, #cfcfcf); box-shadow: -1px 1px 3px rgba(0,0,0,.12); }
 .gc.filler { cursor: default; }
 .gc.filler, .gc.filler .cover { display: block; }
 .gc.filler .cover::after { display: none; }
@@ -779,7 +777,7 @@ function vDetail(v) {
   return `
   <div class="top"><button class="back" data-act="back">‹ 返回</button><button class="btn" data-act="edit" data-id="${b.id}">編輯</button></div>
   <section class="detail-hero d-sheet" data-book="${b.id}">
-    <div class="d-book"><div class="d-3d${b.spineData ? ' has-spine' : ''}" style="--sr:${b.spineRatio || 0.1}">${coverHTML(b)}${b.spineData ? `<span class="d-spine" style="background-image:url('${b.spineData}')"></span>` : ''}</div><span class="d-floor" aria-hidden="true"></span></div>
+    <div class="d-book"><div class="d-3d${b.spineData ? ' has-spine' : ''}"><span class="d-back"></span><span class="d-edge"></span>${coverHTML(b)}${b.spineData ? `<span class="d-spine" style="background-image:url('${b.spineData}')"></span>` : ''}</div><span class="d-floor" aria-hidden="true"></span></div>
     <div class="d-cards">
       <article class="paper p-title">
         <h1>${esc(zh || '未命名')}</h1>
