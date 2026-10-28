@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2a331f">
+<meta name="theme-color" content="#5f6a2c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="我的書房">
@@ -19,29 +19,29 @@
 <style>
 /* Layout: 淺灰畫布上只放封面，四種展示方式；選單收在右上角。配色固定為影片的淺灰黑白，不跟隨深色模式 */
 :root {
-  --bg: #232a1b;
-  --surface: #2e3624;
-  --surface-2: #3a4430;
-  --ink: #ece6d6;
-  --muted: #a9a58f;
-  --line: #4b5540;
-  --accent: #b9bd72;
-  --accent-ink: #1f2516;
-  --accent-soft: #3f4a2c;
-  --gold: #c49a6c;
-  --danger: #e09a7e;
+  --bg: #e8e8e6;
+  --surface: #f5f5f3;
+  --surface-2: #dcdcd8;
+  --ink: #2a2b1e;
+  --muted: #74746b;
+  --line: #cfcfca;
+  --accent: #5f6a2c;
+  --accent-ink: #f7f2e9;
+  --accent-soft: #dde0bf;
+  --gold: #7a5236;
+  --danger: #9a4a33;
   --st-want: #8fadb9;
-  --st-reading: #b9bd72;
-  --st-paused: #d8cf86;
-  --st-dropped: #7f7a68;
-  --st-done: #c49a6c;
-  --shadow: 0 1px 2px rgba(0,0,0,.25), 0 8px 22px rgba(0,0,0,.28);
+  --st-reading: #5f6a2c;
+  --st-paused: #b3ad62;
+  --st-dropped: #b9ab95;
+  --st-done: #7a5236;
+  --shadow: 0 1px 2px rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.07);
   --font-display: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --font-body: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --font-label: "Jost", "Century Gothic", "Avenir Next", sans-serif;
   --font-type: "Jost", "Century Gothic", "Avenir Next", sans-serif;
   --top-h: 64px;
-  color-scheme: dark;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
 body {
@@ -82,7 +82,7 @@ h2 { font-size: 17px; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
 
 /* 封面 */
-.cover { position: relative; aspect-ratio: 2 / 3; max-width: 100%; border-radius: 3px 7px 7px 3px; overflow: hidden; box-shadow: var(--shadow); background: var(--cloth, #3d5a4c); }
+.cover { position: relative; aspect-ratio: 2 / 3; max-width: 100%; border-radius: 0 1px 1px 0; overflow: hidden; box-shadow: var(--shadow); background: var(--cloth, #3d5a4c); }
 .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .cover::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 9%; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.08) 60%, rgba(0,0,0,.05)); pointer-events: none; }
 .cover .ph { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 14% 12% 12% 18%; color: #f4f1ea; }
@@ -125,8 +125,8 @@ h2 { font-size: 17px; }
 .detail-hero.d-sheet { display: flex; flex-direction: column; align-items: stretch; gap: 26px; }
 .d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1400px; }
 .d-3d { position: relative; width: min(56vw, 240px); }
-.d-3d .cover { z-index: 1; border-radius: 1px 3px 3px 1px; box-shadow: 0 2px 4px rgba(40,30,20,.18), 0 14px 30px rgba(40,30,20,.16); }
-.d-3d .cover::after { display: none; }
+.d-3d .cover { z-index: 1; border-radius: 0; box-shadow: 0 2px 4px rgba(40,30,20,.18), 0 14px 30px rgba(40,30,20,.16); }
+.d-3d .cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 55%, rgba(0,0,0,.08)); pointer-events: none; }
 .d-pages { position: absolute; top: 1.5%; bottom: 1.5%; right: -7px; width: 10px; border-radius: 0 2px 2px 0;
   background: repeating-linear-gradient(0deg, #f7f2e9 0 1.4px, #d8ccb8 1.4px 2.2px); box-shadow: 1px 1px 3px rgba(40,30,20,.18); }
 .d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
@@ -174,8 +174,8 @@ h2 { font-size: 17px; }
 
 /* 書籍頁浮層：背景是虛化的原畫面，書封固定，只有資料往上滑 */
 body.d-open { overflow: hidden; }
-body.d-open .app { filter: blur(28px) saturate(.8) brightness(.8); transform: scale(1.03); pointer-events: none; user-select: none; transition: filter .45s, transform .45s; }
-.d-layer { position: fixed; inset: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: color-mix(in srgb, var(--bg) 40%, transparent); }
+body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); pointer-events: none; user-select: none; transition: filter .45s, transform .45s; }
+.d-layer { position: fixed; inset: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: color-mix(in srgb, var(--bg) 30%, transparent); }
 .d-layer[hidden] { display: none; }
 .d-inner { max-width: 1000px; margin: 0 auto; padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .d-inner .top { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 4; max-width: 1000px; margin: 0 auto; padding-inline: 16px; pointer-events: none; }
@@ -341,8 +341,8 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .bk { position: absolute; inset: 0; transform-style: preserve-3d; }
 .bk-face { position: absolute; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .bk-front { inset: 0; transform: translateZ(calc(var(--bt) / 2)); }
-.bk-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 1px 3px 3px 1px; box-shadow: none; }
-.bk-back { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); background: var(--cloth); filter: brightness(.82); border-radius: 3px 1px 1px 3px; }
+.bk-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
+.bk-back { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); background: var(--cloth); filter: brightness(.82); border-radius: 0; }
 .bk-spine { top: 0; left: calc(50% - var(--bt) / 2); width: var(--bt); height: 100%; transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2)); background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 45%, rgba(0,0,0,.18)); color: #f4f2ec; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
 .bk-spine span { writing-mode: vertical-rl; font-size: 11.5px; font-weight: 500; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bk-pages { top: 3px; left: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bt) - 2px); height: calc(100% - 6px); transform: rotateY(90deg) translateZ(calc(var(--bw) / 2 - 3px)); background: repeating-linear-gradient(90deg, #faf8f2 0 1px, #dedad1 1px 2px); }
@@ -744,7 +744,7 @@ function vDetail(v) {
   return `
   <div class="top"><button class="back" data-act="back">‹ 返回</button><button class="btn" data-act="edit" data-id="${b.id}">編輯</button></div>
   <section class="detail-hero d-sheet" data-book="${b.id}">
-    <div class="d-book"><div class="d-3d">${coverHTML(b)}<span class="d-pages" aria-hidden="true"></span></div><span class="d-floor" aria-hidden="true"></span></div>
+    <div class="d-book"><div class="d-3d">${coverHTML(b)}</div><span class="d-floor" aria-hidden="true"></span></div>
     <div class="d-cards">
       <article class="paper p-title">
         <h1>${esc(zh || '未命名')}</h1>
