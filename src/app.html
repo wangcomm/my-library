@@ -208,6 +208,15 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .crop-h { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; cursor: grab; touch-action: none; }
 .crop-h::after { content: ''; position: absolute; inset: 13px; border-radius: 50%; background: #fff; border: 2.5px solid var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.35); transition: transform .15s; }
 .crop-h.on::after { transform: scale(1.35); }
+
+/* 書脊照片 */
+.dot-c, .dot-s { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: #fff; margin: 0 4px -1px 0; }
+.dot-s { border-color: #8a5a3c; }
+.crop-poly polygon.sp { fill: rgba(138,90,60,.16); stroke: #8a5a3c; }
+.crop-h.sp::after { border-color: #8a5a3c; }
+.d-3d.has-spine { transform-style: preserve-3d; transform: translateX(-4%) rotateY(-26deg); }
+.d-3d.has-spine::before { display: none; }
+.d-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(100% * var(--sr)); transform-origin: left center; transform: rotateY(90deg); background-size: 100% 100%; filter: brightness(.9); }
 /* 詳情 */
 .detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
@@ -583,7 +592,7 @@ async function save(b) {
 
 function newBook(p = {}) {
   return {
-    id: uid(), coverUrl: '', coverData: '', titleZh: '', titleEn: '', author: '', blurb: '',
+    id: uid(), coverUrl: '', coverData: '', spineData: '', spineRatio: 0, titleZh: '', titleEn: '', author: '', blurb: '',
     status: 'want', tags: [], quotes: [], notes: '', rating: null,
     startDate: '', endDate: '', currentPage: null, totalPages: null, progress: 0,
     createdAt: new Date().toISOString(), updatedAt: '', ...p,
@@ -744,7 +753,7 @@ function renderGrid() {
   const list = filtered();
   if (S.libView === 'stack' && list.length) {
     const fl = filterLabel();
-    const items = withFillers(list, fl ? 0 : 20);
+    const items = withFillers(list, fl || S.showMode === 'ring' ? 0 : 20);
     el.innerHTML = `<div class="show screen" id="show" tabindex="0" aria-label="封面展示：滑動瀏覽，點封面打開">
       <div class="show-stage" id="show-stage">${items.map((b, i) => b.filler
         ? `<span class="gc filler" data-i="${i}" aria-hidden="true"><span class="cover" style="--cloth:${b.color}"></span></span>`
@@ -770,7 +779,7 @@ function vDetail(v) {
   return `
   <div class="top"><button class="back" data-act="back">‹ 返回</button><button class="btn" data-act="edit" data-id="${b.id}">編輯</button></div>
   <section class="detail-hero d-sheet" data-book="${b.id}">
-    <div class="d-book"><div class="d-3d">${coverHTML(b)}</div><span class="d-floor" aria-hidden="true"></span></div>
+    <div class="d-book"><div class="d-3d${b.spineData ? ' has-spine' : ''}" style="--sr:${b.spineRatio || 0.1}">${coverHTML(b)}${b.spineData ? `<span class="d-spine" style="background-image:url('${b.spineData}')"></span>` : ''}</div><span class="d-floor" aria-hidden="true"></span></div>
     <div class="d-cards">
       <article class="paper p-title">
         <h1>${esc(zh || '未命名')}</h1>
@@ -926,12 +935,44 @@ function guessCorners(canvas) {
   return [tl, tr, br, bl].map(([x, y]) => [x / (W - 1), y / (H - 1)]);
 }
 // 把四邊形拉平成長方形（單位正方形到四邊形的投影轉換）
-function warpCover(canvas, pts) {
+// 找書脊：在書的右邊不到兩成裡，找顏色突然變化的那條直線（封面和書脊的交界）
+function findSpine(canvas, q) {
+  const W = 200, H = Math.max(1, Math.round(canvas.height / canvas.width * W));
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); g.drawImage(canvas, 0, 0, W, H);
+  const d = g.getImageData(0, 0, W, H).data;
+  const x0 = Math.min(q[0][0], q[3][0]) * W, x1 = Math.max(q[1][0], q[2][0]) * W;
+  const y0 = Math.max(q[0][1], q[1][1]) * H, y1 = Math.min(q[2][1], q[3][1]) * H;
+  const ya = Math.round(y0 + (y1 - y0) * 0.15), yb = Math.round(y0 + (y1 - y0) * 0.85);
+  const col = x => { let r = 0, gg = 0, bb = 0, n = 0; for (let y = ya; y < yb; y++) { const i = (y * W + x) * 4; r += d[i]; gg += d[i + 1]; bb += d[i + 2]; n++; } return [r / n, gg / n, bb / n]; };
+  const diffs = [];
+  for (let x = Math.round(x0 + (x1 - x0) * 0.8); x < Math.round(x1 - (x1 - x0) * 0.025); x++) {
+    const a = col(x - 1), b = col(x + 1);
+    diffs.push([x, Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2])]);
+  }
+  const best = Math.max(0, ...diffs.map(v => v[1]));
+  if (best <= 18) return null;
+  // 封面右邊常有直排文字等強烈線條，取最靠右的那條明顯交界
+  const bx = diffs.filter(v => v[1] >= best * 0.5).pop()[0];
+  return (bx - x0) / Math.max(1, x1 - x0);
+}
+function initPts(canvas) {
+  const q = guessCorners(canvas), cw = canvas.width, ch = canvas.height;
+  const d = (a, b) => Math.hypot((a[0] - b[0]) * cw, (a[1] - b[1]) * ch);
+  const ratio = (d(q[0], q[1]) + d(q[3], q[2])) / Math.max(1, d(q[0], q[3]) + d(q[1], q[2]));
+  let f = ratio > 0.6 ? findSpine(canvas, q) : null;
+  if (f === null && ratio > 0.76) f = Math.max(0.75, Math.min(0.95, 0.68 / ratio));
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  // 沒找到書脊：咖啡色點放在綠點右邊一點點（寬度太小會被當成沒有書脊）
+  if (f === null) return [q[0], q[1], q[2], q[3], [Math.min(1, q[1][0] + 0.02), q[1][1]], [Math.min(1, q[2][0] + 0.02), q[2][1]]];
+  return [q[0], lerp(q[0], q[1], f), lerp(q[3], q[2], f), q[3], q[1], q[2]];
+}
+function warpCover(canvas, pts, minW = 300) {
   const sw = canvas.width, sh = canvas.height;
   const P = pts.map(([x, y]) => [x * sw, y * sh]);
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const qw = (dist(P[0], P[1]) + dist(P[3], P[2])) / 2, qh = (dist(P[0], P[3]) + dist(P[1], P[2])) / 2;
-  const OH = 900, OW = Math.round(Math.max(300, Math.min(900, OH * qw / Math.max(1, qh))));
+  const OH = 900, OW = Math.round(Math.max(minW, Math.min(900, OH * qw / Math.max(1, qh))));
   const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = P;
   const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
   const den = dx1 * dy2 - dx2 * dy1 || 1e-9;
@@ -962,11 +1003,11 @@ function vCrop() {
   const c = S.crop; if (!c) return `<button class="back" data-act="back">‹ 返回</button>`;
   return `
   <div class="top"><button class="back" data-act="back">‹ 返回</button><h2>對準封面</h2><span style="width:48px"></span></div>
-  <p class="hint crop-hint">把四個圓點拖到封面<b>正面</b>的四個角，不要包含書背。</p>
+  <p class="hint crop-hint"><span class="dot-c"></span>綠點對準封面<b>正面</b>的四個角；<span class="dot-s"></span>咖啡色點拉到<b>書脊</b>外側的上下兩角。照片沒有書脊的話，把咖啡色點留在綠點旁邊就好。</p>
   <div class="crop-wrap" id="crop-wrap">
     <img id="crop-img" src="${c.url}" alt="封面照片" draggable="false">
-    <svg class="crop-poly" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"><polygon id="crop-polygon" points=""/></svg>
-    ${c.pts.map((_, i) => `<span class="crop-h" data-k="${i}" role="slider" aria-label="第 ${i + 1} 個角" tabindex="0"></span>`).join('')}
+    <svg class="crop-poly" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"><polygon id="crop-spine" class="sp" points=""/><polygon id="crop-polygon" points=""/></svg>
+    ${c.pts.map((_, i) => `<span class="crop-h${i > 3 ? ' sp' : ''}" data-k="${i}" role="slider" aria-label="${i > 3 ? '書脊' : '封面'}第 ${i > 3 ? i - 3 : i + 1} 個角" tabindex="0"></span>`).join('')}
   </div>
   <div class="form-actions"><button class="btn" data-act="crop-auto">重新偵測</button><button class="btn primary" data-act="crop-ok">確定</button></div>`;
 }
@@ -991,7 +1032,8 @@ const Crop = {
   place() {
     const pts = S.crop.pts;
     document.querySelectorAll('.crop-h').forEach(h => { const [x, y] = pts[+h.dataset.k]; h.style.left = x * 100 + '%'; h.style.top = y * 100 + '%'; });
-    const pg = $('#crop-polygon'); if (pg) pg.setAttribute('points', pts.map(p => p.join(',')).join(' '));
+    const pg = $('#crop-polygon'); if (pg) pg.setAttribute('points', pts.slice(0, 4).map(p => p.join(',')).join(' '));
+    const ps = $('#crop-spine'); if (ps) ps.setAttribute('points', [pts[1], pts[4], pts[5], pts[2]].map(p => p.join(',')).join(' '));
   },
 };
 
@@ -1032,7 +1074,7 @@ function vRanking() {
     <p class="flow-label">${esc(d.heading)}</p>
     <div class="flow instant" id="flow" tabindex="0" aria-label="排行榜：左右滑動切換，點中間的書打開">${d.list.map((b, i) => `
       <button class="bk-wrap" data-i="${i}" data-book="${b.id}" style="--cloth:${hashColor(titleOf(b))}" aria-label="第 ${i + 1} 名 ${esc(titleOf(b))}">
-        <span class="bk"><span class="bk-face bk-front">${coverHTML(b)}</span><span class="bk-face bk-back"></span><span class="bk-face bk-spine"><span>${esc(titleOf(b))}</span></span><span class="bk-face bk-pages"></span><span class="bk-face bk-top"></span><span class="bk-face bk-bottom"></span></span>
+        <span class="bk"><span class="bk-face bk-front">${coverHTML(b)}</span><span class="bk-face bk-back"></span><span class="bk-face bk-spine"${b.spineData ? ` style="background-image:url('${b.spineData}');background-size:100% 100%"` : ''}>${b.spineData ? '' : `<span>${esc(titleOf(b))}</span>`}</span><span class="bk-face bk-pages"></span><span class="bk-face bk-top"></span><span class="bk-face bk-bottom"></span></span>
         <span class="bk-shadow"></span>
       </button>`).join('')}
     </div>
@@ -1180,6 +1222,16 @@ const Show = {
     S.showMode = m; DB.setMeta('showMode', m).catch(() => {});
     document.querySelectorAll('.pill[data-m]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
     const stage = $('#show-stage'); if (!stage) return;
+    // 立體環不放空白書、畫廊有，所以切換時重新排一次，停在同一本書
+    if (!filterLabel() && this.list.some(b => b.filler) !== (m !== 'ring')) {
+      const cur = this.list[this.index()], id = cur && !cur.filler ? cur.id : null;
+      renderGrid();
+      const i = id ? this.list.findIndex(b => b.id === id) : -1;
+      if (i >= 0) { this.p = i; this.draw(); }
+      const st = $('#show-stage');
+      if (st && st.animate && !reduceMotion()) st.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 380, easing: 'ease-out' });
+      return;
+    }
     if (!reduceMotion()) { stage.classList.add('morph'); clearTimeout(this.morphTimer); this.morphTimer = setTimeout(() => stage.classList.remove('morph'), 950); }
     this.p = Math.round(this.p);
     this.draw();
@@ -1599,10 +1651,16 @@ const actions = {
   filter: el => { S.filter = el.dataset.f; Show.p = 0; render(); Menu.refresh(); },
   edit: el => { S.draft = JSON.parse(JSON.stringify(byId(el.dataset.id))); go({ name: 'edit' }); },
   manual: () => { S.draft = newBook(); go({ name: 'edit' }); },
-  'crop-auto': () => { S.crop.pts = guessCorners(S.crop.canvas); Crop.place(); },
+  'crop-auto': () => { S.crop.pts = initPts(S.crop.canvas); Crop.place(); },
   'crop-ok': () => {
-    const out = warpCover(S.crop.canvas, S.crop.pts);
-    S.draft = newBook({ coverData: out.toDataURL('image/jpeg', 0.85) });
+    const c = S.crop, P = c.pts, out = warpCover(c.canvas, P.slice(0, 4));
+    // 書脊：綠點右邊到咖啡色點那一塊，太窄就當作沒有書脊
+    const px = (a, b) => Math.hypot((a[0] - b[0]) * c.canvas.width, (a[1] - b[1]) * c.canvas.height);
+    const sw = (px(P[1], P[4]) + px(P[2], P[5])) / 2, cw = (px(P[0], P[1]) + px(P[3], P[2])) / 2;
+    let spine = null;
+    if (sw > cw * 0.03) spine = warpCover(c.canvas, [P[1], P[4], P[5], P[2]], 10);
+    S.draft = newBook({ coverData: out.toDataURL('image/jpeg', 0.85),
+      spineData: spine ? spine.toDataURL('image/jpeg', 0.85) : '', spineRatio: spine ? +(spine.width / out.width).toFixed(3) : 0 });
     URL.revokeObjectURL(S.crop.url); S.crop = null;
     S.stack.pop(); S.stack.push({ name: 'edit' }); render(); window.scrollTo(0, 0);
   },
@@ -1615,7 +1673,7 @@ const actions = {
     if (!S.draft.tags.includes(t)) S.draft.tags.push(t);
     render();
   },
-  'cover-clear': () => { readForm(); S.draft.coverUrl = ''; S.draft.coverData = ''; render(); },
+  'cover-clear': () => { readForm(); S.draft.coverUrl = ''; S.draft.coverData = ''; S.draft.spineData = ''; S.draft.spineRatio = 0; render(); },
   'set-status': async el => { const b = byId(current().id); applyStatus(b, el.dataset.st); await save(b); render(); },
   'quote-new': el => {
     const f = $('#quote-form'); const open = f.hidden;
@@ -1751,7 +1809,7 @@ document.addEventListener('change', async e => {
     try {
       const canvas = await loadPhoto(t.files[0]);
       const url = await new Promise(r => canvas.toBlob(b => r(URL.createObjectURL(b)), 'image/jpeg', 0.9));
-      S.crop = { canvas, url, pts: guessCorners(canvas) };
+      S.crop = { canvas, url, pts: initPts(canvas) };
       go({ name: 'crop' });
     } catch (err) { toast('這張照片讀不出來，請換一張'); }
     t.value = '';
