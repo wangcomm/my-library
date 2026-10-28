@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2c6a4d">
+<meta name="theme-color" content="#5f6a2c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="我的書房">
@@ -19,22 +19,22 @@
 <style>
 /* Layout: 淺灰畫布上只放封面，四種展示方式；選單收在右上角。配色固定為影片的淺灰黑白，不跟隨深色模式 */
 :root {
-  --bg: #e8e8e8;
-  --surface: #f7f7f7;
-  --surface-2: #dcdcdc;
-  --ink: #111111;
-  --muted: #6e6e6e;
-  --line: #c8c8c8;
-  --accent: #111111;
-  --accent-ink: #ffffff;
-  --accent-soft: #d9d9d9;
-  --gold: #111111;
-  --danger: #a33a36;
-  --st-want: #a3a3a3;
-  --st-reading: #111111;
-  --st-paused: #7a7a7a;
-  --st-dropped: #c4c4c4;
-  --st-done: #3d3d3d;
+  --bg: #ece5d8;
+  --surface: #f7f2e9;
+  --surface-2: #ddd3c2;
+  --ink: #2a2b1e;
+  --muted: #7b7463;
+  --line: #d3c8b4;
+  --accent: #5f6a2c;
+  --accent-ink: #f7f2e9;
+  --accent-soft: #dde0bf;
+  --gold: #7a5236;
+  --danger: #9a4a33;
+  --st-want: #8fadb9;
+  --st-reading: #5f6a2c;
+  --st-paused: #b3ad62;
+  --st-dropped: #b9ab95;
+  --st-done: #7a5236;
   --shadow: 0 1px 2px rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.07);
   --font-display: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --font-body: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
@@ -123,11 +123,11 @@ h2 { font-size: 17px; }
 /* 書籍頁：紙卡＋立體書封 */
 .detail-hero.d-sheet { display: flex; flex-direction: column; align-items: stretch; gap: 26px; }
 .d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1400px; }
-.d-3d { position: relative; width: min(56vw, 240px); transform-style: preserve-3d; transform: rotateY(24deg) rotateX(2deg); animation: d-turn .9s cubic-bezier(.2,.7,.2,1) both; }
-@keyframes d-turn { from { transform: rotateY(0deg); } }
-.d-3d .cover { border-radius: 1px 3px 3px 1px; box-shadow: none; transform: translateZ(1px); }
-.d-pages { position: absolute; top: 1.2%; bottom: 1.2%; left: 0; width: 26px; transform-origin: left center; transform: rotateY(90deg);
-  background: repeating-linear-gradient(90deg, #f3f1ec 0 1.4px, #d9d6cf 1.4px 2.2px); box-shadow: inset 0 0 6px rgba(0,0,0,.15); }
+.d-3d { position: relative; width: min(56vw, 240px); }
+.d-3d .cover { z-index: 1; border-radius: 1px 3px 3px 1px; box-shadow: 0 2px 4px rgba(40,30,20,.18), 0 14px 30px rgba(40,30,20,.16); }
+.d-3d .cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 55%, rgba(0,0,0,.08)); pointer-events: none; }
+.d-pages { position: absolute; top: 1.5%; bottom: 1.5%; right: -7px; width: 10px; border-radius: 0 2px 2px 0;
+  background: repeating-linear-gradient(0deg, #f7f2e9 0 1.4px, #d8ccb8 1.4px 2.2px); box-shadow: 1px 1px 3px rgba(40,30,20,.18); }
 .d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
 .d-cards { display: flex; flex-direction: column; }
 .paper { position: relative; background: var(--surface); border: 0; border-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.05), 0 6px 16px rgba(0,0,0,.09); padding: 18px 20px; }
@@ -170,7 +170,25 @@ h2 { font-size: 17px; }
   .d-sheet .p-title h1 { font-size: 30px; }
   .d-more { max-width: calc(50% - 20px); }
 }
-@media (prefers-reduced-motion: reduce) { .d-3d { animation: none; } }
+
+/* 書籍頁浮層：背景是虛化的原畫面，書封固定，只有資料往上滑 */
+body.d-open { overflow: hidden; }
+body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); pointer-events: none; user-select: none; transition: filter .45s, transform .45s; }
+.d-layer { position: fixed; inset: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: color-mix(in srgb, var(--bg) 30%, transparent); }
+.d-layer[hidden] { display: none; }
+.d-inner { max-width: 1000px; margin: 0 auto; padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.d-inner .top { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 4; max-width: 1000px; margin: 0 auto; padding-inline: 16px; pointer-events: none; }
+.d-inner .top > * { pointer-events: auto; }
+.d-inner .back { background: var(--surface); border-radius: 999px; padding: 6px 14px; box-shadow: var(--shadow); }
+.d-inner .detail-hero.d-sheet { display: block; animation: none; }
+.d-inner .d-book { position: fixed; z-index: 0; top: calc(env(safe-area-inset-top, 0px) + 64px); left: 0; right: 0; padding: 0; pointer-events: none; }
+.d-inner .d-floor { bottom: -14px; }
+.d-inner .d-cards { position: relative; z-index: 2; margin-top: calc(64px + min(84vw, 360px) + 40px); }
+.d-inner .d-more { position: relative; z-index: 2; }
+@media (min-width: 760px) {
+  .d-inner .d-book { left: 50%; right: auto; width: min(50vw, 500px); top: 110px; }
+  .d-inner .d-cards { margin-top: 80px; max-width: calc(50% - 20px); }
+}
 /* 詳情 */
 .detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
@@ -427,6 +445,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 </style>
 
 <div class="app"><main id="main" aria-live="polite"></main></div>
+<div class="d-layer" id="d-layer" hidden><div class="d-inner" id="d-inner"></div></div>
 <button class="fab" id="fab" data-act="tab" data-tab="add" aria-label="新增書籍" hidden><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 <div class="drawer" id="drawer" hidden>
   <div class="drawer-backdrop" data-act="menu-close"></div>
@@ -446,7 +465,7 @@ const STATUS = [
 const STATUS_LABEL = Object.fromEntries(STATUS.map(s => [s.k, s.label]));
 const STATUS_EN = { want: 'To Read', reading: 'Reading', paused: 'Paused', dropped: 'Dropped', done: 'Finished' };
 const DEFAULT_TAGS = ['文學', '歷史', '自我成長', '科幻/奇幻', '愛情'];
-const CLOTH = ['#3d5a4c', '#5a3d43', '#33485e', '#6b5233', '#4b3f5e', '#2f5558', '#5e4a3a', '#3f4a2f'];
+const CLOTH = ['#5f6a2c', '#34402a', '#7a5236', '#956a4a', '#6c8c99', '#8f8a45', '#a08a70', '#4d3a2a'];
 
 // ---------- 儲存：IndexedDB（失敗時退回記憶體） ----------
 const DB = {
@@ -613,6 +632,24 @@ function render() {
   const v = current();
   rankCache = null;
   const views = { library: vLibrary, detail: vDetail, edit: vEdit, add: vAdd, ranking: vRanking, settings: vSettings };
+  const layer = $('#d-layer');
+  if (v.name === 'detail') {
+    // 書籍頁蓋在原本畫面上，底下的畫面虛化
+    const base = S.stack[S.stack.length - 2] || { name: S.tab === 'add' ? 'library' : S.tab };
+    const key = JSON.stringify(base);
+    if (layer.hidden || layer.dataset.base !== key) {
+      $('#main').innerHTML = views[base.name](base);
+      if (base.name === 'library') renderGrid();
+      if (base.name === 'ranking') Flow.mount();
+      layer.dataset.base = key; layer.scrollTop = 0;
+    }
+    $('#d-inner').innerHTML = vDetail(v);
+    layer.hidden = false; document.body.classList.add('d-open');
+    document.body.dataset.mode = '';
+    $('#fab').hidden = true;
+    return;
+  }
+  layer.hidden = true; layer.dataset.base = ''; $('#d-inner').innerHTML = ''; document.body.classList.remove('d-open');
   $('#main').innerHTML = views[v.name](v);
   document.body.dataset.mode = v.name === 'ranking' ? 'shelf' : '';
   $('#fab').hidden = !(v.name === 'library' || v.name === 'ranking') || !S.books.length;
@@ -804,7 +841,9 @@ function vAdd() {
 }
 function resultsHTML() {
   if (S.resultSource === 'loading') return `<p class="notice"><span class="loading"></span>搜尋中…</p>`;
+  if (S.resultSource === 'error' && S.googleLimited) return `<p class="notice">Google Books 今天的免費查詢次數已經用完，備用來源也連不上。可以先手動新增，或在「我的」填入自己的 Google Books 金鑰。</p>`;
   if (S.resultSource === 'error') return `<p class="notice">搜尋服務目前連不上（可能是網路或服務限制）。可以稍後再試，或改用手動新增。</p>`;
+  if (S.resultSource === 'none' && S.googleLimited) return `<p class="notice">Google Books 今天的免費查詢次數已經用完，備用的 Open Library 又查不到這本（中文書它收錄很少）。可以先手動新增，或在「我的」填入自己的 Google Books 金鑰，就不會再遇到這個限制。</p>`;
   if (S.resultSource === 'none') return `<p class="notice">查不到這本書。可以換個關鍵字（例如作者名或 ISBN），或改用手動新增。</p>`;
   if (!S.results.length) return '';
   return `<ul class="results">${S.results.map((r, i) => `<li><button class="result" data-act="pick" data-i="${i}">
@@ -816,8 +855,10 @@ function resultsHTML() {
 async function searchBooks(q) {
   // 1) Google Books
   try {
-    const key = S.apiKey ? `&key=${encodeURIComponent(S.apiKey)}` : '';
+    const k = S.apiKey || (window.LIBRARY_CONFIG || {}).googleBooksKey || '';
+    const key = k ? `&key=${encodeURIComponent(k)}` : '';
     const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=20&printType=books${key}`);
+    S.googleLimited = r.status === 429 || r.status === 403;
     if (r.ok) {
       const j = await r.json();
       const items = (j.items || []).map(it => {
@@ -1306,7 +1347,7 @@ window.addEventListener('online', () => Sync.schedule());
 
 // ---------- 選單（從右側滑出） ----------
 const NAV = [
-  { tab: 'library', label: '書庫', sub: '圓環・傾斜・立體環・畫廊' },
+  { tab: 'library', label: '書庫', sub: '' },
   { tab: 'ranking', label: '排行榜', sub: '總榜・分類榜・年度最愛' },
   { tab: 'add', label: '新增書籍', sub: '搜尋書名自動帶入' },
   { tab: 'settings', label: '我的', sub: '同步・備份・設定' },
@@ -1336,7 +1377,7 @@ const Menu = {
         + (S.rankTab === 'tag' && d.tags.length ? item(`<p class="m-label">選擇分類</p><div class="chips wrap">${d.tags.map(t => `<button class="chip" data-act="rank-tag" data-tag="${esc(t)}" aria-pressed="${t === S.rankTag}">${esc(t)}</button>`).join('')}</div>`) : '')
         + (S.rankTab === 'year' && d.years.length ? item(`<p class="m-label">選擇年份</p><div class="chips wrap">${d.years.map(y => `<button class="chip" data-act="rank-year" data-y="${y}" aria-pressed="${y === S.rankYear}">${y}</button>`).join('')}</div>`) : '');
     }
-    const nav = NAV.map(n => item(`<button class="m-nav" data-act="tab" data-tab="${n.tab}" ${S.tab === n.tab && !S.stack.length ? 'aria-current="page"' : ''}><b>${n.label}</b><span>${n.sub}</span></button>`)).join('');
+    const nav = NAV.map(n => item(`<button class="m-nav" data-act="tab" data-tab="${n.tab}" ${S.tab === n.tab && !S.stack.length ? 'aria-current="page"' : ''}><b>${n.label}</b>${n.sub ? `<span>${n.sub}</span>` : ''}</button>`)).join('');
     return `<div class="m-head"><span class="m-brand">莉莉的書房</span><button class="m-close" data-act="menu-close" aria-label="關閉選單">×</button></div>
       ${ctx ? `<div class="m-ctx">${ctx}</div>` : ''}
       <nav class="m-navs" aria-label="頁面">${nav}</nav>`;

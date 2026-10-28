@@ -4,7 +4,7 @@ app = (root/'app.html').read_text()
 head = '''<!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2c6a4d">
+<meta name="theme-color" content="#5f6a2c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="我的書房">
