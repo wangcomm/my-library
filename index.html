@@ -15,7 +15,7 @@
 <title>莉莉的書房</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Courier+Prime:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
 /* Layout: 淺灰畫布上只放封面，四種展示方式；選單收在右上角。配色固定為影片的淺灰黑白，不跟隨深色模式 */
 :root {
@@ -39,6 +39,7 @@
   --font-display: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --font-body: "Noto Sans TC", -apple-system, "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   --font-label: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-type: "Courier Prime", "Courier New", Courier, monospace;
   --top-h: 64px;
   color-scheme: light;
 }
@@ -118,6 +119,58 @@ h2 { font-size: 17px; }
 .empty .shelf span { width: 14px; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--line); }
 .empty h2 { color: var(--ink); }
 
+
+/* 書籍頁：紙卡＋立體書封 */
+.detail-hero.d-sheet { display: flex; flex-direction: column; align-items: stretch; gap: 26px; }
+.d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1400px; }
+.d-3d { position: relative; width: min(56vw, 240px); transform-style: preserve-3d; transform: rotateY(24deg) rotateX(2deg); animation: d-turn .9s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes d-turn { from { transform: rotateY(0deg); } }
+.d-3d .cover { border-radius: 1px 3px 3px 1px; box-shadow: none; transform: translateZ(1px); }
+.d-pages { position: absolute; top: 1.2%; bottom: 1.2%; left: 0; width: 26px; transform-origin: left center; transform: rotateY(90deg);
+  background: repeating-linear-gradient(90deg, #f3f1ec 0 1.4px, #d9d6cf 1.4px 2.2px); box-shadow: inset 0 0 6px rgba(0,0,0,.15); }
+.d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
+.d-cards { display: flex; flex-direction: column; }
+.paper { position: relative; background: var(--surface); border: 0; border-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.05), 0 6px 16px rgba(0,0,0,.09); padding: 18px 20px; }
+.d-cards .paper { animation: rise .55s cubic-bezier(.22,.8,.25,1) both; }
+.d-cards .paper + .paper { margin-top: -6px; }
+.d-cards .paper:nth-child(1) { z-index: 5; } .d-cards .paper:nth-child(2) { z-index: 6; animation-delay: 60ms; }
+.d-cards .paper:nth-child(3) { z-index: 4; animation-delay: 120ms; } .d-cards .paper:nth-child(4) { z-index: 3; animation-delay: 180ms; }
+.d-cards .paper:nth-child(5) { z-index: 2; animation-delay: 240ms; }
+.p-title { padding: 20px 20px 18px; }
+.d-sheet .p-title h1 { font-size: 24px; line-height: 1.3; }
+.d-en { margin: 10px 0 0; text-align: right; font-family: var(--font-type); font-weight: 700; font-size: 21px; line-height: 1.2; letter-spacing: -.01em; }
+.d-author { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
+.p-status { align-self: flex-start; display: inline-flex; align-items: baseline; gap: 10px; padding: 10px 22px 12px; margin-left: -4px; }
+.p-status span { font-family: var(--font-type); font-weight: 700; font-size: 20px; letter-spacing: .02em; }
+.p-status small { font-family: var(--font-type); font-size: 13px; color: var(--muted); }
+.p-blurb p { margin: 0; font-size: 14.5px; line-height: 1.85; }
+.p-tags { align-self: flex-start; display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 18px; max-width: 100%; }
+.oval { display: inline-block; padding: 4px 16px; border: 1.5px solid var(--ink); border-radius: 50%; font-size: 13px; line-height: 1.4; }
+.p-quotes { padding: 20px 20px 64px; min-height: 140px; }
+.d-quotes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.d-quotes li { position: relative; padding-right: 30px; }
+.d-quotes p { margin: 0; font-size: 14.5px; line-height: 1.85; white-space: pre-wrap; }
+.d-quotes .pg { font-family: var(--font-type); font-size: 12px; color: var(--muted); }
+.d-quotes .x { position: absolute; top: -4px; right: -8px; width: 32px; height: 32px; border: 0; background: none; color: var(--muted); font-size: 18px; border-radius: 50%; }
+.d-empty { margin: 0; color: var(--muted); font-size: 14px; }
+.p-quotes .quote-form { margin-top: 14px; grid-template-columns: minmax(0, 1fr) auto; }
+.p-quotes .quote-form[hidden] { display: none; }
+.d-plus { position: absolute; right: 16px; bottom: 14px; width: 40px; height: 40px; border-radius: 50%; border: 1.5px dashed var(--muted); background: none; color: var(--ink); font-size: 20px; line-height: 1; display: grid; place-items: center; transition: transform .25s, border-color .25s; }
+.d-plus[aria-expanded="true"] { transform: rotate(45deg); border-color: var(--ink); }
+.d-more { margin-top: 18px; }
+.d-more .panel.paper { border: 0; border-radius: 2px; margin-top: 12px; padding: 18px 20px; }
+.d-h { font-family: var(--font-type); font-weight: 700; font-size: 18px; letter-spacing: .02em; }
+.d-more .status-pick .chip { font-family: var(--font-type); font-weight: 700; }
+@media (min-width: 760px) {
+  .detail-hero.d-sheet { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  .d-sheet .d-en { font-size: 34px; }
+  .d-cards { order: 1; } .d-book { order: 2; position: sticky; top: 24px; padding-top: 30px; }
+  .d-3d { width: min(34vw, 330px); }
+  .d-floor { width: min(30vw, 300px); }
+  .d-sheet .p-title h1 { font-size: 30px; }
+  .d-more { max-width: calc(50% - 20px); }
+}
+@media (prefers-reduced-motion: reduce) { .d-3d { animation: none; } }
 /* 詳情 */
 .detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
@@ -391,6 +444,7 @@ const STATUS = [
   { k: 'done', label: '閱讀完畢' },
 ];
 const STATUS_LABEL = Object.fromEntries(STATUS.map(s => [s.k, s.label]));
+const STATUS_EN = { want: 'To Read', reading: 'Reading', paused: 'Paused', dropped: 'Dropped', done: 'Finished' };
 const DEFAULT_TAGS = ['文學', '歷史', '自我成長', '科幻/奇幻', '愛情'];
 const CLOTH = ['#3d5a4c', '#5a3d43', '#33485e', '#6b5233', '#4b3f5e', '#2f5558', '#5e4a3a', '#3f4a2f'];
 
@@ -435,7 +489,7 @@ const DB = {
 const S = {
   books: [], tags: [...DEFAULT_TAGS], apiKey: '',
   tab: 'library', stack: [],
-  filter: 'all', tagFilter: null, q: '', libView: 'stack', showMode: 'flat',
+  filter: 'all', tagFilter: null, q: '', libView: 'stack', showMode: 'ring',
   rankTab: 'all', rankTag: null, rankYear: null, shelfIdx: 0, shelfKey: '',
   sbUrl: '', sbKey: '',
   results: [], resultSource: '', draft: null,
@@ -634,19 +688,36 @@ function renderGrid() {
 function vDetail(v) {
   const b = byId(v.id); if (!b) return `<button class="back" data-act="back">‹ 返回</button><p class="notice">找不到這本書。</p>`;
   const p = progressOf(b);
+  const zh = b.titleZh || b.titleEn, en = b.titleZh && b.titleEn ? b.titleEn : '';
   return `
   <div class="top"><button class="back" data-act="back">‹ 返回</button><button class="btn" data-act="edit" data-id="${b.id}">編輯</button></div>
-  <section class="detail-hero" data-book="${b.id}">${coverHTML(b)}
-    <div><h1>${esc(titleOf(b))}</h1>
-      ${b.titleZh && b.titleEn ? `<p class="en">${esc(b.titleEn)}</p>` : ''}
-      <p class="author">${esc(b.author || '作者未填')}</p>
-      ${b.blurb ? `<p class="blurb">${esc(b.blurb)}</p>` : ''}
-      ${b.tags.length ? `<div class="tags">${b.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+  <section class="detail-hero d-sheet" data-book="${b.id}">
+    <div class="d-book"><div class="d-3d">${coverHTML(b)}<span class="d-pages" aria-hidden="true"></span></div><span class="d-floor" aria-hidden="true"></span></div>
+    <div class="d-cards">
+      <article class="paper p-title">
+        <h1>${esc(zh || '未命名')}</h1>
+        ${en ? `<p class="d-en">${esc(en)}</p>` : ''}
+        <p class="d-author">${esc(b.author || '作者未填')}</p>
+      </article>
+      <div class="paper p-status"><span>${STATUS_EN[b.status] || ''}</span>${b.status !== 'done' && p ? `<small>${p}%</small>` : ''}</div>
+      ${b.blurb ? `<article class="paper p-blurb"><p>${esc(b.blurb)}</p></article>` : ''}
+      ${b.tags.length ? `<div class="paper p-tags">${b.tags.map(t => `<span class="oval">${esc(t)}</span>`).join('')}</div>` : ''}
+      <article class="paper p-quotes">
+        ${b.quotes.length ? `<ul class="d-quotes">${b.quotes.map(q => `<li><p>${esc(q.text)}</p>${q.page ? `<span class="pg">p.${esc(q.page)}</span>` : ''}
+          <button class="x" data-act="quote-del" data-q="${q.id}" aria-label="刪除這句">×</button></li>`).join('')}</ul>` : `<p class="d-empty">還沒有畫線句子</p>`}
+        <form class="quote-form" id="quote-form" hidden>
+          <textarea id="q-text" placeholder="寫下打動你的句子" required></textarea>
+          <input class="input" id="q-page" inputmode="numeric" placeholder="頁碼（可不填）" aria-label="頁碼">
+          <button class="btn primary" type="submit">加入</button>
+        </form>
+        <button class="d-plus" type="button" data-act="quote-new" aria-label="新增畫線句子">+</button>
+      </article>
     </div>
   </section>
 
-  <section class="panel"><h2>閱讀狀態</h2>
-    <div class="status-pick">${STATUS.map(s => `<button class="chip s-${s.k}" data-act="set-status" data-st="${s.k}" aria-pressed="${b.status === s.k}">${s.label}</button>`).join('')}</div>
+  <div class="d-more">
+  <section class="panel paper"><h2 class="d-h">Status</h2>
+    <div class="status-pick">${STATUS.map(s => `<button class="chip s-${s.k}" data-act="set-status" data-st="${s.k}" aria-pressed="${b.status === s.k}">${STATUS_EN[s.k]}</button>`).join('')}</div>
     <div class="progress-row"><span class="pbar"><span style="width:${p}%"></span></span><span class="pct">${p}%</span></div>
     ${b.status !== 'done' ? (b.totalPages ? `<div class="page-input"><span>讀到第</span><input id="cur-page" type="number" inputmode="numeric" min="0" max="${b.totalPages}" value="${b.currentPage ?? ''}"><span>/ ${b.totalPages} 頁</span></div>`
       : `<input id="pct-range" type="range" min="0" max="100" step="5" value="${p}" aria-label="閱讀進度百分比"><p class="hint" style="margin:0">在「編輯」填入總頁數，就能用頁數記錄進度。</p>`) : ''}
@@ -657,29 +728,19 @@ function vDetail(v) {
     </dl>
   </section>
 
-  <section class="panel rating-panel"><div class="panel-head"><h2>評分</h2><span class="small muted" id="rank-note">${rankOf(b) ? `總榜第 ${rankOf(b)} 名` : '評分後自動上榜'}</span></div>
+  <section class="panel paper rating-panel"><div class="panel-head"><h2 class="d-h">Rating</h2><span class="small muted" id="rank-note">${rankOf(b) ? `總榜第 ${rankOf(b)} 名` : '評分後自動上榜'}</span></div>
     <div class="score" style="--t:${(b.rating || 0) / 10}"><span class="score-num" id="score-num">${b.rating ? fmtScore(b.rating) : '–'}</span><span class="score-max">/ 10</span></div>
     <input id="rating" class="rating-range" type="range" min="1" max="10" step="0.5" value="${b.rating || 1}" style="--p:${b.rating ? (b.rating - 1) / 9 * 100 : 0}%" aria-label="評分，1 到 10 分">
     <div class="score-scale" aria-hidden="true">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<span>${n}</span>`).join('')}</div>
     ${b.rating ? `<button class="btn ghost" data-act="rating-clear" style="align-self:flex-start">清除評分</button>` : `<p class="hint" style="margin:0">拖動滑桿打分數，可以給到 0.5 分。</p>`}
   </section>
 
-  <section class="panel"><div class="panel-head"><h2>金句</h2><span class="small muted">${b.quotes.length} 句</span></div>
-    ${b.quotes.length ? `<ul class="quotes">${b.quotes.map(q => `<li class="quote"><p>${esc(q.text)}</p>${q.page ? `<span class="pg">p.${esc(q.page)}</span>` : ''}
-      <button class="x" data-act="quote-del" data-q="${q.id}" aria-label="刪除這句">×</button></li>`).join('')}</ul>` : ''}
-    <form class="quote-form" id="quote-form">
-      <textarea id="q-text" placeholder="寫下打動你的句子" required></textarea>
-      <label class="small muted" style="grid-column:1/2;align-self:center">頁碼（可不填）</label>
-      <input class="input" id="q-page" inputmode="numeric" placeholder="頁碼" aria-label="頁碼">
-      <button class="btn primary" type="submit">加入</button>
-    </form>
-  </section>
-
-  <section class="panel"><div class="panel-head"><h2>筆記心得</h2><span class="saved" id="notes-saved"></span></div>
+  <section class="panel paper"><div class="panel-head"><h2 class="d-h">Notes</h2><span class="saved" id="notes-saved"></span></div>
     <textarea class="notes" id="notes" placeholder="讀完的感想、想記住的事">${esc(b.notes)}</textarea>
   </section>
 
-  <section class="panel"><button class="btn danger block" data-act="delete" data-id="${b.id}">刪除這本書</button></section>`;
+  <section class="panel paper"><button class="btn danger block" data-act="delete" data-id="${b.id}">刪除這本書</button></section>
+  </div>`;
 }
 
 // ---------- 編輯 / 新增表單 ----------
@@ -897,10 +958,9 @@ const Flow = {
   },
 };
 
-// ---------- 首頁展示：圓環／傾斜／立體環／畫廊 ----------
+// ---------- 首頁展示：立體環／畫廊 ----------
 const reduceMotion = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-const MODES = [{ k: 'flat', label: '圓環' }, { k: 'tilt', label: '傾斜' }, { k: 'ring', label: '立體環' }, { k: 'gallery', label: '畫廊' }];
-const rnd = i => { const x = Math.sin((i + 1) * 12.9898) * 43758.5453; return x - Math.floor(x); };
+const MODES = [{ k: 'ring', label: '立體環' }, { k: 'gallery', label: '畫廊' }];
 const Show = {
   p: 0, v: 0, raf: 0, list: [], drag: null, moved: false, wheelTimer: null, geo: { step: 100 },
   mount(list) {
@@ -944,7 +1004,7 @@ const Show = {
     });
     this.draw();
   },
-  axis(dx, dy) { return S.showMode === 'flat' || S.showMode === 'ring' ? dx - dy * 0.6 : dx + dy * 0.25; },
+  axis(dx, dy) { return S.showMode === 'ring' ? dx - dy * 0.6 : dx + dy * 0.25; },
   index() { const n = this.list.length; return ((Math.round(this.p) % n) + n) % n; },
   fling(v) {
     if (reduceMotion()) { this.snap(); return; }
@@ -978,42 +1038,51 @@ const Show = {
     this.p = Math.round(this.p);
     this.draw();
   },
+  // 先算整個圓環（含封面大小）的外框，再整體縮小、置中，保證不超出畫面
+  ringFit(w, h) {
+    const al = 64 * Math.PI / 180, be = -36 * Math.PI / 180, f = 900;
+    const make = (R, s) => {
+      const proj = a => {
+        const px = R * Math.sin(a), pz = R * Math.cos(a);
+        const y1 = pz * Math.sin(al), z1 = pz * Math.cos(al);
+        const sc = f / (f - z1);
+        return { x: (px * Math.cos(be) - y1 * Math.sin(be)) * sc, y: (px * Math.sin(be) + y1 * Math.cos(be)) * sc, z: z1, sc };
+      };
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (let i = 0; i < 72; i++) {
+        const q = proj(i / 72 * 2 * Math.PI), hw = s * q.sc / 2;
+        // 封面以中心縮放：寬 s、高 1.5s，中心在 (x, y - 0.75s + 0.75s)
+        x0 = Math.min(x0, q.x - hw); x1 = Math.max(x1, q.x + hw);
+        y0 = Math.min(y0, q.y - hw * 1.5); y1 = Math.max(y1, q.y + hw * 1.5);
+      }
+      return { R, s, proj, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, bw: x1 - x0, bh: y1 - y0 };
+    };
+    const pad = 12;
+    let g = make(Math.min(w * 0.46, h * 0.62), Math.min(w, h) * 0.15);
+    for (let t = 0; t < 3; t++) {
+      const fit = Math.min(1, (w - pad * 2) / g.bw, (h - pad * 2) / g.bh);
+      if (fit > 0.995) break;
+      g = make(g.R * fit, g.s * fit);
+    }
+    return g;
+  },
   draw() {
     const stage = $('#show-stage'); if (!stage) return;
     const w = stage.clientWidth, h = stage.clientHeight - 30, n = this.list.length, m = S.showMode;
     const cards = stage.querySelectorAll('.gc');
     let step = 100;
+    const ring = m === 'ring' ? this.ringFit(w, h) : null;
     cards.forEach((el, i) => {
       let d = ((i - this.p) % n + n) % n; if (d > n / 2) d -= n;
       const ad = Math.abs(d);
       let x, y, s, k = 1, z = 0, o = 1, ry = 0, zi;
-      if (m === 'flat') {
-        // 平鋪成一個大圓，最上面那本是目前這本
-        const R = Math.min(w, h) * 0.39;
-        s = Math.max(38, Math.min(R * 2 * Math.PI / Math.max(n, 6) * 0.62, Math.min(w, h) * 0.2));
-        const a = d / n * 2 * Math.PI - Math.PI / 2;
-        x = w / 2 + R * Math.cos(a); y = h / 2 + R * Math.sin(a);
-        step = R * 2 * Math.PI / Math.max(n, 6);
-        zi = 100;
-      } else if (m === 'tilt') {
-        // 高低錯落的橫向輪播，帶一點透視
-        s = Math.min(w * 0.34, h * 0.26, 190);
-        x = w / 2 + d * s * 1.18; y = h / 2 + (rnd(i) - 0.5) * h * 0.3;
-        k = 0.78 + rnd(i + 11) * 0.4; z = -ad * 30; ry = -d * 6;
-        o = ad > 3.5 ? Math.max(0, 1 - (ad - 3.5)) : 1;
-        step = s * 1.18; zi = 100 - Math.round(ad * 10);
-      } else if (m === 'ring') {
-        // 圓環斜放成 3D，從左下延伸到右上
-        const R = Math.min(w * 0.46, h * 0.62), al = 64 * Math.PI / 180, be = -36 * Math.PI / 180, f = 900;
-        const a = d / n * 2 * Math.PI;
-        const px = R * Math.sin(a), pz = R * Math.cos(a);
-        const y1 = pz * Math.sin(al), z1 = pz * Math.cos(al);
-        const x2 = px * Math.cos(be) - y1 * Math.sin(be), y2 = px * Math.sin(be) + y1 * Math.cos(be);
-        const sc = f / (f - z1);
-        s = Math.min(w, h) * 0.15; k = sc;
-        x = w / 2 + x2 * sc; y = h / 2 + y2 * sc;
-        o = 0.55 + 0.45 * (pz / R + 1) / 2;
-        step = R * 2 * Math.PI / Math.max(n, 6) * 0.8; zi = Math.round(500 + z1);
+      if (m === 'ring') {
+        // 圓環斜放成 3D，從左下延伸到右上；整個圓環縮放到畫面內
+        const a = d / n * 2 * Math.PI, q = ring.proj(a);
+        s = ring.s; k = q.sc;
+        x = w / 2 + q.x - ring.cx; y = h / 2 + q.y - ring.cy;
+        o = 0.55 + 0.45 * (Math.cos(a) + 1) / 2;
+        step = ring.R * 2 * Math.PI / Math.max(n, 6) * 0.8; zi = Math.round(500 + q.z);
       } else {
         // 畫廊：一排橫向展開，中間那本最大
         s = Math.min(w * 0.44, h * 0.42, 260);
@@ -1395,6 +1464,11 @@ const actions = {
   },
   'cover-clear': () => { readForm(); S.draft.coverUrl = ''; S.draft.coverData = ''; render(); },
   'set-status': async el => { const b = byId(current().id); applyStatus(b, el.dataset.st); await save(b); render(); },
+  'quote-new': el => {
+    const f = $('#quote-form'); const open = f.hidden;
+    f.hidden = !open; el.setAttribute('aria-expanded', String(open));
+    if (open) $('#q-text').focus();
+  },
   'quote-del': async el => { const b = byId(current().id); b.quotes = b.quotes.filter(q => q.id !== el.dataset.q); await save(b); render(); },
   delete: async el => {
     if (!el.classList.contains('armed')) { el.classList.add('armed'); el.textContent = '再按一次確認刪除'; setTimeout(() => { if (el.isConnected) { el.classList.remove('armed'); el.textContent = '刪除這本書'; } }, 4000); return; }
@@ -1570,7 +1644,8 @@ document.addEventListener('submit', async e => {
     S.tags = (await DB.getMeta('tags')) || [...DEFAULT_TAGS];
     S.apiKey = (await DB.getMeta('apiKey')) || '';
     S.libView = (await DB.getMeta('libView')) || 'stack';
-    S.showMode = (await DB.getMeta('showMode')) || 'flat';
+    S.showMode = (await DB.getMeta('showMode')) || 'ring';
+    if (!MODES.some(m => m.k === S.showMode)) S.showMode = 'ring';
     const sb = (await DB.getMeta('sb')) || {};
     S.sbUrl = sb.url || ''; S.sbKey = sb.key || '';
   } catch (e) { S.books = []; }
