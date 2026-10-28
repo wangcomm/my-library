@@ -337,6 +337,9 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .show { position: relative; }
 .show-stage { position: relative; height: 100%; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; perspective: 1200px; }
 .gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 50% 50%; will-change: transform; }
+.gc.filler { cursor: default; }
+.gc.filler, .gc.filler .cover { display: block; }
+.gc.filler .cover::after { display: none; }
 .gc .cover { border-radius: 0; box-shadow: 0 1px 2px rgba(0,0,0,.08); transition: transform .3s cubic-bezier(.2,.7,.2,1); }
 .gc .cover::after { display: none; }
 .gc .cover .ph { padding: 12% 10%; }
@@ -735,16 +738,31 @@ function vLibrary() {
     <button class="btn primary" data-act="tab" data-tab="add">新增第一本書</button>
     <button class="btn ghost" data-act="load-demo">載入 10 本範例書看看效果</button></div>`}`;
 }
+// 書不多時，用沒有書名的空白書封把展示補滿（只是裝飾，點了沒反應，不會存進書庫）
+function withFillers(list, total) {
+  const need = Math.max(0, total - list.length);
+  if (!need || !list.length) return list;
+  const out = [], every = (list.length + need) / list.length;
+  let r = 0;
+  for (let i = 0; i < list.length + need; i++) {
+    if (r < list.length && i >= Math.round(r * every)) out.push(list[r++]);
+    else out.push({ filler: true, color: CLOTH[(i * 5 + 3) % CLOTH.length] });
+  }
+  return out;
+}
 function renderGrid() {
   const el = $('#lib-grid'); if (!el) return;
   const list = filtered();
   if (S.libView === 'stack' && list.length) {
     const fl = filterLabel();
+    const items = withFillers(list, fl ? 0 : 20);
     el.innerHTML = `<div class="show screen" id="show" tabindex="0" aria-label="封面展示：滑動瀏覽，點封面打開">
-      <div class="show-stage" id="show-stage">${list.map((b, i) => `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
+      <div class="show-stage" id="show-stage">${items.map((b, i) => b.filler
+        ? `<span class="gc filler" data-i="${i}" aria-hidden="true"><span class="cover" style="--cloth:${b.color}"></span></span>`
+        : `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
       <div class="show-foot">${fl ? `<button data-act="clear-filter">${esc(fl)} ✕</button>` : '<span>滑動瀏覽</span>'}<span class="show-count" id="show-count"></span></div>
     </div>`;
-    Show.mount(list);
+    Show.mount(items);
     return;
   }
   el.innerHTML = list.length ? `<div class="grid">${list.map((b, i) => `
@@ -1126,7 +1144,7 @@ const Show = {
     stage.addEventListener('pointerup', end);
     stage.addEventListener('pointercancel', end);
     stage.addEventListener('click', e => {
-      const el = e.target.closest('.gc'); if (!el || this.moved) return;
+      const el = e.target.closest('.gc'); if (!el || this.moved || el.classList.contains('filler')) return;
       openBook(this.list[+el.dataset.i].id, el);
     });
     stage.addEventListener('wheel', e => {
@@ -1139,7 +1157,7 @@ const Show = {
     $('#show').addEventListener('keydown', e => {
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { this.animateTo(Math.round(this.p) + 1); e.preventDefault(); }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { this.animateTo(Math.round(this.p) - 1); e.preventDefault(); }
-      if (e.key === 'Enter' && e.target.id === 'show') openBook(this.list[this.index()].id);
+      if (e.key === 'Enter' && e.target.id === 'show' && !this.list[this.index()].filler) openBook(this.list[this.index()].id);
     });
     this.draw();
   },
@@ -1178,7 +1196,7 @@ const Show = {
     this.draw();
   },
   // 先算整個圓環（含封面大小）的外框，再整體縮小、置中，保證不超出畫面
-  ringFit(w, h) {
+  ringFit(w, h, n) {
     // 斜放的扁圓：從左下延伸到右上，前面（右下）大、後面（左上）小
     // 斜度跟著螢幕的對角線走：直的手機比較陡、橫的電腦比較平
     const al = 21 * Math.PI / 180, be = -Math.atan2(h, w) * 0.85;
@@ -1200,7 +1218,7 @@ const Show = {
     };
     const pad = 12;
     const R0 = Math.hypot(w, h) * 0.5;
-    let g = make(R0, R0 * 0.3);
+    let g = make(R0, R0 * Math.min(0.3, 4.2 / n));
     for (let t = 0; t < 3; t++) {
       const fit = Math.min(1, (w - pad * 2) / g.bw, (h - pad * 2) / g.bh);
       if (fit > 0.995) break;
@@ -1213,7 +1231,7 @@ const Show = {
     const w = stage.clientWidth, h = stage.clientHeight - 30, n = this.list.length, m = S.showMode;
     const cards = stage.querySelectorAll('.gc');
     let step = 100;
-    const ring = m === 'ring' ? this.ringFit(w, h) : null;
+    const ring = m === 'ring' ? this.ringFit(w, h, n) : null;
     cards.forEach((el, i) => {
       let d = ((i - this.p) % n + n) % n; if (d > n / 2) d -= n;
       const ad = Math.abs(d);
@@ -1228,8 +1246,8 @@ const Show = {
       } else {
         // 畫廊：平放的圓，從側面看——前面的大、後面的小，全部排在同一條水平線上
         const a = d / n * 2 * Math.PI, dep = (Math.cos(a) + 1) / 2;
-        const R = w * 0.46;
-        s = Math.min(w * 0.24, h * 0.3, 230);
+        const R = w * 0.62;
+        s = Math.min(w * 0.26, h * 0.3, 230, R * 2 * Math.PI / n * 0.9);
         k = 0.22 + 0.78 * Math.pow(dep, 1.6);
         x = w / 2 + R * Math.sin(a); y = h / 2 - (1 - dep) * h * 0.02;
         step = R * 2 * Math.PI / n; zi = Math.round(100 + dep * 400);
@@ -1242,7 +1260,13 @@ const Show = {
     });
     this.geo.step = step;
     const c = $('#show-count');
-    if (c) c.textContent = `${String(this.index() + 1).padStart(2, '0')} — ${String(n).padStart(2, '0')}`;
+    // 計數只算真正的書，停在空白書封時顯示前一本
+    if (c) {
+      const real = this.list.filter(b => !b.filler).length;
+      let j = this.index(); while (this.list[j] && this.list[j].filler && j > 0) j--;
+      const no = this.list.slice(0, j + 1).filter(b => !b.filler).length || 1;
+      c.textContent = `${String(no).padStart(2, '0')} — ${String(real).padStart(2, '0')}`;
+    }
   },
 };
 window.addEventListener('resize', () => { Show.draw(); Flow.layout(); });
