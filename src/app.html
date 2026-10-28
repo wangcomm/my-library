@@ -208,11 +208,6 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .crop-h { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; cursor: grab; touch-action: none; }
 .crop-h::after { content: ''; position: absolute; inset: 13px; border-radius: 50%; background: #fff; border: 2.5px solid var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.35); transition: transform .15s; }
 .crop-h.on::after { transform: scale(1.35); }
-.ocr-box:empty { display: none; }
-.ocr-box { padding: 12px 14px; border: 1px dashed var(--line); background: var(--surface); }
-.ocr-msg { margin: 0 0 4px; font-size: 13px; color: var(--muted); }
-.ocr-box .chips { padding-block: 6px 0; }
-.ocr-box .chip { height: auto; min-height: 34px; padding-block: 6px; white-space: normal; text-align: left; max-width: 100%; }
 /* 詳情 */
 .detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
@@ -535,7 +530,7 @@ const S = {
   filter: 'all', tagFilter: null, q: '', libView: 'stack', showMode: 'ring',
   rankTab: 'all', rankTag: null, rankYear: null, shelfIdx: 0, shelfKey: '',
   sbUrl: '', sbKey: '',
-  draft: null, crop: null, ocr: null,
+  draft: null, crop: null,
 };
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -816,7 +811,6 @@ function vEdit(v) {
     <div class="cover-edit"><div id="cover-preview">${coverHTML(b)}</div>
       <div class="acts"><span class="btn file-btn">上傳封面<input type="file" id="cover-file" accept="image/*"></span>
       ${b.coverData || b.coverUrl ? `<button type="button" class="btn ghost" data-act="cover-clear">移除封面</button>` : ''}</div></div>
-    <div class="ocr-box" id="ocr-box">${ocrHTML()}</div>
     <label><span>中文書名</span><input class="input" id="f-zh" value="${esc(b.titleZh)}"></label>
     <label><span>英文書名（可留空）</span><input class="input" id="f-en" value="${esc(b.titleEn)}"></label>
     <label><span>作者</span><input class="input" id="f-author" value="${esc(b.author)}"></label>
@@ -860,7 +854,7 @@ function readForm() {
 // ---------- 新增（拍封面） ----------
 function vAdd() {
   return `
-  ${topbar('新增書籍', '拍下封面，幫你拉平並試著辨識書名')}
+  ${topbar('新增書籍', '拍下封面，再填入書名和作者')}
   <div class="add-pick">
     <label class="pick-btn main"><input type="file" id="snap-file" accept="image/*" capture="environment"><span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg></span><b>拍封面</b><small>直接開相機</small></label>
     <label class="pick-btn"><input type="file" id="snap-file2" accept="image/*"><span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16"/><path d="M4 16l5-5 4 4 2-2 5 5"/><circle cx="15.5" cy="8.5" r="1.4"/></svg></span><b>從相簿選</b><small>選已經拍好的照片</small></label>
@@ -979,60 +973,6 @@ const Crop = {
     const pg = $('#crop-polygon'); if (pg) pg.setAttribute('points', pts.map(p => p.join(',')).join(' '));
   },
 };
-
-// ---------- 封面文字辨識（Tesseract.js，免費、在手機上執行） ----------
-const OCR = {
-  worker: null,
-  lines(data, cjkOnly) {
-    const out = [];
-    (data.blocks || []).forEach(bl => (bl.paragraphs || []).forEach(pa => (pa.lines || []).forEach(ln => {
-      let t = (ln.text || '').replace(/\s+/g, ' ').trim();
-      t = t.replace(/(?<=[㐀-鿿])\s+(?=[㐀-鿿])/g, '').replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}）)]+$/gu, '');
-      if (t.length < 2 || ln.confidence < 45 || (cjkOnly && !hasCJK(t))) return;
-      // 字的大小：橫排看高度、直排看寬度
-      out.push({ t: t.slice(0, 40), c: ln.confidence, h: Math.min(ln.bbox.y1 - ln.bbox.y0, ln.bbox.x1 - ln.bbox.x0) });
-    })));
-    return out;
-  },
-  async run(canvas, draftId) {
-    S.ocr = { id: draftId, status: 'loading', lines: [] }; this.paint();
-    try {
-      if (!window.Tesseract) await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js');
-      if (!this.worker) this.worker = await Tesseract.createWorker(['chi_tra', 'eng'], 1);
-      const r = await this.worker.recognize(canvas, {}, { blocks: true });
-      const lines = this.lines(r.data, false).sort((a, b) => b.h - a.h);
-      if (!S.ocr || S.ocr.id !== draftId) return;
-      S.ocr = { id: draftId, status: 'done', lines: [...new Map(lines.map(l => [l.t, l])).values()] };
-      this.fill();
-    } catch (e) {
-      if (S.ocr && S.ocr.id === draftId) S.ocr = { id: draftId, status: 'error', lines: [] };
-    }
-    this.paint();
-  },
-  // 只自動填有把握的結果：有「著」的那行當作者、像英文書名的那行、信心很高的最大中文字
-  fill() {
-    const L = S.ocr.lines; if (!L.length) return;
-    const big = arr => arr.slice().sort((a, b) => b.h - a.h)[0];
-    const au = L.map(l => (l.t.match(/^作者[:：]?\s*(.+)$/) || l.t.match(/^(.+?)\s*[／/]?\s*[著编編]$/) || [])[1]).find(Boolean);
-    const zh = big(L.filter(l => hasCJK(l.t) && l.c >= 80 && l.t.length <= 20 && (!au || !l.t.includes(au))));
-    const en = big(L.filter(l => l.c >= 50 && /^[A-Za-z][A-Za-z '’:,&-]{2,}$/.test(l.t)));
-    const set = (id, v) => { const el = $(id); if (el && !el.value.trim() && v) el.value = v; };
-    set('#f-zh', zh && zh.t); set('#f-en', en && en.t); set('#f-author', au && au.replace(/\s*[.．・·]\s*/g, '・'));
-  },
-  paint() {
-    const box = $('#ocr-box'); if (box) box.innerHTML = ocrHTML();
-  },
-};
-let ocrTarget = 'f-zh';
-document.addEventListener('focusin', e => { if (['f-zh', 'f-en', 'f-author'].includes(e.target.id)) ocrTarget = e.target.id; });
-function ocrHTML() {
-  const o = S.ocr; if (!o || !S.draft || o.id !== S.draft.id) return '';
-  if (o.status === 'loading') return `<p class="ocr-msg"><span class="loading"></span>正在辨識封面上的字…第一次使用要下載辨識資料（約 5 MB），請稍等。</p>`;
-  if (o.status === 'error') return `<p class="ocr-msg">這次沒辦法辨識（可能是網路問題），請直接輸入書名和作者。</p>`;
-  if (!o.lines.length) return `<p class="ocr-msg">封面上沒有辨識到文字，請直接輸入書名和作者。</p>`;
-  return `<p class="ocr-msg">辨識到的字（設計字、直書常會認錯）。先點要填的欄位，再點下面的字：</p>
-    <div class="chips wrap">${o.lines.slice(0, 14).map((l, i) => `<button type="button" class="chip" data-act="ocr-use" data-i="${i}">${esc(l.t)}</button>`).join('')}</div>`;
-}
 
 // ---------- 排行榜 ----------
 function rankData() {
@@ -1225,13 +1165,15 @@ const Show = {
   },
   // 先算整個圓環（含封面大小）的外框，再整體縮小、置中，保證不超出畫面
   ringFit(w, h) {
-    const al = 64 * Math.PI / 180, be = -36 * Math.PI / 180, f = 900;
+    // 斜放的扁圓：從左下延伸到右上，前面（右下）大、後面（左上）小
+    // 斜度跟著螢幕的對角線走：直的手機比較陡、橫的電腦比較平
+    const al = 21 * Math.PI / 180, be = -Math.atan2(h, w) * 0.85;
     const make = (R, s) => {
       const proj = a => {
         const px = R * Math.sin(a), pz = R * Math.cos(a);
         const y1 = pz * Math.sin(al), z1 = pz * Math.cos(al);
-        const sc = f / (f - z1);
-        return { x: (px * Math.cos(be) - y1 * Math.sin(be)) * sc, y: (px * Math.sin(be) + y1 * Math.cos(be)) * sc, z: z1, sc };
+        const sc = 0.45 + 0.55 * (Math.cos(a) + 1) / 2;
+        return { x: px * Math.cos(be) - y1 * Math.sin(be), y: px * Math.sin(be) + y1 * Math.cos(be), z: z1, sc };
       };
       let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
       for (let i = 0; i < 72; i++) {
@@ -1243,7 +1185,8 @@ const Show = {
       return { R, s, proj, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, bw: x1 - x0, bh: y1 - y0 };
     };
     const pad = 12;
-    let g = make(Math.min(w * 0.46, h * 0.62), Math.min(w, h) * 0.15);
+    const R0 = Math.hypot(w, h) * 0.5;
+    let g = make(R0, R0 * 0.3);
     for (let t = 0; t < 3; t++) {
       const fit = Math.min(1, (w - pad * 2) / g.bw, (h - pad * 2) / g.bh);
       if (fit > 0.995) break;
@@ -1266,16 +1209,16 @@ const Show = {
         const a = d / n * 2 * Math.PI, q = ring.proj(a);
         s = ring.s; k = q.sc;
         x = w / 2 + q.x - ring.cx; y = h / 2 + q.y - ring.cy;
-        o = 0.55 + 0.45 * (Math.cos(a) + 1) / 2;
+        o = 1;
         step = ring.R * 2 * Math.PI / Math.max(n, 6) * 0.8; zi = Math.round(500 + q.z);
       } else {
-        // 畫廊：一排橫向展開，中間那本最大
-        s = Math.min(w * 0.44, h * 0.42, 260);
-        const off = ad < 1 ? ad * s * 0.82 : s * 0.82 + (ad - 1) * s * 0.5;
-        x = w / 2 + Math.sign(d) * off; y = h / 2;
-        k = ad < 1 ? 1 - ad * 0.36 : Math.max(0.3, 0.64 - (ad - 1) * 0.08);
-        o = ad > 5 ? Math.max(0, 6 - ad) : 1;
-        step = s * 0.82; zi = 100 - Math.round(ad * 10);
+        // 畫廊：平放的圓，從側面看——前面的大、後面的小，全部排在同一條水平線上
+        const a = d / n * 2 * Math.PI, dep = (Math.cos(a) + 1) / 2;
+        const R = w * 0.46;
+        s = Math.min(w * 0.24, h * 0.3, 230);
+        k = 0.22 + 0.78 * Math.pow(dep, 1.6);
+        x = w / 2 + R * Math.sin(a); y = h / 2 - (1 - dep) * h * 0.02;
+        step = R * 2 * Math.PI / n; zi = Math.round(100 + dep * 400);
       }
       el.style.width = s + 'px';
       el.style.transform = `translate3d(${x - s / 2}px, ${y - s * 0.75}px, ${z}px) rotateY(${ry}deg) scale(${k})`;
@@ -1628,20 +1571,15 @@ const actions = {
   open: el => openBook(el.dataset.id, el.closest('[data-book]') || el),
   filter: el => { S.filter = el.dataset.f; Show.p = 0; render(); Menu.refresh(); },
   edit: el => { S.draft = JSON.parse(JSON.stringify(byId(el.dataset.id))); go({ name: 'edit' }); },
-  manual: () => { S.draft = newBook(); S.ocr = null; go({ name: 'edit' }); },
+  manual: () => { S.draft = newBook(); go({ name: 'edit' }); },
   'crop-auto': () => { S.crop.pts = guessCorners(S.crop.canvas); Crop.place(); },
   'crop-ok': () => {
     const out = warpCover(S.crop.canvas, S.crop.pts);
     S.draft = newBook({ coverData: out.toDataURL('image/jpeg', 0.85) });
     URL.revokeObjectURL(S.crop.url); S.crop = null;
     S.stack.pop(); S.stack.push({ name: 'edit' }); render(); window.scrollTo(0, 0);
-    OCR.run(out, S.draft.id);
   },
-  'ocr-use': el => {
-    const l = S.ocr.lines[+el.dataset.i]; const inp = $('#' + ocrTarget); if (!l || !inp) return;
-    let t = l.t; if (ocrTarget === 'f-author') t = t.replace(/^作者[:：]?\s*/, '').replace(/\s*[／/]?\s*[著编編]$/, '');
-    inp.value = t; inp.focus();
-  },
+
   'toggle-tag': el => { const t = el.dataset.tag; const tags = S.draft.tags; const i = tags.indexOf(t); if (i >= 0) tags.splice(i, 1); else tags.push(t); el.setAttribute('aria-pressed', i < 0); },
   'new-tag': async () => {
     const inp = $('#f-newtag'); const t = inp.value.trim(); if (!t) return;
