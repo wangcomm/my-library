@@ -323,6 +323,9 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .show { position: relative; }
 .show-stage { position: relative; height: 100%; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; perspective: 1200px; }
 .gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 50% 50%; will-change: transform; }
+/* 有照片的封面不要疊書背陰影，免得蓋到封面上的字；書的厚度改畫在封面外側 */
+.cover:has(img)::after, .d-3d .cover:has(img)::before { display: none; }
+.d-3d::before { content: ''; position: absolute; top: .8%; bottom: .8%; left: -7px; width: 7px; background: linear-gradient(90deg, #bdbdbd, #e2e2e2 60%, #cfcfcf); box-shadow: -1px 1px 3px rgba(0,0,0,.12); }
 .gc.filler { cursor: default; }
 .gc.filler, .gc.filler .cover { display: block; }
 .gc.filler .cover::after { display: none; }
