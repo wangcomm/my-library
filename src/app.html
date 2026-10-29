@@ -1,4 +1,4 @@
-<title>莉莉的書房</title>
+<title>Marginalia</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Jost:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Sans+TC:wght@400;500;700&display=swap">
@@ -360,9 +360,9 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .bk-front { inset: 0; transform: translateZ(calc(var(--bt) / 2)); }
 .bk-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
 .bk-back { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); background: var(--cloth); filter: brightness(.82); border-radius: 0; }
-.bk-spine { top: 0; left: calc(50% - var(--bt) / 2); width: var(--bt); height: 100%; transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2)); background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 45%, rgba(0,0,0,.18)); color: #2a2a2a; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
+.bk-spine { top: 0; left: calc(50% - var(--bt) / 2); width: var(--bt); height: 100%; transform: rotateY(90deg) translateZ(calc(var(--bw) / 2)); background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 45%, rgba(0,0,0,.18)); color: #2a2a2a; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
 .bk-spine span { writing-mode: vertical-rl; font-size: 11.5px; font-weight: 500; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bk-pages { top: 3px; left: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bt) - 2px); height: calc(100% - 6px); transform: rotateY(90deg) translateZ(calc(var(--bw) / 2 - 3px)); background: repeating-linear-gradient(90deg, #faf8f2 0 1px, #dedad1 1px 2px); }
+.bk-pages { top: 3px; left: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bt) - 2px); height: calc(100% - 6px); transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2 - 3px)); background: repeating-linear-gradient(90deg, #faf8f2 0 1px, #dedad1 1px 2px); }
 .bk-top, .bk-bottom { left: 0; top: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bw) - 3px); height: calc(var(--bt) - 2px); background: repeating-linear-gradient(0deg, #faf8f2 0 1px, #dedad1 1px 2px); }
 .bk-top { transform: rotateX(90deg) translateZ(calc(var(--bh) / 2 - 3px)); }
 .bk-bottom { transform: rotateX(-90deg) translateZ(calc(var(--bh) / 2 - 3px)); }
@@ -432,7 +432,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .drawer-panel.no-stagger .m-item { animation: none; opacity: 1; transform: none; }
 @keyframes m-in { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
 .m-head { display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
-.m-brand { font-family: var(--font-display); font-size: 15px; letter-spacing: .12em; color: var(--muted); }
+.m-brand { font-family: var(--font-label); font-style: italic; font-size: 17px; letter-spacing: .04em; color: var(--muted); }
 .m-close { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); font-size: 22px; line-height: 1; color: var(--ink); }
 .m-ctx { display: flex; flex-direction: column; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
 .m-label { margin: 0 0 8px; font-size: 12px; letter-spacing: .12em; color: var(--muted); }
@@ -677,6 +677,7 @@ function render() {
     }
     $('#d-inner').innerHTML = vDetail(v);
     layer.hidden = false; document.body.classList.add('d-open');
+    fitDetail(); $('.d-inner .d-3d img')?.addEventListener('load', fitDetail);
     document.body.dataset.mode = '';
     $('#fab').hidden = true;
     return;
@@ -734,27 +735,26 @@ function vLibrary() {
     <button class="btn primary" data-act="tab" data-tab="add">新增第一本書</button></div>`}`;
 }
 // 書不多時，用沒有書名的空白書封把展示補滿（只是裝飾，點了沒反應，不會存進書庫）
-function withFillers(list, total) {
-  const need = Math.max(0, total - list.length);
-  if (!need || !list.length) return list;
-  const out = [], every = (list.length + need) / list.length;
-  let r = 0;
-  for (let i = 0; i < list.length + need; i++) {
-    if (r < list.length && i >= Math.round(r * every)) out.push(list[r++]);
-    else out.push({ filler: true, color: CLOTH[(i * 5 + 3) % CLOTH.length] });
-  }
-  return out;
+// 手機版：詳細資訊從書的下緣開始，不壓到書
+function fitDetail() {
+  const bk = $('.d-inner .d-3d'), cards = $('.d-inner .d-cards'), layer = $('#d-layer');
+  if (!bk || !cards) return;
+  cards.style.marginTop = '';
+  if (innerWidth >= 760) return;
+  const cur = parseFloat(getComputedStyle(cards).marginTop) || 0;
+  const want = bk.getBoundingClientRect().bottom + 30;
+  cards.style.marginTop = Math.round(cur + want - (cards.getBoundingClientRect().top + layer.scrollTop)) + 'px';
 }
+addEventListener('resize', fitDetail);
+
 function renderGrid() {
   const el = $('#lib-grid'); if (!el) return;
   const list = filtered();
   if (S.libView === 'stack' && list.length) {
     const fl = filterLabel();
-    const items = withFillers(list, fl || S.showMode === 'ring' ? 0 : 20);
+    const items = list;
     el.innerHTML = `<div class="show screen" id="show" tabindex="0" aria-label="封面展示：滑動瀏覽，點封面打開">
-      <div class="show-stage" id="show-stage">${items.map((b, i) => b.filler
-        ? `<span class="gc filler" data-i="${i}" aria-hidden="true"><span class="cover" style="--cloth:${b.color}"></span></span>`
-        : `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
+      <div class="show-stage" id="show-stage">${items.map((b, i) => `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
       <div class="show-foot">${fl ? `<button data-act="clear-filter">${esc(fl)} ✕</button>` : '<span>滑動瀏覽</span>'}<span class="show-count" id="show-count"></span></div>
     </div>`;
     Show.mount(items);
@@ -1219,16 +1219,6 @@ const Show = {
     S.showMode = m; DB.setMeta('showMode', m).catch(() => {});
     document.querySelectorAll('.pill[data-m]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
     const stage = $('#show-stage'); if (!stage) return;
-    // 立體環不放空白書、畫廊有，所以切換時重新排一次，停在同一本書
-    if (!filterLabel() && this.list.some(b => b.filler) !== (m !== 'ring')) {
-      const cur = this.list[this.index()], id = cur && !cur.filler ? cur.id : null;
-      renderGrid();
-      const i = id ? this.list.findIndex(b => b.id === id) : -1;
-      if (i >= 0) { this.p = i; this.draw(); }
-      const st = $('#show-stage');
-      if (st && st.animate && !reduceMotion()) st.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 380, easing: 'ease-out' });
-      return;
-    }
     if (!reduceMotion()) { stage.classList.add('morph'); clearTimeout(this.morphTimer); this.morphTimer = setTimeout(() => stage.classList.remove('morph'), 950); }
     this.p = Math.round(this.p);
     this.draw();
@@ -1397,23 +1387,6 @@ async function importJSON(text) {
 }
 
 // 圖片縮小後存成 data URL，避免佔太多空間
-function resizeImage(file, max = 480) {
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const k = Math.min(1, max / Math.max(img.width, img.height));
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        res(c.toDataURL('image/jpeg', 0.82));
-      };
-      img.onerror = rej; img.src = fr.result;
-    };
-    fr.onerror = rej; fr.readAsDataURL(file);
-  });
-}
 
 // ---------- 雲端同步（Supabase） ----------
 // 本機 IndexedDB 是主要資料；每筆書用 updatedAt 比較，新的蓋舊的。刪除的書留下 deleted 標記，讓其他裝置也刪掉。
@@ -1534,7 +1507,7 @@ const Menu = {
         + (S.rankTab === 'year' && d.years.length ? item(`<p class="m-label">選擇年份</p><div class="chips wrap">${d.years.map(y => `<button class="chip" data-act="rank-year" data-y="${y}" aria-pressed="${y === S.rankYear}">${y}</button>`).join('')}</div>`) : '');
     }
     const nav = NAV.map(n => item(`<button class="m-nav" data-act="tab" data-tab="${n.tab}" ${S.tab === n.tab && !S.stack.length ? 'aria-current="page"' : ''}><b>${n.label}</b>${n.sub ? `<span>${n.sub}</span>` : ''}</button>`)).join('');
-    return `<div class="m-head"><span class="m-brand">莉莉的書房</span><button class="m-close" data-act="menu-close" aria-label="關閉選單">×</button></div>
+    return `<div class="m-head"><span class="m-brand">Marginalia</span><button class="m-close" data-act="menu-close" aria-label="關閉選單">×</button></div>
       ${ctx ? `<div class="m-ctx">${ctx}</div>` : ''}
       <nav class="m-navs" aria-label="頁面">${nav}</nav>`;
   },
@@ -1638,9 +1611,12 @@ const actions = {
     const sw = (px(P[1], P[4]) + px(P[2], P[5])) / 2, cw = (px(P[0], P[1]) + px(P[3], P[2])) / 2;
     let spine = null;
     if (sw > cw * 0.03) spine = warpCover(c.canvas, [P[1], P[4], P[5], P[2]], 10);
-    S.draft = newBook({ coverData: out.toDataURL('image/jpeg', 0.85),
-      spineData: spine ? spine.toDataURL('image/jpeg', 0.85) : '', spineRatio: spine ? +(spine.width / out.width).toFixed(3) : 0 });
+    const img = { coverData: out.toDataURL('image/jpeg', 0.85),
+      spineData: spine ? spine.toDataURL('image/jpeg', 0.85) : '', spineRatio: spine ? +(spine.width / out.width).toFixed(3) : 0 };
+    const keep = c.keep;
     URL.revokeObjectURL(S.crop.url); S.crop = null;
+    if (keep) { Object.assign(S.draft, img); S.stack.pop(); render(); window.scrollTo(0, 0); return; }
+    S.draft = newBook(img);
     S.stack.pop(); S.stack.push({ name: 'edit' }); render(); window.scrollTo(0, 0);
   },
 
@@ -1764,15 +1740,13 @@ document.addEventListener('change', async e => {
     if (b.currentPage >= b.totalPages) { applyStatus(b, 'done'); toast('恭喜讀完！'); }
     await save(b); render();
   }
-  if (t.id === 'cover-file' && t.files[0]) {
-    try { readForm(); S.draft.coverData = await resizeImage(t.files[0]); render(); }
-    catch (err) { toast('這張圖片讀不出來，請換一張'); }
-  }
-  if ((t.id === 'snap-file' || t.id === 'snap-file2') && t.files[0]) {
+  // 編輯頁換封面也走對準封面的步驟，才能拉平並切出書脊
+  if ((t.id === 'snap-file' || t.id === 'snap-file2' || t.id === 'cover-file') && t.files[0]) {
     try {
+      if (t.id === 'cover-file') readForm();
       const canvas = await loadPhoto(t.files[0]);
       const url = await new Promise(r => canvas.toBlob(b => r(URL.createObjectURL(b)), 'image/jpeg', 0.9));
-      S.crop = { canvas, url, pts: initPts(canvas) };
+      S.crop = { canvas, url, pts: initPts(canvas), keep: t.id === 'cover-file' };
       go({ name: 'crop' });
     } catch (err) { toast('這張照片讀不出來，請換一張'); }
     t.value = '';

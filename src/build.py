@@ -7,7 +7,7 @@ head = '''<!doctype html>
 <meta name="theme-color" content="#5f6a2c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="我的書房">
+<meta name="apple-mobile-web-app-title" content="Marginalia">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
