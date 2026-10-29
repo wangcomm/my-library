@@ -126,7 +126,7 @@ h2 { font-size: 17px; }
 .d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1000px; }
 .d-3d { --bw: min(56vw, 240px); position: relative; width: var(--bw); transform-style: preserve-3d; transform: translateX(8%) rotateY(30deg); }
 .d-edge, .b3-edge { position: absolute; top: .6%; bottom: .6%; left: calc(var(--bw) * -.2); width: calc(var(--bw) * .2); transform-origin: right center; transform: rotateY(-90deg); background: linear-gradient(90deg, rgba(0,0,0,.14), transparent 18%, transparent 82%, rgba(0,0,0,.1)), repeating-linear-gradient(90deg, #f6f6f3 0 1.3px, #dcdcd7 1.3px 2px); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
-.d-3d .cover { z-index: 1; border-radius: 0; transform: translateZ(1px); box-shadow: 0 1px 2px rgba(0,0,0,.14), 0 10px 24px rgba(0,0,0,.12); }
+.d-3d .cover { z-index: 1; border-radius: 0; transform: translateZ(1px); box-shadow: none; outline: 1px solid rgba(0,0,0,.06); }
 .d-3d .cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 55%, rgba(0,0,0,.08)); pointer-events: none; }
 .d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
 .d-cards { display: flex; flex-direction: column; }
@@ -229,7 +229,7 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .crop-poly polygon.sp { fill: rgba(138,90,60,.16); stroke: #8a5a3c; }
 .crop-h.sp::after { border-color: #8a5a3c; }
 .d-3d::before { display: none !important; }
-.d-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(var(--bw) * .2); transform-origin: left center; transform: rotateY(90deg); background-size: 100% 100%; filter: brightness(.9); }
+.d-spine { backface-visibility: hidden; -webkit-backface-visibility: hidden; position: absolute; top: 0; left: 100%; height: 100%; width: calc(var(--bw) * .2); transform-origin: left center; transform: rotateY(90deg); background-size: 100% 100%; filter: brightness(.9); }
 /* 詳情 */
 .detail-hero { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: start; }
 @media (min-width: 640px) { .detail-hero { grid-template-columns: 180px minmax(0, 1fr); gap: 28px; } }
@@ -354,7 +354,9 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 /* 疊起時書脊朝外：右側的書脊轉向前面 */
 .b3-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(var(--bw) * .2); transform-origin: left center; transform: rotateY(90deg); background: #ececec center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); display: flex; justify-content: center; padding-block: 10%; overflow: hidden; }
 .b3-spine span { writing-mode: vertical-rl; font-size: calc(var(--bw) * .075); font-weight: 500; letter-spacing: .08em; color: #2a2a2a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.b3 .cover { box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 8px 18px rgba(0,0,0,.1) !important; }
+.b3 .cover { box-shadow: none !important; outline: 1px solid rgba(0,0,0,.06); }
+/* 陰影加在外層，3D 書本身不放 box-shadow，避免瀏覽器畫出怪方塊 */
+.gc, .d-book { filter: drop-shadow(0 10px 14px rgba(0,0,0,.13)); }
 .gc-no { position: absolute; left: 0; right: 0; top: 100%; margin-top: 10px; text-align: center; font-family: var(--font-label), var(--font-body); font-size: 15px; font-variant-numeric: tabular-nums; transition: opacity .4s; }
 .is-stack .gc-no { opacity: 0; }
 /* 有照片的封面不要疊書背陰影，免得蓋到封面上的字；書的厚度改畫在封面外側 */
