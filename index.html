@@ -345,7 +345,7 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .show { position: relative; }
 #lib-grid .show { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); }
 #lib-grid .show-foot { padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
-.show-stage { position: relative; height: 100%; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.show-stage { position: relative; isolation: isolate; height: 100%; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 0 50%; will-change: transform; perspective: 1000px; }
 /* 每本書都跟點開時一樣：右側往後退、左邊露出書頁厚度（疊起時才轉） */
 .b3 { position: relative; display: block; width: 100%; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.65,0,.25,1); }
@@ -1385,7 +1385,7 @@ window.addEventListener('online', () => Sync.schedule());
 const NAV = [
   { tab: 'library', label: '書庫', sub: '' },
   { tab: 'ranking', label: '排行榜', sub: '總榜・分類榜・年度最愛' },
-  { tab: 'add', label: '新增書籍', sub: '搜尋書名自動帶入' },
+  { tab: 'add', label: '新增書籍', sub: '拍封面加入' },
   { tab: 'settings', label: '我的', sub: '同步・備份・設定' },
 ];
 const Menu = {
