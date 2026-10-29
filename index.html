@@ -125,8 +125,8 @@ h2 { font-size: 17px; }
 .detail-hero.d-sheet { display: flex; flex-direction: column; align-items: stretch; gap: 26px; }
 .d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1000px; }
 .d-3d { --bw: min(56vw, 240px); position: relative; width: var(--bw); transform-style: preserve-3d; transform: translateX(8%) rotateY(30deg); }
-.d-edge { position: absolute; top: .6%; bottom: .6%; left: calc(var(--bw) * -.2); width: calc(var(--bw) * .2); transform-origin: right center; transform: rotateY(-90deg); background: linear-gradient(90deg, rgba(0,0,0,.14), transparent 18%, transparent 82%, rgba(0,0,0,.1)), repeating-linear-gradient(90deg, #f6f6f3 0 1.3px, #dcdcd7 1.3px 2px); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
-.d-back { position: absolute; inset: 0; transform: translateZ(calc(var(--bw) * -.2)); background: #d8d8d8; }
+.d-edge, .b3-edge { position: absolute; top: .6%; bottom: .6%; left: calc(var(--bw) * -.2); width: calc(var(--bw) * .2); transform-origin: right center; transform: rotateY(-90deg); background: linear-gradient(90deg, rgba(0,0,0,.14), transparent 18%, transparent 82%, rgba(0,0,0,.1)), repeating-linear-gradient(90deg, #f6f6f3 0 1.3px, #dcdcd7 1.3px 2px); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
+.d-back, .b3-back { position: absolute; inset: 0; transform: translateZ(calc(var(--bw) * -.2)); background: #d8d8d8; }
 .d-3d .cover { z-index: 1; border-radius: 0; box-shadow: 0 2px 4px rgba(40,30,20,.18), 0 14px 30px rgba(40,30,20,.16); }
 .d-3d .cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 55%, rgba(0,0,0,.08)); pointer-events: none; }
 .d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
@@ -343,51 +343,33 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .home-bar .menu-btn { margin-left: auto; }
 .show { position: relative; }
-.show-stage { position: relative; height: 100%; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; perspective: 1200px; }
-.gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 50% 50%; will-change: transform; }
+#lib-grid .show { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); }
+#lib-grid .show-foot { padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
+.show-stage { position: relative; height: 100%; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 0 50%; will-change: transform; perspective: 1000px; }
+/* 每本書都跟點開時一樣：右側往後退、左邊露出書頁厚度（疊起時才轉） */
+.b3 { position: relative; display: block; width: 100%; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.65,0,.25,1); }
+.is-stack .b3 { transform: rotateY(34deg); }
+.b3 .cover { box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 8px 18px rgba(0,0,0,.1) !important; }
+.gc-no { position: absolute; left: 0; right: 0; top: 100%; margin-top: 10px; text-align: center; font-family: var(--font-label), var(--font-body); font-size: 15px; font-variant-numeric: tabular-nums; transition: opacity .4s; }
+.is-stack .gc-no { opacity: 0; }
 /* 有照片的封面不要疊書背陰影，免得蓋到封面上的字；書的厚度改畫在封面外側 */
 .cover:has(img)::after, .d-3d .cover:has(img)::before { display: none; }
-.gc.filler { cursor: default; }
-.gc.filler, .gc.filler .cover { display: block; }
-.gc.filler .cover::after { display: none; }
 .gc .cover { border-radius: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.07), 0 2px 8px rgba(0,0,0,.08); transition: transform .3s cubic-bezier(.2,.7,.2,1); }
 .gc .cover::after { display: none; }
 .gc .cover .ph { padding: 12% 10%; }
 .gc .cover .ph::before { display: none; }
 .gc img { pointer-events: none; -webkit-user-drag: none; }
-@media (hover: hover) { .gc:hover .cover { transform: scale(1.06); } }
-.show-stage.morph .gc { transition: transform .9s cubic-bezier(.65,0,.25,1), width .9s cubic-bezier(.65,0,.25,1), opacity .6s; }
+.show-stage.morph .gc { transition: transform .9s cubic-bezier(.65,0,.25,1), width .9s cubic-bezier(.65,0,.25,1); }
 .show-foot { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 12px; pointer-events: none; z-index: 5; font-family: var(--font-label), var(--font-body); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); }
 .show-foot button { pointer-events: auto; border: 1px solid var(--ink); background: transparent; border-radius: 999px; height: 26px; padding: 0 10px; font-size: 12px; letter-spacing: 0; text-transform: none; }
 .show-count { font-variant-numeric: tabular-nums; margin-right: 72px; }
 
-/* 排行榜：有厚度的 3D 書，Cover Flow 排列 */
-.flow-wrap { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); display: flex; flex-direction: column; justify-content: center; }
-.flow { --bw: 148px; --bh: 222px; --bt: 26px; position: relative; height: calc(var(--bh) + 96px); perspective: 1100px; perspective-origin: 50% 30%; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-@media (min-width: 640px) { .flow { --bw: 180px; --bh: 270px; --bt: 30px; } }
-@media (min-height: 760px) and (max-width: 639px) { .flow { --bw: 168px; --bh: 252px; --bt: 28px; } }
-.flow:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-.bk-wrap { position: absolute; left: 50%; top: 34px; width: var(--bw); height: var(--bh); margin-left: calc(var(--bw) / -2); padding: 0; border: 0; background: none; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.22,.8,.25,1), opacity .5s; }
-.flow.instant .bk-wrap { transition: none; }
-.bk { position: absolute; inset: 0; transform-style: preserve-3d; }
-.bk-face { position: absolute; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.bk-front { inset: 0; transform: translateZ(calc(var(--bt) / 2)); }
-.bk-front .cover { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
-.bk-back { inset: 0; transform: rotateY(180deg) translateZ(calc(var(--bt) / 2)); background: var(--cloth); filter: brightness(.82); border-radius: 0; }
-.bk-spine { top: 0; left: calc(50% - var(--bt) / 2); width: var(--bt); height: 100%; transform: rotateY(90deg) translateZ(calc(var(--bw) / 2)); background: var(--cloth); background-image: linear-gradient(90deg, rgba(0,0,0,.28), rgba(255,255,255,.12) 45%, rgba(0,0,0,.18)); color: #2a2a2a; display: flex; justify-content: center; padding-block: 12px; overflow: hidden; }
-.bk-spine span { writing-mode: vertical-rl; font-size: 11.5px; font-weight: 500; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bk-pages { top: 3px; left: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bt) - 2px); height: calc(100% - 6px); transform: rotateY(-90deg) translateZ(calc(var(--bw) / 2 - 3px)); background: repeating-linear-gradient(90deg, #faf8f2 0 1px, #dedad1 1px 2px); }
-.bk-top, .bk-bottom { left: 0; top: calc(50% - var(--bt) / 2 + 1px); width: calc(var(--bw) - 3px); height: calc(var(--bt) - 2px); background: repeating-linear-gradient(0deg, #faf8f2 0 1px, #dedad1 1px 2px); }
-.bk-top { transform: rotateX(90deg) translateZ(calc(var(--bh) / 2 - 3px)); }
-.bk-bottom { transform: rotateX(-90deg) translateZ(calc(var(--bh) / 2 - 3px)); }
-.bk-shadow { position: absolute; left: -12%; right: -12%; bottom: -22px; height: 34px; background: radial-gradient(closest-side, rgba(0,0,0,.26), rgba(0,0,0,0)); transform: translateZ(-40px); pointer-events: none; }
-.flow-info { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: end; max-width: 520px; width: 100%; margin: 0 auto; padding: 4px max(20px, env(safe-area-inset-left, 0px)) 0; }
-.fi-no { font-family: var(--font-label), var(--font-body); font-size: 56px; font-weight: 500; line-height: .9; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-.fi-text { display: flex; flex-direction: column; min-width: 0; padding-bottom: 2px; }
-.fi-text b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fi-text span { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fi-score { font-family: var(--font-label), var(--font-body); font-size: 26px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; padding-bottom: 4px; }
-.fi-score small { font-size: 12px; color: var(--muted); margin-left: 2px; }
+/* 排行榜上方的展示 */
+.flow-wrap { display: flex; flex-direction: column; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); }
+.rank-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 max(16px, env(safe-area-inset-left, 0px)); }
+.rank-head .modes { flex: none; }
+.rank-show { flex: 1; min-height: 0; }
 .flow-label { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 0; font-family: var(--font-label), var(--font-body); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
 .flow-label::before, .flow-label::after { content: ""; width: 28px; border-top: 1px solid var(--ink); }
 .row-score { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; }
@@ -417,7 +399,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-5.6px) rotate(-45deg); }
 .screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 8px); min-height: 420px; }
-.flow-wrap.screen { height: calc(100dvh - var(--top-h) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 52px); min-height: 400px; gap: 18px; }
+.flow-wrap.screen { height: min(64dvh, 560px); min-height: 360px; gap: 8px; margin-top: 14px; }
 .shelf-switch { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--ink); background: transparent; color: var(--ink); height: 30px; padding: 0 14px; border-radius: 999px; font-size: 13px; }
 .shelf-switch span { font-size: 9px; }
 #lib-grid.screen .stack, #lib-grid.screen .stack-stage { height: 100%; }
@@ -554,7 +536,7 @@ const DB = {
 const S = {
   books: [], tags: [...DEFAULT_TAGS],
   tab: 'library', stack: [],
-  filter: 'all', tagFilter: null, q: '', libView: 'stack', showMode: 'ring',
+  filter: 'all', tagFilter: null, q: '', libView: 'stack', showMode: 'stack',
   rankTab: 'all', rankTag: null, rankYear: null, shelfIdx: 0, shelfKey: '',
   sbUrl: '', sbKey: '',
   draft: null, crop: null,
@@ -686,7 +668,7 @@ function render() {
     if (layer.hidden || layer.dataset.base !== key) {
       $('#main').innerHTML = views[base.name](base);
       if (base.name === 'library') renderGrid();
-      if (base.name === 'ranking') Flow.mount();
+      if (base.name === 'ranking') mountRank();
       layer.dataset.base = key; layer.scrollTop = 0;
     }
     $('#d-inner').innerHTML = vDetail(v);
@@ -701,7 +683,7 @@ function render() {
   document.body.dataset.mode = v.name === 'ranking' ? 'shelf' : '';
   $('#fab').hidden = !(v.name === 'library' || v.name === 'ranking') || !S.books.length;
   if (v.name === 'library') renderGrid();
-  if (v.name === 'ranking') Flow.mount();
+  if (v.name === 'ranking') mountRank();
   if (v.name === 'crop') Crop.mount();
 }
 
@@ -732,7 +714,7 @@ function vLibrary() {
   const stack = S.libView === 'stack';
   const fl = filterLabel();
   const bar = stack && S.books.length
-    ? `<header class="home-bar"><div class="modes" role="group" aria-label="展示方式">${MODES.map(m => `<button class="pill" data-act="show-mode" data-m="${m.k}" aria-pressed="${S.showMode === m.k}">${m.label}</button>`).join('')}</div>
+    ? `<header class="home-bar">${modePills()}
         <button class="menu-btn" data-act="menu-open" aria-label="打開選單" aria-expanded="false"><span></span><span></span><span></span></button></header>`
     : topbar('我的書庫', `共 ${S.books.length} 本・已讀完 ${count('done')} 本`);
   return `
@@ -766,12 +748,13 @@ function renderGrid() {
   const list = filtered();
   if (S.libView === 'stack' && list.length) {
     const fl = filterLabel();
-    const items = list;
-    el.innerHTML = `<div class="show screen" id="show" tabindex="0" aria-label="封面展示：滑動瀏覽，點封面打開">
-      <div class="show-stage" id="show-stage">${items.map((b, i) => `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${esc(titleOf(b))}">${coverHTML(b)}</button>`).join('')}</div>
+    // 照加入的順序：最早加入的在最左邊
+    const items = [...list].sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+    el.innerHTML = `<div class="show screen" id="show" tabindex="0" aria-label="封面展示：左右滑動瀏覽，點封面打開">
+      <div class="show-stage" id="show-stage">${items.map((b, i) => deckBook(b, i)).join('')}</div>
       <div class="show-foot">${fl ? `<button data-act="clear-filter">${esc(fl)} ✕</button>` : '<span>滑動瀏覽</span>'}<span class="show-count" id="show-count"></span></div>
     </div>`;
-    Show.mount(items);
+    Show.mount(items, 'lib');
     return;
   }
   el.innerHTML = list.length ? `<div class="grid">${list.map((b, i) => `
@@ -1067,8 +1050,7 @@ function rankData() {
 function vRanking() {
   const all = ranked();
   const d = rankData();
-  if (S.shelfKey !== d.key) { S.shelfKey = d.key; S.shelfIdx = 0; }
-  S.shelfIdx = Math.min(S.shelfIdx, Math.max(0, d.list.length - 1));
+  if (S.shelfKey !== d.key) { S.shelfKey = d.key; Show.x = 0; }
   let empty = '', extra = '';
   if (S.rankTab === 'tag') {
     empty = d.tags.length ? `「${esc(S.rankTag)}」還沒有評過分的書。` : '還沒有書標上分類。';
@@ -1082,19 +1064,16 @@ function vRanking() {
   ${topbar('排行榜', `${all.length} 本已評分・依分數自動排名`)}
   <button class="shelf-switch" data-act="menu-open">${{ all: '總榜', tag: '分類榜', year: '年度最愛' }[S.rankTab]}${S.rankTab === 'tag' && S.rankTag ? '・' + esc(S.rankTag) : ''}${S.rankTab === 'year' && S.rankYear ? '・' + S.rankYear : ''}<span aria-hidden="true">▾</span></button>
   ${d.list.length ? `<section class="flow-wrap screen">
-    <p class="flow-label">${esc(d.heading)}</p>
-    <div class="flow instant" id="flow" tabindex="0" aria-label="排行榜：左右滑動切換，點中間的書打開">${d.list.map((b, i) => `
-      <button class="bk-wrap" data-i="${i}" data-book="${b.id}" style="--cloth:${hashColor(titleOf(b))}" aria-label="第 ${i + 1} 名 ${esc(titleOf(b))}">
-        <span class="bk"><span class="bk-face bk-front">${coverHTML(b)}</span><span class="bk-face bk-back"></span><span class="bk-face bk-spine"${b.spineData ? ` style="background-image:url('${b.spineData}');background-size:100% 100%"` : ''}>${b.spineData ? '' : `<span>${esc(titleOf(b))}</span>`}</span><span class="bk-face bk-pages"></span><span class="bk-face bk-top"></span><span class="bk-face bk-bottom"></span></span>
-        <span class="bk-shadow"></span>
-      </button>`).join('')}
+    <div class="rank-head"><p class="flow-label">${esc(d.heading)}</p>${modePills()}</div>
+    <div class="show rank-show" id="show" tabindex="0" aria-label="排行榜：左右滑動瀏覽，點書打開">
+      <div class="show-stage" id="show-stage">${d.list.map((b, i) => deckBook(b, i, i + 1)).join('')}</div>
     </div>
-    <div class="flow-info" id="flow-info"></div>
   </section>
   <p class="section-label list-label">完整名次</p>
   <ol class="rank-list">${d.list.map((b, i) => rankRow(b, i + 1)).join('')}</ol>` : `<p class="notice">${empty}</p>`}
   ${extra}`;
 }
+function mountRank() { if ($('#show')) Show.mount(rankData().list, 'rank'); }
 function rankRow(b, no) {
   return `<li class="rank-row" data-book="${b.id}"><span class="no">${no}</span>${coverHTML(b)}
     <button class="info" data-act="open" data-id="${b.id}"><div class="t">${esc(titleOf(b))}</div><div class="a">${esc(b.author || '')}${S.rankTab !== 'all' && rankOf(b) ? `・總榜 #${rankOf(b)}` : ''}</div></button>
@@ -1102,216 +1081,126 @@ function rankRow(b, no) {
   </li>`;
 }
 
-// ---------- 排行榜：Cover Flow（有厚度的 3D 書） ----------
-const Flow = {
-  list: [],
-  mount() {
-    const view = $('#flow'); if (!view) return;
-    this.list = rankData().list;
-    this.select(S.shelfIdx);
-    requestAnimationFrame(() => requestAnimationFrame(() => view.classList.remove('instant')));
-    let x0 = null, moved = false;
-    view.addEventListener('pointerdown', e => { x0 = e.clientX; moved = false; });
-    view.addEventListener('pointermove', e => { if (x0 !== null && Math.abs(e.clientX - x0) > 8) moved = true; });
-    view.addEventListener('pointerup', e => {
-      if (x0 === null) return;
-      const dx = e.clientX - x0; x0 = null;
-      // 書跟著手指走：往左滑，右邊的書轉到中間
-      if (Math.abs(dx) > 30) this.select(S.shelfIdx + (dx < 0 ? 1 : -1) * Math.max(1, Math.round(Math.abs(dx) / 110)));
-    });
-    view.addEventListener('pointercancel', () => { x0 = null; });
-    view.addEventListener('click', e => {
-      const el = e.target.closest('.bk-wrap'); if (!el || moved) return;
-      const i = +el.dataset.i;
-      if (i === S.shelfIdx) openBook(this.list[i].id, el.querySelector('.bk-front .cover')); else this.select(i);
-    });
-    view.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') { this.select(S.shelfIdx + 1); e.preventDefault(); }
-      if (e.key === 'ArrowLeft') { this.select(S.shelfIdx - 1); e.preventDefault(); }
-      if (e.key === 'Enter') openBook(this.list[S.shelfIdx].id);
-    });
-  },
-  select(i) {
-    if (!$('#flow') || !this.list.length) return;
-    S.shelfIdx = Math.max(0, Math.min(this.list.length - 1, i));
-    this.layout();
-    const b = this.list[S.shelfIdx];
-    $('#flow-info').innerHTML = `<span class="fi-no">${String(S.shelfIdx + 1).padStart(2, '0')}</span>
-      <span class="fi-text"><b>${esc(titleOf(b))}</b><span>${esc(b.author || '')}</span></span>
-      <span class="fi-score">${fmtScore(b.rating)}<small>/10</small></span>`;
-  },
-  layout() {
-    const view = $('#flow'); if (!view) return;
-    const bw = parseFloat(getComputedStyle(view).getPropertyValue('--bw')) || 150;
-    view.querySelectorAll('.bk-wrap').forEach((el, j) => {
-      const d = j - S.shelfIdx, ad = Math.abs(d), sg = Math.sign(d);
-      // 中間那本微微側轉露出書背；左邊的書露出書背，右邊的書露出書頁
-      const x = ad === 0 ? 0 : sg * (bw * 0.66 + (ad - 1) * bw * 0.3);
-      const z = ad === 0 ? 30 : -150 - (ad - 1) * 20;
-      const ry = ad === 0 ? 22 : sg * -64;
-      el.style.transform = `translateX(${x}px) translateZ(${z}px) rotateY(${ry}deg)`;
-      el.style.zIndex = String(100 - ad);
-      el.style.opacity = ad > 6 ? '0' : '1';
-      el.tabIndex = -1;
-    });
-  },
-};
-
-// ---------- 首頁展示：立體環／畫廊 ----------
+// ---------- 書庫／排行榜展示：展開（平排一列）／疊起（立起來斜斜往右上疊） ----------
 const reduceMotion = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-const MODES = [{ k: 'ring', label: '立體環' }, { k: 'gallery', label: '畫廊' }];
+const MODES = [{ k: 'row', label: '展開' }, { k: 'stack', label: '疊起' }];
+function modePills() {
+  return `<div class="modes" role="group" aria-label="展示方式">${MODES.map(m => `<button class="pill" data-act="show-mode" data-m="${m.k}" aria-pressed="${S.showMode === m.k}">${m.label}</button>`).join('')}</div>`;
+}
+function deckBook(b, i, no) {
+  return `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${no ? `第 ${no} 名 ` : ''}${esc(titleOf(b))}">
+    <span class="b3"><span class="b3-back"></span><span class="b3-edge"></span>${coverHTML(b)}</span>${no ? `<span class="gc-no">${String(no).padStart(2, '0')}</span>` : ''}</button>`;
+}
 const Show = {
-  p: 0, v: 0, raf: 0, list: [], drag: null, moved: false, wheelTimer: null, geo: { step: 100 },
-  mount(list) {
+  x: 0, v: 0, raf: 0, list: [], kind: '', drag: null, moved: false, geo: { step: 100, max: 0 },
+  mount(list, kind) {
+    if (kind !== this.kind) { this.kind = kind; this.x = 0; }
     this.list = list;
     cancelAnimationFrame(this.raf); this.raf = 0;
-    const stage = $('#show-stage');
+    const stage = $('#show-stage'); if (!stage) return;
     stage.addEventListener('pointerdown', e => {
       cancelAnimationFrame(this.raf); this.raf = 0;
-      this.drag = { x: e.clientX, y: e.clientY, p: this.p, last: this.axis(0, 0), t: performance.now(), v: 0 };
+      this.drag = { x: e.clientX, y: e.clientY, x0: this.x, last: e.clientX, t: performance.now(), v: 0 };
       this.moved = false;
     });
     stage.addEventListener('pointermove', e => {
       const d = this.drag; if (!d) return;
       const dx = e.clientX - d.x, dy = e.clientY - d.y;
-      if (!this.moved && Math.hypot(dx, dy) > 6) { this.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
+      if (!this.moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) { this.moved = true; try { stage.setPointerCapture(e.pointerId); } catch (_) {} }
       if (!this.moved) return;
-      const a = this.axis(dx, dy), now = performance.now();
-      // 封面跟著手指移動
-      this.p = d.p - a / this.geo.step;
-      d.v = -((a - d.last) / this.geo.step) / Math.max(1, now - d.t); d.last = a; d.t = now;
+      const now = performance.now();
+      // 書跟著手指走
+      this.x = this.clamp(d.x0 - dx);
+      d.v = -(e.clientX - d.last) / Math.max(1, now - d.t); d.last = e.clientX; d.t = now;
       this.draw();
     });
-    const end = () => { const d = this.drag; this.drag = null; if (d && this.moved) this.fling(Math.max(-0.02, Math.min(0.02, d.v))); };
+    const end = () => { const d = this.drag; this.drag = null; if (d && this.moved) this.fling(Math.max(-3, Math.min(3, d.v))); };
     stage.addEventListener('pointerup', end);
     stage.addEventListener('pointercancel', end);
     stage.addEventListener('click', e => {
-      const el = e.target.closest('.gc'); if (!el || this.moved || el.classList.contains('filler')) return;
-      openBook(this.list[+el.dataset.i].id, el);
+      const el = e.target.closest('.gc'); if (!el || this.moved) return;
+      openBook(this.list[+el.dataset.i].id, el.querySelector('.cover'));
     });
     stage.addEventListener('wheel', e => {
-      e.preventDefault();
-      cancelAnimationFrame(this.raf); this.raf = 0;
-      this.p += (e.deltaY + e.deltaX) / (this.geo.step * 1.4);
-      this.draw();
-      clearTimeout(this.wheelTimer); this.wheelTimer = setTimeout(() => this.snap(), 140);
+      // 書庫整個畫面都是展示，上下滾輪也能左右捲；排行榜只吃左右，讓頁面能往下捲
+      const d = kind === 'lib' ? (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) : e.deltaX;
+      if (!d || !this.geo.max) return;
+      e.preventDefault(); cancelAnimationFrame(this.raf); this.raf = 0;
+      this.x = this.clamp(this.x + d); this.draw();
     }, { passive: false });
     $('#show').addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { this.animateTo(Math.round(this.p) + 1); e.preventDefault(); }
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { this.animateTo(Math.round(this.p) - 1); e.preventDefault(); }
-      if (e.key === 'Enter' && e.target.id === 'show' && !this.list[this.index()].filler) openBook(this.list[this.index()].id);
+      if (e.key === 'ArrowRight') { this.animateTo(this.x + this.geo.step); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { this.animateTo(this.x - this.geo.step); e.preventDefault(); }
     });
-    this.draw();
+    this.draw(true);
   },
-  axis(dx, dy) { return S.showMode === 'ring' ? dx - dy * 0.6 : dx + dy * 0.25; },
-  index() { const n = this.list.length; return ((Math.round(this.p) % n) + n) % n; },
+  clamp(x) { return Math.max(0, Math.min(this.geo.max, x)); },
   fling(v) {
-    if (reduceMotion()) { this.snap(); return; }
+    if (reduceMotion()) return;
     let last = performance.now();
     const step = now => {
       const dt = Math.min(40, now - last); last = now;
-      this.p += v * dt; v *= Math.pow(0.93, dt / 16);
-      this.draw();
-      if (Math.abs(v) > 0.0004) this.raf = requestAnimationFrame(step); else this.snap();
+      const nx = this.clamp(this.x + v * dt);
+      v = nx === this.x + v * dt ? v * Math.pow(0.95, dt / 16) : 0;
+      this.x = nx; this.draw();
+      this.raf = Math.abs(v) > 0.02 ? requestAnimationFrame(step) : 0;
     };
     this.raf = requestAnimationFrame(step);
   },
-  snap() { this.animateTo(Math.round(this.p)); },
   animateTo(t) {
-    cancelAnimationFrame(this.raf);
-    if (reduceMotion()) { this.p = t; this.draw(); return; }
+    t = this.clamp(t); cancelAnimationFrame(this.raf);
+    if (reduceMotion()) { this.x = t; this.draw(); return; }
     const step = () => {
-      const diff = t - this.p;
-      this.p = Math.abs(diff) < 0.002 ? t : this.p + diff * 0.16;
+      const diff = t - this.x;
+      this.x = Math.abs(diff) < 0.5 ? t : this.x + diff * 0.18;
       this.draw();
-      this.raf = this.p === t ? 0 : requestAnimationFrame(step);
+      this.raf = this.x === t ? 0 : requestAnimationFrame(step);
     };
     this.raf = requestAnimationFrame(step);
   },
   setMode(m) {
-    if (S.showMode === m) return;
+    if (S.showMode === m || !MODES.some(x => x.k === m)) return;
+    const old = this.geo.step;
     S.showMode = m; DB.setMeta('showMode', m).catch(() => {});
     document.querySelectorAll('.pill[data-m]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === m)));
     const stage = $('#show-stage'); if (!stage) return;
     if (!reduceMotion()) { stage.classList.add('morph'); clearTimeout(this.morphTimer); this.morphTimer = setTimeout(() => stage.classList.remove('morph'), 950); }
-    this.p = Math.round(this.p);
+    // 停在差不多同一本書
+    this.draw(true);
+    this.x = this.clamp(this.x / old * this.geo.step);
     this.draw();
   },
-  // 先算整個圓環（含封面大小）的外框，再整體縮小、置中，保證不超出畫面
-  ringFit(w, h, n) {
-    // 斜放的扁圓：從左下延伸到右上，前面（右下）大、後面（左上）小
-    // 斜度跟著螢幕的對角線走：直的手機比較陡、橫的電腦比較平
-    const al = 21 * Math.PI / 180, be = -Math.atan2(h, w) * 0.85;
-    const make = (R, s) => {
-      const proj = a => {
-        const px = R * Math.sin(a), pz = R * Math.cos(a);
-        const y1 = pz * Math.sin(al), z1 = pz * Math.cos(al);
-        const sc = 0.45 + 0.55 * (Math.cos(a) + 1) / 2;
-        return { x: px * Math.cos(be) - y1 * Math.sin(be), y: px * Math.sin(be) + y1 * Math.cos(be), z: z1, sc };
-      };
-      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-      for (let i = 0; i < 72; i++) {
-        const q = proj(i / 72 * 2 * Math.PI), hw = s * q.sc / 2;
-        // 封面以中心縮放：寬 s、高 1.5s，中心在 (x, y - 0.75s + 0.75s)
-        x0 = Math.min(x0, q.x - hw); x1 = Math.max(x1, q.x + hw);
-        y0 = Math.min(y0, q.y - hw * 1.5); y1 = Math.max(y1, q.y + hw * 1.5);
-      }
-      return { R, s, proj, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, bw: x1 - x0, bh: y1 - y0 };
-    };
-    const pad = 12;
-    const R0 = Math.hypot(w, h) * 0.5;
-    let g = make(R0, R0 * Math.min(0.3, 4.2 / n));
-    for (let t = 0; t < 3; t++) {
-      const fit = Math.min(1, (w - pad * 2) / g.bw, (h - pad * 2) / g.bh);
-      if (fit > 0.995) break;
-      g = make(g.R * fit, g.s * fit);
-    }
-    return g;
+  geom(w, h, n) {
+    const stack = S.showMode === 'stack', pad = 18;
+    const s = stack ? Math.min(w * 0.4, 210, (h - 90) / 1.95) : Math.min(w * 0.3, 170, (h - 80) / 1.7);
+    const step = stack ? s * 0.5 : s * 1.12;
+    const total = (n - 1) * step + s * (stack ? 1.15 : 1);
+    const room = w - pad * 2;
+    return { stack, s, step, base: total <= room ? (w - total) / 2 : pad, max: Math.max(0, total - room) };
   },
-  draw() {
+  draw(measureOnly) {
     const stage = $('#show-stage'); if (!stage) return;
-    const w = stage.clientWidth, h = stage.clientHeight - 30, n = this.list.length, m = S.showMode;
-    const cards = stage.querySelectorAll('.gc');
-    let step = 100;
-    const ring = m === 'ring' ? this.ringFit(w, h, n) : null;
-    cards.forEach((el, i) => {
-      let d = ((i - this.p) % n + n) % n; if (d > n / 2) d -= n;
-      const ad = Math.abs(d);
-      let x, y, s, k = 1, z = 0, o = 1, ry = 0, zi;
-      if (m === 'ring') {
-        // 圓環斜放成 3D，從左下延伸到右上；整個圓環縮放到畫面內
-        const a = d / n * 2 * Math.PI, q = ring.proj(a);
-        s = ring.s; k = q.sc;
-        x = w / 2 + q.x - ring.cx; y = h / 2 + q.y - ring.cy;
-        o = 1;
-        step = ring.R * 2 * Math.PI / Math.max(n, 6) * 0.8; zi = Math.round(500 + q.z);
-      } else {
-        // 畫廊：平放的圓，從側面看——前面的大、後面的小，全部排在同一條水平線上
-        const a = d / n * 2 * Math.PI, dep = (Math.cos(a) + 1) / 2;
-        const R = w * 0.62;
-        s = Math.min(w * 0.26, h * 0.3, 230, R * 2 * Math.PI / n * 0.9);
-        k = 0.22 + 0.78 * Math.pow(dep, 1.6);
-        x = w / 2 + R * Math.sin(a); y = h / 2 - (1 - dep) * h * 0.02;
-        step = R * 2 * Math.PI / n; zi = Math.round(100 + dep * 400);
-      }
-      el.style.width = s + 'px';
-      el.style.transform = `translate3d(${x - s / 2}px, ${y - s * 0.75}px, ${z}px) rotateY(${ry}deg) scale(${k})`;
-      el.style.opacity = String(o);
-      el.style.zIndex = String(zi);
-      el.style.visibility = o <= 0.01 ? 'hidden' : 'visible';
+    const w = stage.clientWidth, h = stage.clientHeight, n = this.list.length;
+    const g = this.geom(w, h, n);
+    this.geo = g; this.x = this.clamp(this.x);
+    stage.classList.toggle('is-stack', g.stack);
+    stage.querySelectorAll('.gc').forEach((el, i) => {
+      const left = g.base + i * g.step - this.x, cx = left + g.s / 2;
+      // 疊起：一本接一本往右上方排，越後面越小一點
+      const rel = Math.max(-0.7, Math.min(0.7, (cx - w / 2) / w));
+      const y = g.stack ? h * 0.52 - rel * Math.min(h, w) * 0.3 : h * 0.47;
+      const k = g.stack ? Math.min(1.04, 1 - 0.3 * rel) : 1;
+      el.style.width = g.s + 'px';
+      el.style.setProperty('--bw', g.s + 'px');
+      el.style.transform = `translate3d(${left}px, ${y - g.s * 0.75}px, 0) scale(${k})`;
+      el.style.zIndex = String(g.stack ? 1000 - i : 1);
+      el.style.visibility = left > w + g.s || left < -g.s * 2 ? 'hidden' : 'visible';
     });
-    this.geo.step = step;
     const c = $('#show-count');
-    // 計數只算真正的書，停在空白書封時顯示前一本
-    if (c) {
-      const real = this.list.filter(b => !b.filler).length;
-      let j = this.index(); while (this.list[j] && this.list[j].filler && j > 0) j--;
-      const no = this.list.slice(0, j + 1).filter(b => !b.filler).length || 1;
-      c.textContent = `${String(no).padStart(2, '0')} — ${String(real).padStart(2, '0')}`;
-    }
+    if (c) c.textContent = `${String(n).padStart(2, '0')} 本`;
   },
 };
-window.addEventListener('resize', () => { Show.draw(); Flow.layout(); });
+window.addEventListener('resize', () => Show.draw());
 
 // ---------- 我的 ----------
 function vSettings() {
@@ -1614,7 +1503,7 @@ const actions = {
   tab: el => setTab(el.dataset.tab),
   back: () => back(),
   open: el => openBook(el.dataset.id, el.closest('[data-book]') || el),
-  filter: el => { S.filter = el.dataset.f; Show.p = 0; render(); Menu.refresh(); },
+  filter: el => { S.filter = el.dataset.f; Show.x = 0; render(); Menu.refresh(); },
   edit: el => { S.draft = JSON.parse(JSON.stringify(byId(el.dataset.id))); go({ name: 'edit' }); },
   manual: () => { S.draft = newBook(); go({ name: 'edit' }); },
   'crop-auto': () => { S.crop.pts = initPts(S.crop.canvas); Crop.place(); },
@@ -1660,10 +1549,10 @@ const actions = {
   },
   'menu-open': () => Menu.open(),
   'menu-close': () => Menu.close(),
-  'clear-filter': () => { S.filter = 'all'; S.tagFilter = null; S.q = ''; Show.p = 0; render(); },
+  'clear-filter': () => { S.filter = 'all'; S.tagFilter = null; S.q = ''; Show.x = 0; render(); },
   'rating-clear': async () => { const b = byId(current().id); b.rating = null; await save(b); render(); },
   'lib-view': el => { S.libView = el.dataset.v; DB.setMeta('libView', S.libView).catch(() => {}); render(); Menu.refresh(); },
-  'tag-filter': el => { S.tagFilter = S.tagFilter === el.dataset.tag ? null : el.dataset.tag; Show.p = 0; render(); Menu.refresh(); },
+  'tag-filter': el => { S.tagFilter = S.tagFilter === el.dataset.tag ? null : el.dataset.tag; Show.x = 0; render(); Menu.refresh(); },
   'show-mode': el => Show.setMode(el.dataset.m),
   'kobo-help': () => { const h = $('#kobo-steps'); if (h) h.hidden = !h.hidden; },
   'sb-save': async () => {
@@ -1721,7 +1610,7 @@ document.addEventListener('click', e => {
 let notesTimer;
 document.addEventListener('input', e => {
   const t = e.target;
-  if (t.id === 'menu-q') { S.q = t.value; Show.p = 0; if (current().name === 'library') render(); }
+  if (t.id === 'menu-q') { S.q = t.value; Show.x = 0; if (current().name === 'library') render(); }
   if (t.id === 'rating') {
     const v = +t.value, num = $('#score-num');
     t.style.setProperty('--p', `${(v - 1) / 9 * 100}%`);
@@ -1806,8 +1695,8 @@ document.addEventListener('submit', async e => {
     S.books = S.books.filter(b => !b.demo);
     S.tags = (await DB.getMeta('tags')) || [...DEFAULT_TAGS];
     S.libView = (await DB.getMeta('libView')) || 'stack';
-    S.showMode = (await DB.getMeta('showMode')) || 'ring';
-    if (!MODES.some(m => m.k === S.showMode)) S.showMode = 'ring';
+    S.showMode = (await DB.getMeta('showMode')) || 'stack';
+    if (!MODES.some(m => m.k === S.showMode)) S.showMode = 'stack';
     const sb = (await DB.getMeta('sb')) || {};
     S.sbUrl = sb.url || ''; S.sbKey = sb.key || '';
   } catch (e) { S.books = []; }
