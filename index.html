@@ -349,7 +349,11 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .gc { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: none; transform-origin: 0 50%; will-change: transform; perspective: 1000px; }
 /* 每本書都跟點開時一樣：右側往後退、左邊露出書頁厚度（疊起時才轉） */
 .b3 { position: relative; display: block; width: 100%; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.65,0,.25,1); }
-.is-stack .b3 { transform: rotateY(34deg); }
+.is-stack .b3 { transform: rotateY(-34deg); }
+.b3-edge { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+/* 疊起時書脊朝外：右側的書脊轉向前面 */
+.b3-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(var(--bw) * .2); transform-origin: left center; transform: rotateY(90deg); background: #ececec center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); display: flex; justify-content: center; padding-block: 10%; overflow: hidden; }
+.b3-spine span { writing-mode: vertical-rl; font-size: calc(var(--bw) * .075); font-weight: 500; letter-spacing: .08em; color: #2a2a2a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .b3 .cover { box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 8px 18px rgba(0,0,0,.1) !important; }
 .gc-no { position: absolute; left: 0; right: 0; top: 100%; margin-top: 10px; text-align: center; font-family: var(--font-label), var(--font-body); font-size: 15px; font-variant-numeric: tabular-nums; transition: opacity .4s; }
 .is-stack .gc-no { opacity: 0; }
@@ -1089,7 +1093,7 @@ function modePills() {
 }
 function deckBook(b, i, no) {
   return `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${no ? `第 ${no} 名 ` : ''}${esc(titleOf(b))}">
-    <span class="b3"><span class="b3-back"></span><span class="b3-edge"></span>${coverHTML(b)}</span>${no ? `<span class="gc-no">${String(no).padStart(2, '0')}</span>` : ''}</button>`;
+    <span class="b3"><span class="b3-back"></span><span class="b3-edge"></span>${coverHTML(b)}<span class="b3-spine"${b.spineData ? ` style="background-image:url('${b.spineData}')"` : ''}>${b.spineData ? '' : `<span>${esc(titleOf(b))}</span>`}</span></span>${no ? `<span class="gc-no">${String(no).padStart(2, '0')}</span>` : ''}</button>`;
 }
 const Show = {
   x: 0, v: 0, raf: 0, list: [], kind: '', drag: null, moved: false, geo: { step: 100, max: 0 },
