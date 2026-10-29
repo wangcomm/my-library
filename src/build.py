@@ -10,7 +10,7 @@ head = '''<!doctype html>
 <meta name="apple-mobile-web-app-title" content="Marginalia">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-64.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="config.js"></script>

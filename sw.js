@@ -1,6 +1,6 @@
 // 離線快取：App 本體走快取優先，搜書 API 一律走網路
-const CACHE = 'library-v23';
-const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
+const CACHE = 'library-v24';
+const SHELL = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'icon-64.png', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))));
