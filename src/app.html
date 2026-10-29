@@ -112,8 +112,7 @@ h2 { font-size: 17px; }
 .d-book { position: relative; display: flex; justify-content: center; padding: 6px 0 18px; perspective: 1000px; }
 .d-3d { --bw: min(56vw, 240px); position: relative; width: var(--bw); transform-style: preserve-3d; transform: translateX(8%) rotateY(30deg); }
 .d-edge, .b3-edge { position: absolute; top: .6%; bottom: .6%; left: calc(var(--bw) * -.2); width: calc(var(--bw) * .2); transform-origin: right center; transform: rotateY(-90deg); background: linear-gradient(90deg, rgba(0,0,0,.14), transparent 18%, transparent 82%, rgba(0,0,0,.1)), repeating-linear-gradient(90deg, #f6f6f3 0 1.3px, #dcdcd7 1.3px 2px); box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
-.d-back, .b3-back { position: absolute; inset: 0; transform: translateZ(calc(var(--bw) * -.2)); background: #d8d8d8; }
-.d-3d .cover { z-index: 1; border-radius: 0; box-shadow: 0 2px 4px rgba(40,30,20,.18), 0 14px 30px rgba(40,30,20,.16); }
+.d-3d .cover { z-index: 1; border-radius: 0; transform: translateZ(1px); box-shadow: 0 1px 2px rgba(0,0,0,.14), 0 10px 24px rgba(0,0,0,.12); }
 .d-3d .cover::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 7%; z-index: 2; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(255,255,255,.14) 55%, rgba(0,0,0,.08)); pointer-events: none; }
 .d-floor { position: absolute; left: 50%; bottom: 4px; width: min(50vw, 220px); height: 18px; transform: translateX(-46%); background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(3px); }
 .d-cards { display: flex; flex-direction: column; }
@@ -160,8 +159,9 @@ h2 { font-size: 17px; }
 
 /* 書籍頁浮層：背景是虛化的原畫面，書封固定，只有資料往上滑 */
 body.d-open { overflow: hidden; }
+body.d-open .app .gc { opacity: .2; transition: opacity .45s; }
 body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); pointer-events: none; user-select: none; transition: filter .45s, transform .45s; }
-.d-layer { position: fixed; inset: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: color-mix(in srgb, var(--bg) 30%, transparent); }
+.d-layer { position: fixed; inset: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: color-mix(in srgb, var(--bg) 82%, transparent); }
 .d-layer[hidden] { display: none; }
 .d-inner { max-width: 1000px; margin: 0 auto; padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
 .d-inner .top { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 4; max-width: 1000px; margin: 0 auto; padding-inline: 16px; pointer-events: none; }
@@ -763,7 +763,7 @@ function vDetail(v) {
   return `
   <div class="top"><button class="back" data-act="back">‹ 返回</button><button class="btn" data-act="edit" data-id="${b.id}">編輯</button></div>
   <section class="detail-hero d-sheet" data-book="${b.id}">
-    <div class="d-book"><div class="d-3d${b.spineData ? ' has-spine' : ''}"><span class="d-back"></span><span class="d-edge"></span>${coverHTML(b)}${b.spineData ? `<span class="d-spine" style="background-image:url('${b.spineData}')"></span>` : ''}</div><span class="d-floor" aria-hidden="true"></span></div>
+    <div class="d-book"><div class="d-3d${b.spineData ? ' has-spine' : ''}"><span class="d-edge"></span>${coverHTML(b)}${b.spineData ? `<span class="d-spine" style="background-image:url('${b.spineData}')"></span>` : ''}</div><span class="d-floor" aria-hidden="true"></span></div>
     <div class="d-cards">
       <article class="paper p-title">
         <h1>${esc(zh || '未命名')}</h1>
@@ -1079,7 +1079,7 @@ function modePills() {
 }
 function deckBook(b, i, no) {
   return `<button class="gc" data-i="${i}" data-book="${b.id}" aria-label="${no ? `第 ${no} 名 ` : ''}${esc(titleOf(b))}">
-    <span class="b3"><span class="b3-back"></span><span class="b3-edge"></span>${coverHTML(b)}<span class="b3-spine"${b.spineData ? ` style="background-image:url('${b.spineData}')"` : ''}>${b.spineData ? '' : `<span>${esc(titleOf(b))}</span>`}</span></span>${no ? `<span class="gc-no">${String(no).padStart(2, '0')}</span>` : ''}</button>`;
+    <span class="b3"><span class="b3-edge"></span>${coverHTML(b)}<span class="b3-spine"${b.spineData ? ` style="background-image:url('${b.spineData}')"` : ''}>${b.spineData ? '' : `<span>${esc(titleOf(b))}</span>`}</span></span>${no ? `<span class="gc-no">${String(no).padStart(2, '0')}</span>` : ''}</button>`;
 }
 const Show = {
   x: 0, v: 0, raf: 0, list: [], kind: '', drag: null, moved: false, geo: { step: 100, max: 0 },
