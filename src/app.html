@@ -172,6 +172,13 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .d-inner .d-floor { bottom: -14px; }
 .d-inner .d-cards { position: relative; z-index: 2; margin-top: calc(64px + min(84vw, 360px) + 40px); }
 .d-inner .d-more { position: relative; z-index: 2; }
+/* 手機：書固定在上面，詳細資訊只在書下方的區域裡捲動，不蓋到書 */
+@media (max-width: 759px) {
+  .d-3d { --bw: min(44vw, 200px); }
+  body.d-open::before { content: ''; position: fixed; inset: 0; z-index: 19; background: color-mix(in srgb, var(--bg) 82%, transparent); }
+  .d-layer { background: transparent; border-top: 1px solid var(--line); }
+  .d-inner .d-cards { margin-top: 18px; }
+}
 @media (min-width: 760px) {
   .d-inner .d-book { left: 50%; right: auto; width: min(50vw, 500px); top: 110px; }
   .d-inner .d-cards { margin-top: 80px; max-width: calc(50% - 20px); }
@@ -725,13 +732,11 @@ function vLibrary() {
 // 書不多時，用沒有書名的空白書封把展示補滿（只是裝飾，點了沒反應，不會存進書庫）
 // 手機版：詳細資訊從書的下緣開始，不壓到書
 function fitDetail() {
-  const bk = $('.d-inner .d-3d'), cards = $('.d-inner .d-cards'), layer = $('#d-layer');
-  if (!bk || !cards) return;
-  cards.style.marginTop = '';
+  const bk = $('.d-inner .d-3d'), layer = $('#d-layer');
+  if (!bk) return;
+  layer.style.top = '';
   if (innerWidth >= 760) return;
-  const cur = parseFloat(getComputedStyle(cards).marginTop) || 0;
-  const want = bk.getBoundingClientRect().bottom + 30;
-  cards.style.marginTop = Math.round(cur + want - (cards.getBoundingClientRect().top + layer.scrollTop)) + 'px';
+  layer.style.top = Math.round(bk.getBoundingClientRect().bottom + 26) + 'px';
 }
 addEventListener('resize', fitDetail);
 
