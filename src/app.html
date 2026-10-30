@@ -202,6 +202,7 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .add-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 .pick-btn { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 22px 18px 18px; min-height: 168px; justify-content: flex-end; border: 1px solid var(--ink); border-radius: 2px; background: var(--surface); cursor: pointer; }
 .pick-btn.main { background: var(--ink); color: var(--bg); }
+.paste-zone { font: inherit; text-align: left; width: 100%; }
 .pick-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .pick-btn .pi { margin-bottom: auto; }
 .pick-btn b { font-size: 18px; }
@@ -335,6 +336,7 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 .pill { flex: none; height: 30px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font-family: var(--font-label), var(--font-body); font-size: 13px; transition: background .25s, color .25s; }
 .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .home-bar .menu-btn { margin-left: auto; }
+.home-title { font-size: 15px; font-weight: 600; letter-spacing: .06em; }
 .show { position: relative; }
 #lib-grid .show { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))) calc(-1 * max(16px, env(safe-area-inset-right, 0px))); }
 #lib-grid .show-foot { padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
@@ -343,6 +345,7 @@ textarea { min-height: 84px; resize: vertical; line-height: 1.7; }
 /* 每本書都跟點開時一樣：右側往後退、左邊露出書頁厚度（疊起時才轉） */
 .b3 { position: relative; display: block; width: 100%; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.65,0,.25,1); }
 .is-stack .b3 { transform: rotateY(-34deg); }
+.is-ring .b3 { transition: none; }
 .b3-edge { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 /* 疊起時書脊朝外：右側的書脊轉向前面 */
 .b3-spine { position: absolute; top: 0; left: 100%; height: 100%; width: calc(var(--bw) * .2); transform-origin: left center; transform: rotateY(90deg); background: #ececec center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); display: flex; justify-content: center; padding-block: 10%; overflow: hidden; }
@@ -713,7 +716,7 @@ function vLibrary() {
   const stack = S.libView === 'stack';
   const fl = filterLabel();
   const bar = stack && S.books.length
-    ? `<header class="home-bar">${modePills()}
+    ? `<header class="home-bar"><span class="home-title">我的書庫</span>
         <button class="menu-btn" data-act="menu-open" aria-label="打開選單" aria-expanded="false"><span></span><span></span><span></span></button></header>`
     : topbar('我的書庫', `共 ${S.books.length} 本・已讀完 ${count('done')} 本`);
   return `
@@ -875,13 +878,35 @@ function readForm() {
 // ---------- 新增（拍封面） ----------
 function vAdd() {
   return `
-  ${topbar('新增書籍', '拍下封面，再填入書名和作者')}
+  ${topbar('新增書籍', '放上封面照片，再填入書名和作者')}
   <div class="add-pick">
-    <label class="pick-btn main"><input type="file" id="snap-file" accept="image/*" capture="environment"><span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg></span><b>拍封面</b><small>直接開相機</small></label>
-    <label class="pick-btn"><input type="file" id="snap-file2" accept="image/*"><span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16"/><path d="M4 16l5-5 4 4 2-2 5 5"/><circle cx="15.5" cy="8.5" r="1.4"/></svg></span><b>從相簿選</b><small>選已經拍好的照片</small></label>
+    <button class="pick-btn main paste-zone" data-act="paste-img"><span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="4" width="12" height="16"/><path d="M9 4V2.8h6V4M9 10h6M9 13.5h6M9 17h4"/></svg></span><b>貼上圖片</b><small>複製圖片後按 ⌘V／Ctrl+V，也可以拖進來</small></button>
+    <label class="pick-btn"><input type="file" id="snap-file2" accept="image/*"><span class="pi" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16"/><path d="M4 16l5-5 4 4 2-2 5 5"/><circle cx="15.5" cy="8.5" r="1.4"/></svg></span><b>選擇圖片</b><small>從相簿或電腦裡的檔案選</small></label>
   </div>
   <button class="btn ghost block add-manual" data-act="manual">不放封面，直接手動新增</button>`;
 }
+
+// 進到「對準封面」：keep = 編輯頁換封面（保留原本填的資料）
+async function startCrop(file, keep) {
+  try {
+    const canvas = await loadPhoto(file);
+    const url = await new Promise(r => canvas.toBlob(b => r(URL.createObjectURL(b)), 'image/jpeg', 0.9));
+    S.crop = { canvas, url, pts: initPts(canvas), keep };
+    go({ name: 'crop' });
+  } catch (err) { toast('這張圖片讀不出來，請換一張'); }
+}
+// 電腦：在新增書籍或編輯頁直接貼上／拖進圖片
+function imageFrom(list) { return [...(list || [])].map(x => x.getAsFile ? (x.kind === 'file' ? x.getAsFile() : null) : x).find(f => f && /^image\//.test(f.type)); }
+function pastedImage(file) {
+  const v = current().name;
+  if (!file || (v !== 'add' && v !== 'edit')) return false;
+  if (v === 'edit') readForm();
+  startCrop(file, v === 'edit');
+  return true;
+}
+document.addEventListener('paste', e => { if (pastedImage(imageFrom(e.clipboardData && e.clipboardData.items))) e.preventDefault(); });
+document.addEventListener('dragover', e => { if (['add', 'edit'].includes(current().name)) e.preventDefault(); });
+document.addEventListener('drop', e => { if (pastedImage(imageFrom(e.dataTransfer && e.dataTransfer.files))) e.preventDefault(); });
 
 // 讀進照片（最長邊 1600px），自動猜封面四個角
 function loadPhoto(file) {
@@ -1131,7 +1156,8 @@ const Show = {
     });
     this.draw(true);
   },
-  clamp(x) { return Math.max(0, Math.min(this.geo.max, x)); },
+  // 書庫是立體環，可以一直轉；排行榜是一列，到頭就停
+  clamp(x) { return this.kind === 'lib' ? x : Math.max(0, Math.min(this.geo.max, x)); },
   fling(v) {
     if (reduceMotion()) return;
     let last = performance.now();
@@ -1175,9 +1201,49 @@ const Show = {
     const room = w - pad * 2;
     return { stack, s, step, base: total <= room ? (w - total) / 2 : pad, max: Math.max(0, total - room) };
   },
+  // 立體環：書站在一個水平的圓上，從斜上方看；先算整個環的外框，再縮放到畫面裡，保證不超出去
+  ringGeom(w, h, n) {
+    // 直的手機從比較上面往下看，環看起來比較圓；書多時讓書互相疊一點，書才不會變太小
+    const s0 = 100, sinT = Math.max(0.3, Math.min(0.55, h / w * 0.27)), pad = 14;
+    const gap = Math.max(0.5, 1.08 - Math.max(0, n - 12) * 0.022);
+    const R = Math.max(n * s0 * gap / (2 * Math.PI), n > 1 ? s0 * 0.75 : 0);
+    const f = Math.max(R, s0) * 3.4;
+    const proj = a => {
+      const X = R * Math.sin(a), Z = R * Math.cos(a), k = f / (f - Z);
+      return { x: X * k, y: Z * sinT * k, k, z: Z };
+    };
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    const N = n > 1 ? 72 : 1;
+    for (let i = 0; i < N; i++) {
+      const q = proj(i / N * 2 * Math.PI), hw = s0 * q.k / 2;
+      x0 = Math.min(x0, q.x - hw); x1 = Math.max(x1, q.x + hw);
+      y0 = Math.min(y0, q.y - hw * 1.5); y1 = Math.max(y1, q.y + hw * 1.5);
+    }
+    const F = Math.min((w - pad * 2) / (x1 - x0), (h - pad * 2) / (y1 - y0), 2.6);
+    return { ring: true, s0, R, proj, F, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, step: Math.max(36, 2 * Math.PI * R * F / Math.max(n, 1)), max: Infinity };
+  },
+  drawRing(stage, w, h, n) {
+    const g = this.ringGeom(w, h, n);
+    this.geo = g;
+    stage.classList.add('is-ring');
+    const p = this.x / g.step;
+    stage.querySelectorAll('.gc').forEach((el, i) => {
+      const a = (i - p) / n * 2 * Math.PI, q = g.proj(a);
+      const s = g.s0 * q.k * g.F;
+      const x = w / 2 + (q.x - g.cx) * g.F, y = h / 2 + (q.y - g.cy) * g.F;
+      el.style.width = s + 'px';
+      el.style.setProperty('--bw', s + 'px');
+      el.style.transform = `translate3d(${x - s / 2}px, ${y - s * 0.75}px, 0)`;
+      el.style.zIndex = String(Math.round(500 + q.z));
+      el.style.visibility = 'visible';
+      // 兩側的書跟著圓弧轉：右邊露出書頁、左邊露出書脊；前後的書正對畫面
+      el.firstElementChild.style.transform = `rotateY(${(Math.sin(a) * 42).toFixed(1)}deg)`;
+    });
+  },
   draw(measureOnly) {
     const stage = $('#show-stage'); if (!stage) return;
     const w = stage.clientWidth, h = stage.clientHeight, n = this.list.length;
+    if (this.kind === 'lib') { this.drawRing(stage, w, h, n); const c = $('#show-count'); if (c) c.textContent = `${String(n).padStart(2, '0')} 本`; return; }
     const g = this.geom(w, h, n);
     this.geo = g; this.x = this.clamp(this.x);
     stage.classList.toggle('is-stack', g.stack);
@@ -1504,6 +1570,16 @@ const actions = {
   edit: el => { S.draft = JSON.parse(JSON.stringify(byId(el.dataset.id))); go({ name: 'edit' }); },
   manual: () => { S.draft = newBook(); go({ name: 'edit' }); },
   'crop-auto': () => { S.crop.pts = initPts(S.crop.canvas); Crop.place(); },
+  // 點「貼上圖片」：讀剪貼簿（手機也能用，瀏覽器會先問一次）
+  'paste-img': async () => {
+    try {
+      for (const item of await navigator.clipboard.read()) {
+        const type = item.types.find(t => t.startsWith('image/'));
+        if (type) { const blob = await item.getType(type); startCrop(new File([blob], 'paste', { type }), false); return; }
+      }
+      toast('剪貼簿裡沒有圖片，先複製一張圖片再試');
+    } catch (e) { toast('請按 ⌘V／Ctrl+V 貼上，或改用「選擇圖片」'); }
+  },
   'crop-ok': () => {
     const c = S.crop, P = c.pts, out = warpCover(c.canvas, P.slice(0, 4));
     // 書脊：綠點右邊到咖啡色點那一塊，太窄就當作沒有書脊
@@ -1641,14 +1717,8 @@ document.addEventListener('change', async e => {
     await save(b); render();
   }
   // 編輯頁換封面也走對準封面的步驟，才能拉平並切出書脊
-  if ((t.id === 'snap-file' || t.id === 'snap-file2' || t.id === 'cover-file') && t.files[0]) {
-    try {
-      if (t.id === 'cover-file') readForm();
-      const canvas = await loadPhoto(t.files[0]);
-      const url = await new Promise(r => canvas.toBlob(b => r(URL.createObjectURL(b)), 'image/jpeg', 0.9));
-      S.crop = { canvas, url, pts: initPts(canvas), keep: t.id === 'cover-file' };
-      go({ name: 'crop' });
-    } catch (err) { toast('這張照片讀不出來，請換一張'); }
+  if ((t.id === 'snap-file2' || t.id === 'cover-file') && t.files[0]) {
+    await startCrop(t.files[0], t.id === 'cover-file');
     t.value = '';
   }
   if (t.id === 'kobo-file' && t.files[0]) { importKobo(t.files[0]); t.value = ''; }
