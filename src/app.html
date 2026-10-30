@@ -161,26 +161,28 @@ h2 { font-size: 17px; }
 body.d-open { overflow: hidden; }
 body.d-open .app .gc { opacity: .2; transition: opacity .45s; }
 body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); pointer-events: none; user-select: none; transition: filter .45s, transform .45s; }
-.d-layer { position: fixed; inset: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: color-mix(in srgb, var(--bg) 82%, transparent); }
+/* 書和上方按鈕放在 d-fixed，不放進會捲動的 d-scroll 裡（iPhone 的 Safari 會把捲動區裡的固定元素裁掉） */
+.d-scroll { position: absolute; inset: 0; z-index: 2; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.d-fixed { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.d-layer { position: fixed; inset: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 82%, transparent); }
 .d-layer[hidden] { display: none; }
 .d-inner { max-width: 1000px; margin: 0 auto; padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
-.d-inner .top { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 4; max-width: 1000px; margin: 0 auto; padding-inline: 16px; pointer-events: none; }
-.d-inner .top > * { pointer-events: auto; }
-.d-inner .back { background: var(--surface); border-radius: 999px; padding: 6px 14px; box-shadow: var(--shadow); }
+.d-fixed .top { position: fixed; display: flex; justify-content: space-between; align-items: center; min-height: var(--top-h); top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 4; max-width: 1000px; margin: 0 auto; padding-inline: 16px; pointer-events: none; }
+.d-fixed .top > * { pointer-events: auto; }
+.d-fixed .back { background: var(--surface); border-radius: 999px; padding: 6px 14px; box-shadow: var(--shadow); }
 .d-inner .detail-hero.d-sheet { display: block; animation: none; }
-.d-inner .d-book { position: fixed; z-index: 0; top: calc(env(safe-area-inset-top, 0px) + 64px); left: 0; right: 0; padding: 0; pointer-events: none; }
-.d-inner .d-floor { bottom: -14px; }
+.d-fixed .d-book { position: fixed; z-index: 0; top: calc(env(safe-area-inset-top, 0px) + 64px); left: 0; right: 0; padding: 0; pointer-events: none; }
+.d-fixed .d-floor { bottom: -14px; }
 .d-inner .d-cards { position: relative; z-index: 2; margin-top: calc(64px + min(84vw, 360px) + 40px); }
 .d-inner .d-more { position: relative; z-index: 2; }
 /* 手機：書固定在上面，詳細資訊只在書下方的區域裡捲動，不蓋到書 */
 @media (max-width: 759px) {
   .d-3d { --bw: min(44vw, 200px); }
-  body.d-open::before { content: ''; position: fixed; inset: 0; z-index: 19; background: color-mix(in srgb, var(--bg) 82%, transparent); }
-  .d-layer { background: transparent; border-top: 1px solid var(--line); }
+  .d-scroll { border-top: 1px solid var(--line); }
   .d-inner .d-cards { margin-top: 18px; }
 }
 @media (min-width: 760px) {
-  .d-inner .d-book { left: 50%; right: auto; width: min(50vw, 500px); top: 110px; }
+  .d-fixed .d-book { left: 50%; right: auto; width: min(50vw, 500px); top: 110px; }
   .d-inner .d-cards { margin-top: 80px; max-width: calc(50% - 20px); }
 }
 
@@ -475,7 +477,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 </style>
 
 <div class="app"><main id="main" aria-live="polite"></main></div>
-<div class="d-layer" id="d-layer" hidden><div class="d-inner" id="d-inner"></div></div>
+<div class="d-layer" id="d-layer" hidden><div class="d-scroll" id="d-scroll"><div class="d-inner" id="d-inner"></div></div><div class="d-fixed" id="d-fixed"></div></div>
 <button class="fab" id="fab" data-act="tab" data-tab="add" aria-label="新增書籍" hidden><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 <div class="drawer" id="drawer" hidden>
   <div class="drawer-backdrop" data-act="menu-close"></div>
@@ -631,7 +633,7 @@ function transition(update, dir = 'forward', fromCover = null, bookId = null) {
   const t = document.startViewTransition(() => {
     if (fromCover) fromCover.style.viewTransitionName = '';
     done();
-    const target = dir === 'back' ? findCover(bookId) : $('.detail-hero .cover');
+    const target = dir === 'back' ? findCover(bookId) : $('#d-fixed .d-3d .cover');
     if (target && (fromCover || dir === 'back')) target.style.viewTransitionName = 'book-cover';
   });
   t.finished.finally(() => { document.querySelectorAll('.cover').forEach(c => { c.style.viewTransitionName = ''; }); });
@@ -671,16 +673,17 @@ function render() {
       $('#main').innerHTML = views[base.name](base);
       if (base.name === 'library') renderGrid();
       if (base.name === 'ranking') mountRank();
-      layer.dataset.base = key; layer.scrollTop = 0;
+      layer.dataset.base = key; $('#d-scroll').scrollTop = 0;
     }
     $('#d-inner').innerHTML = vDetail(v);
     layer.hidden = false; document.body.classList.add('d-open');
-    fitDetail(); $('.d-inner .d-3d img')?.addEventListener('load', fitDetail);
+    $('#d-fixed').replaceChildren(...['.top', '.d-book'].map(q => $('#d-inner ' + q)).filter(Boolean));
+    fitDetail(); $('#d-fixed .d-3d img')?.addEventListener('load', fitDetail);
     document.body.dataset.mode = '';
     $('#fab').hidden = true;
     return;
   }
-  layer.hidden = true; layer.dataset.base = ''; $('#d-inner').innerHTML = ''; document.body.classList.remove('d-open');
+  layer.hidden = true; layer.dataset.base = ''; $('#d-inner').innerHTML = ''; $('#d-fixed').innerHTML = ''; document.body.classList.remove('d-open');
   $('#main').innerHTML = views[v.name](v);
   document.body.dataset.mode = v.name === 'ranking' ? 'shelf' : '';
   $('#fab').hidden = !(v.name === 'library' || v.name === 'ranking') || !S.books.length;
@@ -735,11 +738,11 @@ function vLibrary() {
 // 書不多時，用沒有書名的空白書封把展示補滿（只是裝飾，點了沒反應，不會存進書庫）
 // 手機版：詳細資訊從書的下緣開始，不壓到書
 function fitDetail() {
-  const bk = $('.d-inner .d-3d'), layer = $('#d-layer');
+  const bk = $('#d-fixed .d-3d'), sc = $('#d-scroll');
   if (!bk) return;
-  layer.style.top = '';
+  sc.style.top = '';
   if (innerWidth >= 760) return;
-  layer.style.top = Math.round(bk.getBoundingClientRect().bottom + 26) + 'px';
+  sc.style.top = Math.round(bk.getBoundingClientRect().bottom + 26) + 'px';
 }
 addEventListener('resize', fitDetail);
 
