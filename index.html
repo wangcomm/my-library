@@ -212,6 +212,13 @@ body.d-open .app { filter: blur(14px) saturate(.85); transform: scale(1.03); poi
 .d-cards .p-quotes { --rot: -.6deg; --dx: 10px; }
 .d-more .panel.paper:nth-child(odd) { rotate: .6deg; translate: 8px 0; }
 .d-more .panel.paper:nth-child(even) { rotate: -.5deg; translate: 14px 0; }
+/* 手機：錯落但置中，左右偏移平均，不要整體往右 */
+@media (max-width: 759px) {
+  .d-cards { padding-inline: 4px; }
+  .d-cards .p-title { --dx: 3px; } .d-cards .p-status { --dx: -6px; } .d-cards .p-blurb { --dx: 5px; }
+  .d-cards .p-tags { --dx: -3px; } .d-cards .p-quotes { --dx: 2px; }
+  .d-more .panel.paper:nth-child(odd) { translate: -3px 0; } .d-more .panel.paper:nth-child(even) { translate: 4px 0; }
+}
 @media (min-width: 760px) { .d-inner .d-cards, .d-inner .d-more { margin-left: 48px; } .d-inner .d-cards { max-width: calc(50% - 60px); } .d-inner .d-more { max-width: calc(50% - 60px); } }
 
 /* 新增：拍封面 */
