@@ -1219,8 +1219,9 @@ const Show = {
   ringGeom(w, h, n) {
     // 直的手機從比較上面往下看，環看起來比較圓；書多時讓書互相疊一點，書才不會變太小
     const s0 = 100, sinT = Math.max(0.3, Math.min(0.55, h / w * 0.27)), pad = 14;
-    const gap = Math.max(0.5, 1.08 - Math.max(0, n - 12) * 0.022);
-    const R = Math.max(n * s0 * gap / (2 * Math.PI), n > 1 ? s0 * 0.75 : 0);
+    // 書之間留空隙；書少時環也不要太小，轉起來才不會擠成一團
+    const gap = Math.max(0.62, 1.4 - Math.max(0, n - 10) * 0.026);
+    const R = Math.max(n * s0 * gap / (2 * Math.PI), n > 1 ? s0 * 1.7 : 0);
     const f = Math.max(R, s0) * 3.4;
     const proj = a => {
       const X = R * Math.sin(a), Z = R * Math.cos(a), k = f / (f - Z);
@@ -1233,7 +1234,9 @@ const Show = {
       x0 = Math.min(x0, q.x - hw); x1 = Math.max(x1, q.x + hw);
       y0 = Math.min(y0, q.y - hw * 1.5); y1 = Math.max(y1, q.y + hw * 1.5);
     }
-    const F = Math.min((w - pad * 2) / (x1 - x0), (h - pad * 2) / (y1 - y0), 2.6);
+    // 最前面那本最多這麼大：手機約螢幕寬的 22%，電腦 160px
+    const maxW = Math.min(w * 0.22, h * 0.2, 160);
+    const F = Math.min((w - pad * 2) / (x1 - x0), (h - pad * 2) / (y1 - y0), maxW / (s0 * proj(0).k));
     return { ring: true, s0, R, proj, F, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, step: Math.max(36, 2 * Math.PI * R * F / Math.max(n, 1)), max: Infinity };
   },
   drawRing(stage, w, h, n) {
